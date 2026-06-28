@@ -2,10 +2,50 @@ import type { Product, ProductReview } from "@/types";
 
 const CUR = "USD";
 
-// Build a 4-image gallery from a seed (stable placeholder photos).
+// Maps each product seed to a real-photo search keyword so the images
+// actually match the product (headphones show headphones, etc.).
+// These are temporary stock photos — replace them with your own product
+// photos via Admin → Products → Add Product (Cloudinary upload).
+const IMAGE_KEYWORD: Record<string, string> = {
+  aether: "charger",
+  nimbus: "mug",
+  orbit: "keyboard",
+  halo: "headphones",
+  pebble: "speaker",
+  echo: "earbuds",
+  lumen: "lamp",
+  terra: "tableware",
+  cloud: "blanket",
+  weekender: "handbag",
+  cashmere: "sweater",
+  aviator: "sunglasses",
+  meridian: "wristwatch",
+  solitaire: "necklace",
+  bondstrap: "wristwatch",
+  velvet: "cosmetics",
+  noir: "perfume",
+  silkpress: "hairdryer",
+  summit: "bottle",
+  trailhead: "backpack",
+  ember: "lantern",
+  serenity: "diffuser",
+  restore: "massage",
+  dawn: "clock",
+};
+
+// Stable numeric "lock" from a seed so the same photos appear every time.
+function lockOf(seed: string): number {
+  let h = 0;
+  for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) % 100000;
+  return h;
+}
+
+// Build a 4-image gallery of real, keyword-matched photos.
 function gallery(seed: string): string[] {
-  return [1, 2, 3, 4].map(
-    (n) => `https://picsum.photos/seed/${seed}-${n}/900/1100`,
+  const keyword = IMAGE_KEYWORD[seed] ?? seed;
+  const base = lockOf(seed);
+  return [0, 1, 2, 3].map(
+    (i) => `https://loremflickr.com/900/1100/${keyword}?lock=${base + i}`,
   );
 }
 
@@ -736,6 +776,15 @@ export function getOnSale(limit = 8): Product[] {
   return products
     .filter((p) => p.compareAtPrice && p.compareAtPrice > p.price)
     .slice(0, limit);
+}
+
+export function getNewArrivals(limit = 8): Product[] {
+  return products.filter((p) => p.badge === "New").slice(0, limit);
+}
+
+/** Distinct brand names across the catalogue. */
+export function getBrands(): string[] {
+  return Array.from(new Set(products.map((p) => p.brand)));
 }
 
 export function getRelated(product: Product, limit = 4): Product[] {

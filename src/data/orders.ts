@@ -1,6 +1,6 @@
 import type { Order } from "@/types";
 
-/** Sample orders — used by the admin dashboard and account demo views. */
+/** Recent orders shown in the admin dashboard and account views. */
 export const sampleOrders: Order[] = [
   {
     id: "o1",
@@ -14,7 +14,7 @@ export const sampleOrders: Order[] = [
         productId: "p4",
         slug: "halo-noise-cancelling-headphones",
         name: "Halo Noise-Cancelling Headphones",
-        image: "https://picsum.photos/seed/halo-1/200/200",
+        image: "https://loremflickr.com/200/200/headphones?lock=10145",
         price: 299,
         quantity: 1,
         maxStock: 25,
@@ -47,7 +47,7 @@ export const sampleOrders: Order[] = [
         productId: "p10",
         slug: "heritage-leather-weekender",
         name: "Heritage Leather Weekender",
-        image: "https://picsum.photos/seed/weekender-1/200/200",
+        image: "https://loremflickr.com/200/200/handbag?lock=10245",
         price: 349,
         quantity: 1,
         maxStock: 7,
@@ -56,7 +56,7 @@ export const sampleOrders: Order[] = [
         productId: "p15",
         slug: "bond-leather-watch-strap",
         name: "Bond Leather Watch Strap",
-        image: "https://picsum.photos/seed/bondstrap-1/200/200",
+        image: "https://loremflickr.com/200/200/wristwatch?lock=10345",
         price: 49,
         quantity: 2,
         maxStock: 50,
@@ -89,7 +89,7 @@ export const sampleOrders: Order[] = [
         productId: "p16",
         slug: "velvet-glow-serum",
         name: "Velvet Glow Serum",
-        image: "https://picsum.photos/seed/velvet-1/200/200",
+        image: "https://loremflickr.com/200/200/cosmetics?lock=10445",
         price: 68,
         quantity: 2,
         maxStock: 60,
@@ -122,7 +122,7 @@ export const sampleOrders: Order[] = [
         productId: "p13",
         slug: "meridian-automatic-watch",
         name: "Meridian Automatic Watch",
-        image: "https://picsum.photos/seed/meridian-1/200/200",
+        image: "https://loremflickr.com/200/200/wristwatch?lock=10545",
         price: 459,
         quantity: 1,
         maxStock: 6,
@@ -155,7 +155,7 @@ export const sampleOrders: Order[] = [
         productId: "p22",
         slug: "serenity-aroma-diffuser",
         name: "Serenity Aroma Diffuser",
-        image: "https://picsum.photos/seed/serenity-1/200/200",
+        image: "https://loremflickr.com/200/200/diffuser?lock=10645",
         price: 72,
         quantity: 1,
         maxStock: 33,

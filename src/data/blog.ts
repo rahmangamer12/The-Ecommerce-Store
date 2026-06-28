@@ -6,13 +6,13 @@ export const blogPosts: BlogPost[] = [
     title: "How to Build a Considered Wardrobe That Lasts",
     excerpt:
       "Quality over quantity isn't a cliché — it's a strategy. Here's how to invest in pieces that earn their place for years.",
-    cover: "https://picsum.photos/seed/blog-wardrobe/1200/700",
+    cover: "https://loremflickr.com/1200/700/wardrobe?lock=31",
     category: "Style",
     tags: ["fashion", "guides", "sustainability"],
     author: {
       name: "Eleanor Vance",
       role: "Style Editor",
-      avatar: "https://picsum.photos/seed/author-eleanor/120/120",
+      avatar: "https://i.pravatar.cc/120?img=47",
     },
     date: "2026-06-10",
     featured: true,
@@ -39,13 +39,13 @@ Quality pieces reward a little maintenance. Store knitwear folded, condition you
     title: "The Art of the Gift: A Guide to Giving Well",
     excerpt:
       "Great gifts aren't about price. They're about attention. A short guide to choosing presents people actually treasure.",
-    cover: "https://picsum.photos/seed/blog-gift/1200/700",
+    cover: "https://loremflickr.com/1200/700/gift?lock=32",
     category: "Living",
     tags: ["gifts", "guides"],
     author: {
       name: "Marcus Reed",
       role: "Lifestyle Writer",
-      avatar: "https://picsum.photos/seed/author-marcus/120/120",
+      avatar: "https://i.pravatar.cc/120?img=15",
     },
     date: "2026-05-28",
     content: `The best gift you've ever received probably wasn't the most expensive. It was the one that proved someone was paying attention. That's the whole art of it.
@@ -67,13 +67,13 @@ Half the delight of a gift is the unwrapping. Premium packaging and a handwritte
     title: "Designing a Calm Home in a Busy World",
     excerpt:
       "Your space shapes your mood more than you think. Small, intentional choices can turn any room into a retreat.",
-    cover: "https://picsum.photos/seed/blog-home/1200/700",
+    cover: "https://loremflickr.com/1200/700/interior?lock=33",
     category: "Home",
     tags: ["home", "wellness", "guides"],
     author: {
       name: "Priya Anand",
       role: "Interiors Contributor",
-      avatar: "https://picsum.photos/seed/author-priya/120/120",
+      avatar: "https://i.pravatar.cc/120?img=48",
     },
     date: "2026-05-12",
     content: `Calm isn't expensive, and it isn't about minimalism for its own sake. It's about removing friction and adding warmth — making a home that lets you exhale.
@@ -95,13 +95,13 @@ A warm throw, the glow of a diffuser, the weight of a well-made mug — calm is 
     title: "Why Buying Quality Pays for Itself",
     excerpt:
       "The cheapest option is rarely the most affordable. A look at the real math behind buying things that last.",
-    cover: "https://picsum.photos/seed/blog-quality/1200/700",
+    cover: "https://loremflickr.com/1200/700/craft?lock=34",
     category: "Living",
     tags: ["guides", "sustainability"],
     author: {
       name: "Eleanor Vance",
       role: "Style Editor",
-      avatar: "https://picsum.photos/seed/author-eleanor/120/120",
+      avatar: "https://i.pravatar.cc/120?img=47",
     },
     date: "2026-04-22",
     content: `"Buy it nice or buy it twice" is more than a saying — it's arithmetic. When you factor in replacements, the premium option is often the budget option in disguise.

@@ -14,8 +14,17 @@ import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/sections/section-header";
 import { ProductCard } from "@/components/product/product-card";
 import { CategoryIcon } from "@/components/category-icon";
+import { BrandStrip } from "@/components/home/brand-strip";
+import { PromoTiles } from "@/components/home/promo-tiles";
+import { FlashDeal } from "@/components/home/flash-deal";
 import { categories } from "@/data/categories";
-import { getFeatured, getTrending, getProductsByCategory } from "@/data/products";
+import {
+  getFeatured,
+  getTrending,
+  getProductsByCategory,
+  getOnSale,
+  getNewArrivals,
+} from "@/data/products";
 import { testimonials } from "@/data/testimonials";
 import { getAllPosts } from "@/data/blog";
 import { siteConfig } from "@/config/site";
@@ -25,6 +34,8 @@ import { jsonLd, websiteSchema, organizationSchema } from "@/lib/seo";
 export default function HomePage() {
   const featured = getFeatured(8);
   const trending = getTrending(4);
+  const onSale = getOnSale(4);
+  const newArrivals = getNewArrivals(4);
   const posts = getAllPosts().slice(0, 3);
   // Use a real product image for the hero.
   const heroProduct = getProductsByCategory("watches-jewelry")[0];
@@ -156,6 +167,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ===================== BRAND STRIP ===================== */}
+      <BrandStrip />
+
       {/* ===================== CATEGORIES ===================== */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <Reveal>
@@ -191,6 +205,9 @@ export default function HomePage() {
         </Stagger>
       </section>
 
+      {/* ===================== PROMO TILES ===================== */}
+      <PromoTiles />
+
       {/* ===================== FEATURED PRODUCTS ===================== */}
       <section className="bg-paper-2">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
@@ -211,6 +228,30 @@ export default function HomePage() {
           </Stagger>
         </div>
       </section>
+
+      {/* ===================== FLASH DEAL ===================== */}
+      <FlashDeal products={onSale} />
+
+      {/* ===================== NEW ARRIVALS ===================== */}
+      {newArrivals.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Just landed"
+              title="New arrivals"
+              description="The latest additions to the Luxora collection."
+              href="/shop?sort=newest"
+            />
+          </Reveal>
+          <Stagger className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
+            {newArrivals.map((p) => (
+              <StaggerItem key={p.id}>
+                <ProductCard product={p} />
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </section>
+      )}
 
       {/* ===================== EDITORIAL CTA ===================== */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">

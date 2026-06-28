@@ -8,7 +8,7 @@ export const categories: Category[] = [
     slug: "technology",
     description:
       "Cutting-edge gadgets, smart devices and accessories engineered for modern living.",
-    image: "https://picsum.photos/seed/luxora-tech/800/600",
+    image: "https://loremflickr.com/800/600/electronics?lock=21",
     icon: "Cpu",
   },
   {
@@ -17,7 +17,7 @@ export const categories: Category[] = [
     slug: "audio",
     description:
       "Studio-grade headphones, speakers and earbuds tuned for pure, immersive sound.",
-    image: "https://picsum.photos/seed/luxora-audio/800/600",
+    image: "https://loremflickr.com/800/600/headphones?lock=22",
     icon: "Headphones",
   },
   {
@@ -26,7 +26,7 @@ export const categories: Category[] = [
     slug: "home-living",
     description:
       "Elevated essentials and decor that bring warmth and craft into every room.",
-    image: "https://picsum.photos/seed/luxora-home/800/600",
+    image: "https://loremflickr.com/800/600/interior?lock=23",
     icon: "Lamp",
   },
   {
@@ -35,7 +35,7 @@ export const categories: Category[] = [
     slug: "fashion",
     description:
       "Timeless wardrobe pieces and accessories made from considered materials.",
-    image: "https://picsum.photos/seed/luxora-fashion/800/600",
+    image: "https://loremflickr.com/800/600/fashion?lock=24",
     icon: "Shirt",
   },
   {
@@ -44,7 +44,7 @@ export const categories: Category[] = [
     slug: "watches-jewelry",
     description:
       "Precision timepieces and fine jewelry, finished by hand for a lifetime of wear.",
-    image: "https://picsum.photos/seed/luxora-watch/800/600",
+    image: "https://loremflickr.com/800/600/watch?lock=25",
     icon: "Watch",
   },
   {
@@ -53,7 +53,7 @@ export const categories: Category[] = [
     slug: "beauty",
     description:
       "Clean, high-performance skincare and fragrance for an everyday ritual.",
-    image: "https://picsum.photos/seed/luxora-beauty/800/600",
+    image: "https://loremflickr.com/800/600/cosmetics?lock=26",
     icon: "Sparkles",
   },
   {
@@ -62,7 +62,7 @@ export const categories: Category[] = [
     slug: "outdoors",
     description:
       "Durable, beautifully made gear for adventures near and far.",
-    image: "https://picsum.photos/seed/luxora-outdoor/800/600",
+    image: "https://loremflickr.com/800/600/mountain?lock=27",
     icon: "Mountain",
   },
   {
@@ -71,7 +71,7 @@ export const categories: Category[] = [
     slug: "wellness",
     description:
       "Thoughtful tools and rituals to help you rest, recover and feel your best.",
-    image: "https://picsum.photos/seed/luxora-wellness/800/600",
+    image: "https://loremflickr.com/800/600/spa?lock=28",
     icon: "HeartPulse",
   },
 ];

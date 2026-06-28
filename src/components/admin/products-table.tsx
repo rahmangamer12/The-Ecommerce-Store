@@ -27,12 +27,12 @@ export function ProductsTable({ products }: { products: Product[] }) {
             className="h-10 w-56 bg-transparent text-sm focus-visible:outline-none"
           />
         </div>
-        <button
-          onClick={() => toast("Add product", { description: "Add a new product to your catalogue." })}
+        <Link
+          href="/admin/products/new"
           className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:bg-gold hover:text-white"
         >
           <Plus className="h-4 w-4" /> Add product
-        </button>
+        </Link>
       </div>
 
       <div className="mt-5 overflow-x-auto rounded-2xl border border-border bg-card">

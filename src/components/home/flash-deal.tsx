@@ -1,0 +1,68 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Zap } from "lucide-react";
+import type { Product } from "@/types";
+import { ProductCard } from "@/components/product/product-card";
+
+function pad(n: number) {
+  return String(n).padStart(2, "0");
+}
+
+// A flash-sale section with a live countdown (resets at end of day) and the
+// products currently on sale. Classic high-converting e-commerce block.
+export function FlashDeal({ products }: { products: Product[] }) {
+  const [time, setTime] = useState({ h: 0, m: 0, s: 0 });
+
+  useEffect(() => {
+    function tick() {
+      const now = new Date();
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
+      const diff = Math.max(0, end.getTime() - now.getTime());
+      setTime({
+        h: Math.floor(diff / 3.6e6),
+        m: Math.floor((diff % 3.6e6) / 6e4),
+        s: Math.floor((diff % 6e4) / 1000),
+      });
+    }
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (products.length === 0) return null;
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="eyebrow flex items-center gap-1.5">
+            <Zap className="h-4 w-4 text-gold-strong" /> Limited time
+          </p>
+          <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+            Flash sale
+          </h2>
+        </div>
+        {/* Countdown */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted">Ends in</span>
+          {[time.h, time.m, time.s].map((v, i) => (
+            <span key={i} className="flex items-center gap-2">
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-ink font-mono text-lg font-semibold text-paper">
+                {pad(v)}
+              </span>
+              {i < 2 && <span className="font-semibold text-ink">:</span>}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
+        {products.slice(0, 4).map((p) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
+      </div>
+    </section>
+  );
+}

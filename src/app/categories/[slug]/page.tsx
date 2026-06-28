@@ -4,9 +4,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { categories, getCategory } from "@/data/categories";
-import { getProductsByCategory } from "@/data/products";
+import { getCatalogByCategory } from "@/lib/catalog";
 import { ShopView } from "@/components/shop/shop-view";
 import { buildMetadata, breadcrumbSchema, jsonLd } from "@/lib/seo";
+
+// Render at request time so admin-added products appear in their category.
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return categories.map((c) => ({ slug: c.slug }));
@@ -36,7 +39,7 @@ export default async function CategoryPage({
   const { slug } = await params;
   const cat = getCategory(slug);
   if (!cat) notFound();
-  const products = getProductsByCategory(slug);
+  const products = await getCatalogByCategory(slug);
 
   return (
     <div>

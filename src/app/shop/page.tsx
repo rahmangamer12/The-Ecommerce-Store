@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { ShopView } from "@/components/shop/shop-view";
-import { getAllProducts } from "@/data/products";
+import { getCatalog } from "@/lib/catalog";
 import { buildMetadata } from "@/lib/seo";
+
+// Render at request time so admin-added products always appear.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
   title: "Shop All",
@@ -18,7 +21,7 @@ export default async function ShopPage({
   searchParams: Promise<{ sort?: string; sale?: string }>;
 }) {
   const sp = await searchParams;
-  const products = getAllProducts();
+  const products = await getCatalog();
   const validSorts: SortKey[] = ["featured", "newest", "price-asc", "price-desc", "popular"];
   const sort = (validSorts.includes(sp.sort as SortKey) ? sp.sort : "featured") as SortKey;
 

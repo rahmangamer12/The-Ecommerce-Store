@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import {
-  products,
-  getProductBySlug,
-  getRelated,
-} from "@/data/products";
+import { products } from "@/data/products";
+import { getCatalogProductBySlug, getCatalogRelated } from "@/lib/catalog";
 import { getCategory } from "@/data/categories";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductBuyBox } from "@/components/product/product-buy-box";
@@ -31,7 +28,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getCatalogProductBySlug(slug);
   if (!product) return buildMetadata({ title: "Product" });
   return buildMetadata({
     title: product.seo?.title ?? product.name,
@@ -48,11 +45,11 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getCatalogProductBySlug(slug);
   if (!product) notFound();
 
   const category = getCategory(product.categorySlug);
-  const related = getRelated(product, 4);
+  const related = await getCatalogRelated(product, 4);
 
   return (
     <div>
