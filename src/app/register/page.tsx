@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AuthShell, AuthLink } from "@/components/auth/auth-shell";
 import { AuthForm } from "@/components/auth/auth-form";
+import { SocialAuth } from "@/components/auth/social-auth";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -20,6 +21,7 @@ export default function RegisterPage() {
         </>
       }
     >
+      <SocialAuth next="/account" />
       <AuthForm mode="register" />
     </AuthShell>
   );
