@@ -1,0 +1,333 @@
+import Image from "next/image";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Truck,
+  ShieldCheck,
+  RefreshCw,
+  Headphones,
+  Star,
+  Sparkles,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
+import { SectionHeader } from "@/components/sections/section-header";
+import { ProductCard } from "@/components/product/product-card";
+import { CategoryIcon } from "@/components/category-icon";
+import { categories } from "@/data/categories";
+import { getFeatured, getTrending, getProductsByCategory } from "@/data/products";
+import { testimonials } from "@/data/testimonials";
+import { getAllPosts } from "@/data/blog";
+import { siteConfig } from "@/config/site";
+import { formatDate } from "@/lib/utils";
+import { jsonLd, websiteSchema, organizationSchema } from "@/lib/seo";
+
+export default function HomePage() {
+  const featured = getFeatured(8);
+  const trending = getTrending(4);
+  const posts = getAllPosts().slice(0, 3);
+  // Use a real product image for the hero.
+  const heroProduct = getProductsByCategory("watches-jewelry")[0];
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd([websiteSchema(), organizationSchema()])}
+      />
+
+      {/* ===================== HERO ===================== */}
+      <section className="relative overflow-hidden bg-aura">
+        <div className="absolute inset-0 bg-grid opacity-40" aria-hidden />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-2 lg:gap-8 lg:px-8 lg:pb-24 lg:pt-20">
+          <Reveal>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border glass px-4 py-1.5 text-sm">
+              <Sparkles className="h-4 w-4 text-gold-strong" />
+              <span className="text-ink-soft">
+                Curated from the world&apos;s finest makers
+              </span>
+            </div>
+            <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+              Modern luxury,{" "}
+              <span className="text-gradient-gold">delivered worldwide</span>
+            </h1>
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft">
+              {siteConfig.name} brings together exceptional products across tech,
+              home, fashion and beauty — chosen for quality you can feel and
+              design you&apos;ll love for years.
+            </p>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Button href="/shop" variant="gold" size="lg">
+                Shop the collection
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Button href="/categories" variant="outline" size="lg">
+                Browse categories
+              </Button>
+            </div>
+            {/* Trust row */}
+            <div className="mt-10 flex items-center gap-6">
+              <div className="flex -space-x-3">
+                {testimonials.slice(0, 4).map((t) => (
+                  <span
+                    key={t.id}
+                    className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-paper"
+                  >
+                    <Image src={t.avatar} alt={t.name} fill sizes="40px" className="object-cover" />
+                  </span>
+                ))}
+              </div>
+              <div>
+                <div className="flex items-center gap-1 text-gold">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <p className="mt-0.5 text-sm text-ink-soft">
+                  Loved by <span className="font-semibold text-ink">25,000+</span>{" "}
+                  customers
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Hero visual */}
+          <Reveal delay={0.15} className="relative">
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-md">
+              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-gold-soft/40 to-transparent blur-2xl" />
+              <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-border shadow-luxe-lg">
+                {heroProduct && (
+                  <Image
+                    src={heroProduct.images[0]}
+                    alt={heroProduct.name}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 90vw, 28rem"
+                    className="object-cover"
+                  />
+                )}
+              </div>
+              {/* Floating price card */}
+              {heroProduct && (
+                <div className="animate-float absolute -bottom-5 -left-5 w-52 rounded-2xl border border-border glass p-4 shadow-luxe">
+                  <p className="text-xs text-muted">{heroProduct.brand}</p>
+                  <p className="mt-0.5 line-clamp-1 text-sm font-semibold">
+                    {heroProduct.name}
+                  </p>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="font-display text-lg font-semibold text-gold-strong">
+                      {siteConfig.currencySymbol}
+                      {heroProduct.price}
+                    </span>
+                    <Link
+                      href={`/products/${heroProduct.slug}`}
+                      className="grid h-8 w-8 place-items-center rounded-full bg-ink text-paper"
+                      aria-label="View product"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ===================== BENEFITS ===================== */}
+      <section className="border-y border-border bg-card">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+          {[
+            { icon: Truck, title: "Free worldwide shipping", text: "On orders over $100" },
+            { icon: ShieldCheck, title: "Secure payments", text: "Encrypted via Polar" },
+            { icon: RefreshCw, title: "30-day returns", text: "Shop with confidence" },
+            { icon: Headphones, title: "24/7 support", text: "Real people, fast replies" },
+          ].map((b) => (
+            <div key={b.title} className="flex items-center gap-3 py-6">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-paper-2 text-gold-strong">
+                <b.icon className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-ink">{b.title}</p>
+                <p className="text-xs text-muted">{b.text}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===================== CATEGORIES ===================== */}
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <Reveal>
+          <SectionHeader
+            eyebrow="Explore"
+            title="Shop by category"
+            description="Eight worlds of considered design, each curated by our team."
+            href="/categories"
+          />
+        </Reveal>
+        <Stagger className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
+          {categories.map((cat) => (
+            <StaggerItem key={cat.slug}>
+              <Link
+                href={`/categories/${cat.slug}`}
+                className="card-lift group relative block aspect-square overflow-hidden rounded-2xl"
+              >
+                <Image
+                  src={cat.image}
+                  alt={cat.name}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4 text-paper">
+                  <CategoryIcon name={cat.icon} className="h-5 w-5 text-gold-soft" />
+                  <p className="mt-2 font-display text-lg font-semibold">{cat.name}</p>
+                </div>
+              </Link>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </section>
+
+      {/* ===================== FEATURED PRODUCTS ===================== */}
+      <section className="bg-paper-2">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Handpicked"
+              title="Featured this season"
+              description="Our editors' current obsessions — the pieces everyone's talking about."
+              href="/shop"
+            />
+          </Reveal>
+          <Stagger className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+            {featured.map((p, i) => (
+              <StaggerItem key={p.id}>
+                <ProductCard product={p} priority={i < 4} />
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
+      {/* ===================== EDITORIAL CTA ===================== */}
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-paper sm:px-16 sm:py-24">
+            <div className="absolute inset-0 bg-aura opacity-60" aria-hidden />
+            <div className="relative max-w-xl">
+              <p className="eyebrow text-gold-soft">The Luxora promise</p>
+              <h2 className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-5xl">
+                Buy it nice, not twice.
+              </h2>
+              <p className="mt-5 text-lg text-paper/80">
+                We obsess over materials, makers and the little details — so every
+                order feels like a gift to yourself. If you don&apos;t love it,
+                send it back within 30 days. Simple.
+              </p>
+              <Button href="/shop" variant="gold" size="lg" className="mt-8">
+                Discover why
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ===================== TRENDING ===================== */}
+      <section className="bg-paper-2">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Right now"
+              title="Trending products"
+              href="/shop?sort=popular"
+            />
+          </Reveal>
+          <Stagger className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
+            {trending.map((p) => (
+              <StaggerItem key={p.id}>
+                <ProductCard product={p} />
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
+      {/* ===================== TESTIMONIALS ===================== */}
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <Reveal>
+          <SectionHeader
+            eyebrow="Loved worldwide"
+            title="What our customers say"
+            center
+          />
+        </Reveal>
+        <Stagger className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {testimonials.map((t) => (
+            <StaggerItem key={t.id}>
+              <figure className="flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-luxe">
+                <div className="flex items-center gap-1 text-gold">
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-ink-soft">
+                  “{t.quote}”
+                </blockquote>
+                <figcaption className="mt-5 flex items-center gap-3">
+                  <span className="relative h-10 w-10 overflow-hidden rounded-full">
+                    <Image src={t.avatar} alt={t.name} fill sizes="40px" className="object-cover" />
+                  </span>
+                  <span>
+                    <span className="block text-sm font-semibold text-ink">{t.name}</span>
+                    <span className="block text-xs text-muted">{t.role}</span>
+                  </span>
+                </figcaption>
+              </figure>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </section>
+
+      {/* ===================== JOURNAL ===================== */}
+      <section className="bg-paper-2">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionHeader
+              eyebrow="The Journal"
+              title="Stories & guides"
+              description="Considered reading on style, living and buying well."
+              href="/blog"
+            />
+          </Reveal>
+          <Stagger className="mt-12 grid gap-6 md:grid-cols-3">
+            {posts.map((post) => (
+              <StaggerItem key={post.slug}>
+                <Link href={`/blog/${post.slug}`} className="card-lift group block">
+                  <div className="relative aspect-[16/10] overflow-hidden rounded-2xl">
+                    <Image
+                      src={post.cover}
+                      alt={post.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <p className="eyebrow mt-4">{post.category}</p>
+                  <h3 className="mt-2 font-display text-xl font-semibold leading-snug text-ink transition-colors group-hover:text-gold-strong">
+                    {post.title}
+                  </h3>
+                  <p className="mt-2 line-clamp-2 text-sm text-ink-soft">{post.excerpt}</p>
+                  <p className="mt-3 text-xs text-muted">{formatDate(post.date)}</p>
+                </Link>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+    </>
+  );
+}
