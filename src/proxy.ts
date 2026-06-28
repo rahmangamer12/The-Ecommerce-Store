@@ -1,51 +1,20 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+// Routes that require the user to be signed in.
+const isProtectedRoute = createRouteMatcher(["/account(.*)", "/admin(.*)"]);
 
-// Protected route prefixes (only enforced once Supabase is configured).
-const PROTECTED = ["/account", "/admin"];
-
-export async function proxy(request: NextRequest) {
-  // If Supabase isn't configured, do nothing (demo mode).
-  if (!SUPABASE_URL || !SUPABASE_KEY) return NextResponse.next();
-
-  let response = NextResponse.next({ request });
-
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_KEY, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
-        );
-      },
-    },
-  });
-
-  // Refresh the session so Server Components get a valid token.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const path = request.nextUrl.pathname;
-  const needsAuth = PROTECTED.some((p) => path.startsWith(p));
-
-  if (needsAuth && !user) {
-    const redirect = new URL("/login", request.url);
-    redirect.searchParams.set("redirect", path);
-    return NextResponse.redirect(redirect);
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    // Redirects to the sign-in page (NEXT_PUBLIC_CLERK_SIGN_IN_URL) if not signed in.
+    await auth.protect();
   }
-
-  return response;
-}
+});
 
 export const config = {
-  // Run on everything except static assets and image optimization.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: [
+    // Run on everything except Next internals and static assets…
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|gif|svg|png|webp|ico|woff2?|ttf|map)).*)",
+    // …and always run on API routes.
+    "/(api|trpc)(.*)",
+  ],
 };

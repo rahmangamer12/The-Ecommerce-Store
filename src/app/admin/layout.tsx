@@ -1,43 +1,43 @@
-import { Info } from "lucide-react";
+import Link from "next/link";
+import { ShieldAlert } from "lucide-react";
+import { currentUser } from "@clerk/nextjs/server";
 import { AdminNav } from "@/components/admin/admin-nav";
-import { getCurrentUser } from "@/lib/supabase/server";
-import { isSupabaseConfigured, adminEmails } from "@/config/env";
+import { adminEmails } from "@/config/env";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // --- Access control ---
-  // When Supabase is configured, only signed-in admins (by ADMIN_EMAILS or
-  // the `admin` role) should reach this area. While keys are NOT configured,
-  // we allow access in "demo mode" so you can preview the dashboard.
-  const user = await getCurrentUser();
-  const isAdmin =
-    !!user &&
-    (adminEmails.includes(user.email?.toLowerCase() ?? "") ||
-      user.user_metadata?.role === "admin");
-  const demoMode = !isSupabaseConfigured;
+  // Middleware ensures the user is signed in. Here we additionally require
+  // their email to be listed in ADMIN_EMAILS for admin access.
+  const user = await currentUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress?.toLowerCase();
+  const isAdmin = !!email && adminEmails.includes(email);
+
+  if (!isAdmin) {
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-4 text-center">
+        <div className="grid h-16 w-16 place-items-center rounded-full bg-danger/10 text-danger">
+          <ShieldAlert className="h-8 w-8" />
+        </div>
+        <h1 className="mt-5 font-display text-2xl font-semibold">Access restricted</h1>
+        <p className="mt-2 text-ink-soft">
+          This area is for store administrators only. Your account
+          {email ? ` (${email})` : ""} doesn&apos;t have admin access.
+        </p>
+        <Link
+          href="/"
+          className="mt-6 rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper hover:bg-gold hover:text-white"
+        >
+          Back to store
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[100rem] px-4 py-8 sm:px-6 lg:px-8">
-      {demoMode && (
-        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-gold/30 bg-gold/10 p-4 text-sm text-ink-soft">
-          <Info className="mt-0.5 h-5 w-5 shrink-0 text-gold-strong" />
-          <p>
-            <span className="font-semibold text-ink">Demo mode.</span> Connect
-            Supabase and set <code className="rounded bg-paper-2 px-1">ADMIN_EMAILS</code>{" "}
-            in <code className="rounded bg-paper-2 px-1">.env.local</code> to lock
-            this dashboard to admin accounts only.
-          </p>
-        </div>
-      )}
-      {!demoMode && !isAdmin && (
-        <div className="mb-6 rounded-2xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger">
-          You don&apos;t have admin access. Sign in with an admin account.
-        </div>
-      )}
-
       <div className="grid gap-8 lg:grid-cols-[230px_1fr]">
         <aside className="lg:sticky lg:top-24 lg:h-fit">
           <div className="mb-4">

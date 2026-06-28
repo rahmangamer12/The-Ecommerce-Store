@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/supabase/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { AccountNav } from "@/components/account/account-nav";
 
 export default async function AccountLayout({
@@ -6,11 +6,11 @@ export default async function AccountLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Works with or without Supabase configured — falls back to a demo name.
-  const user = await getCurrentUser();
+  // Middleware already guarantees the user is signed in here.
+  const user = await currentUser();
   const name =
-    (user?.user_metadata?.full_name as string | undefined) ??
-    user?.email?.split("@")[0] ??
+    user?.firstName ||
+    user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] ||
     "there";
 
   return (

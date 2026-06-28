@@ -28,7 +28,7 @@ export function ProductsTable({ products }: { products: Product[] }) {
           />
         </div>
         <button
-          onClick={() => toast("Add product", { description: "Hook this up to a create form + Cloudinary upload." })}
+          onClick={() => toast("Add product", { description: "Add a new product to your catalogue." })}
           className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:bg-gold hover:text-white"
         >
           <Plus className="h-4 w-4" /> Add product

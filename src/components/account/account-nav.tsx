@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
@@ -10,8 +10,8 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useClerk } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { signOutAction } from "@/lib/auth-actions";
 
 const links = [
   { href: "/account", label: "Dashboard", icon: LayoutDashboard },
@@ -23,12 +23,10 @@ const links = [
 
 export function AccountNav() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { signOut } = useClerk();
 
-  async function signOut() {
-    await signOutAction();
-    router.push("/");
-    router.refresh();
+  function handleSignOut() {
+    signOut({ redirectUrl: "/" });
   }
 
   return (
@@ -50,7 +48,7 @@ export function AccountNav() {
         );
       })}
       <button
-        onClick={signOut}
+        onClick={handleSignOut}
         className="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-danger transition-colors hover:bg-danger/10"
       >
         <LogOut className="h-4 w-4" />

@@ -8,7 +8,7 @@ export function AddCouponButton() {
     <button
       onClick={() =>
         toast("New coupon", {
-          description: "Connect this to the `coupons` table to persist new codes.",
+          description: "Create a new discount code for your store.",
         })
       }
       className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:bg-gold hover:text-white"

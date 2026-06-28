@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { StoreProvider } from "@/components/providers/store-provider";
@@ -26,12 +27,13 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${sans.variable} ${mono.variable} ${display.variable}`}
-    >
-      <body className="min-h-screen antialiased">
+    <ClerkProvider>
+      <html
+        lang="en"
+        suppressHydrationWarning
+        className={`${sans.variable} ${mono.variable} ${display.variable}`}
+      >
+        <body className="min-h-screen antialiased">
         {/* Google Tag Manager (noscript) — only rendered when GTM ID is set */}
         {analytics.gtm && (
           <noscript>
@@ -64,7 +66,8 @@ export default function RootLayout({
           </StoreProvider>
         </ThemeProvider>
         <Analytics />
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

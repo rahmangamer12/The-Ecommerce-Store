@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { useUser, UserButton } from "@clerk/nextjs";
 import {
   Search,
   Heart,
@@ -30,6 +31,7 @@ const navLinks = [
 
 export function Navbar() {
   const router = useRouter();
+  const { isSignedIn } = useUser();
   const { cartCount, wishlist, setCartOpen, mounted } = useStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -133,13 +135,19 @@ export function Navbar() {
               </span>
             )}
           </Link>
-          <Link
-            href="/account"
-            className="hidden h-10 w-10 place-items-center rounded-full hover:bg-ink/5 sm:grid"
-            aria-label="Account"
-          >
-            <User className="h-[1.1rem] w-[1.1rem]" />
-          </Link>
+          {isSignedIn ? (
+            <div className="hidden h-10 w-10 place-items-center sm:grid">
+              <UserButton />
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="hidden h-10 w-10 place-items-center rounded-full hover:bg-ink/5 sm:grid"
+              aria-label="Sign in"
+            >
+              <User className="h-[1.1rem] w-[1.1rem]" />
+            </Link>
+          )}
           <button
             onClick={() => setCartOpen(true)}
             className="relative grid h-10 w-10 place-items-center rounded-full hover:bg-ink/5"

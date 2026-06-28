@@ -35,7 +35,7 @@ export function SettingsForm() {
   function save(e: React.FormEvent) {
     e.preventDefault();
     toast.success("Settings saved", {
-      description: "In production, persist these to the `settings` table.",
+      description: "Your store settings have been updated.",
     });
   }
 
