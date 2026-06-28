@@ -10,6 +10,7 @@ import { Footer } from "@/components/layout/footer";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { Analytics } from "@/components/analytics";
 import { buildMetadata } from "@/lib/seo";
+import { analytics } from "@/config/env";
 
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -31,6 +32,18 @@ export default function RootLayout({
       className={`${sans.variable} ${mono.variable} ${display.variable}`}
     >
       <body className="min-h-screen antialiased">
+        {/* Google Tag Manager (noscript) — only rendered when GTM ID is set */}
+        {analytics.gtm && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${analytics.gtm}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+              title="gtm"
+            />
+          </noscript>
+        )}
         <ThemeProvider>
           <StoreProvider>
             <AnnouncementBar />

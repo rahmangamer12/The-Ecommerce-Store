@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import type { CartItem, Coupon } from "@/types";
 import { siteConfig } from "@/config/site";
 import { findCoupon } from "@/data/coupons";
+import { analyticsEvents } from "@/lib/analytics";
 
 // -------------------------------------------------------------
 //  Client-side store: cart, wishlist, recently viewed, coupon.
@@ -131,6 +132,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         return [...prev, { ...item, quantity: Math.min(qty, item.maxStock) }];
       });
       toast.success("Added to cart", { description: item.name });
+      // Forward to any configured analytics pixels (GA4/GTM/Meta/TikTok).
+      analyticsEvents.addToCart(item.productId, item.name, item.price, qty);
       setCartOpen(true);
     },
     [],

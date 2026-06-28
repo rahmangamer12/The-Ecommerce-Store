@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig, siteUrl } from "@/config/site";
+import { analytics } from "@/config/env";
 
 type SeoInput = {
   title?: string;
@@ -35,6 +36,10 @@ export function buildMetadata(input: SeoInput = {}): Metadata {
         siteConfig.name,
       ],
     alternates: { canonical: url },
+    // Google Search Console verification (set NEXT_PUBLIC_SEARCH_CONSOLE_VERIFICATION).
+    verification: analytics.searchConsole
+      ? { google: analytics.searchConsole }
+      : undefined,
     robots: input.noindex
       ? { index: false, follow: false }
       : { index: true, follow: true },
