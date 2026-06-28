@@ -28,7 +28,9 @@ function mapRow(r: Row): Product {
     shortDescription: String(r.short_description ?? ""),
     description: String(r.description ?? ""),
     features: asArray(r.features),
-    images: images.length ? images : ["https://loremflickr.com/900/1100/product"],
+    images: images.length
+      ? images
+      : ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80"],
     rating: Number(r.rating ?? 5),
     reviewCount: Number(r.review_count ?? 0),
     stock: Number(r.stock ?? 0),

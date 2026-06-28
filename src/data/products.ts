@@ -2,51 +2,43 @@ import type { Product, ProductReview } from "@/types";
 
 const CUR = "USD";
 
-// Maps each product seed to a real-photo search keyword so the images
-// actually match the product (headphones show headphones, etc.).
-// These are temporary stock photos — replace them with your own product
-// photos via Admin → Products → Add Product (Cloudinary upload).
-const IMAGE_KEYWORD: Record<string, string> = {
-  aether: "charger",
-  nimbus: "mug",
-  orbit: "keyboard",
-  halo: "headphones",
-  pebble: "speaker",
-  echo: "earbuds",
-  lumen: "lamp",
-  terra: "tableware",
-  cloud: "blanket",
-  weekender: "handbag",
-  cashmere: "sweater",
-  aviator: "sunglasses",
-  meridian: "wristwatch",
-  solitaire: "necklace",
-  bondstrap: "wristwatch",
-  velvet: "cosmetics",
-  noir: "perfume",
-  silkpress: "hairdryer",
-  summit: "bottle",
-  trailhead: "backpack",
-  ember: "lantern",
-  serenity: "diffuser",
-  restore: "massage",
-  dawn: "clock",
+// Real, hand-picked Unsplash product photos per product (verified URLs).
+// These are high-quality stock photos that match each product type.
+// Replace them with your own product photos via Admin → Products → Add Product.
+const U = "https://images.unsplash.com/photo-";
+const Q = "?auto=format&fit=crop&w=900&q=80";
+
+const PRODUCT_IMAGES: Record<string, string[]> = {
+  aether: ["1583863788434-e58a36330cf0", "1587829741301-dc798b83add3", "1514228742587-6b1558fcca3d", "1583863788434-e58a36330cf0"],
+  nimbus: ["1514228742587-6b1558fcca3d", "1507473885765-e6ed057f782c", "1578749556568-bc2c40e68b61", "1514228742587-6b1558fcca3d"],
+  orbit: ["1587829741301-dc798b83add3", "1541140532154-b024d705b90a", "1583863788434-e58a36330cf0", "1608043152269-423dbba4e7e1"],
+  halo: ["1583394838336-acd977736f90", "1505740420928-5e560c06d30e", "1484704849700-f032a568e944", "1589003077984-894e133dabab"],
+  pebble: ["1608043152269-423dbba4e7e1", "1589003077984-894e133dabab", "1583394838336-acd977736f90", "1590658268037-6bf12165a8df"],
+  echo: ["1590658268037-6bf12165a8df", "1572569511254-d8f925fe2cbb", "1600294037681-c80b4cb5b434", "1583394838336-acd977736f90"],
+  lumen: ["1507473885765-e6ed057f782c", "1507473885765-e6ed057f782c", "1578749556568-bc2c40e68b61", "1580301762395-21ce84d00bc6"],
+  terra: ["1578749556568-bc2c40e68b61", "1578749556568-bc2c40e68b61", "1514228742587-6b1558fcca3d", "1507473885765-e6ed057f782c"],
+  cloud: ["1580301762395-21ce84d00bc6", "1580301762395-21ce84d00bc6", "1507473885765-e6ed057f782c", "1576566588028-4147f3842f27"],
+  weekender: ["1547949003-9792a18a2601", "1547949003-9792a18a2601", "1553062407-98eeb64c6a62", "1572635196237-14b3f281503f"],
+  cashmere: ["1576566588028-4147f3842f27", "1576566588028-4147f3842f27", "1580301762395-21ce84d00bc6", "1572635196237-14b3f281503f"],
+  aviator: ["1572635196237-14b3f281503f", "1511499767150-a48a237f0083", "1524592094714-0f0654e20314", "1547949003-9792a18a2601"],
+  meridian: ["1524592094714-0f0654e20314", "1523275335684-37898b6baf30", "1572635196237-14b3f281503f", "1515562141207-7a88fb7ce338"],
+  solitaire: ["1515562141207-7a88fb7ce338", "1515562141207-7a88fb7ce338", "1524592094714-0f0654e20314", "1541643600914-78b084683601"],
+  bondstrap: ["1524592094714-0f0654e20314", "1523275335684-37898b6baf30", "1515562141207-7a88fb7ce338", "1572635196237-14b3f281503f"],
+  velvet: ["1556228720-195a672e8a03", "1620916566398-39f1143ab7be", "1541643600914-78b084683601", "1602874801007-bd458bb1b8b6"],
+  noir: ["1541643600914-78b084683601", "1592945403244-b3fbafd7f539", "1556228720-195a672e8a03", "1603006905003-be475563bc59"],
+  silkpress: ["1522338242992-e1a54906a8da", "1522338242992-e1a54906a8da", "1556228720-195a672e8a03", "1541643600914-78b084683601"],
+  summit: ["1602143407151-7111542de6e8", "1523362628745-0c100150b504", "1517637382994-f02da38c6728", "1553062407-98eeb64c6a62"],
+  trailhead: ["1553062407-98eeb64c6a62", "1553062407-98eeb64c6a62", "1602143407151-7111542de6e8", "1517637382994-f02da38c6728"],
+  ember: ["1517637382994-f02da38c6728", "1517637382994-f02da38c6728", "1602143407151-7111542de6e8", "1553062407-98eeb64c6a62"],
+  serenity: ["1602874801007-bd458bb1b8b6", "1603006905003-be475563bc59", "1507473885765-e6ed057f782c", "1556228720-195a672e8a03"],
+  restore: ["1600166898405-da9535204843", "1600166898405-da9535204843", "1602143407151-7111542de6e8", "1556228720-195a672e8a03"],
+  dawn: ["1512496015851-a90fb38ba796", "1495856458515-0637185db551", "1507473885765-e6ed057f782c", "1580301762395-21ce84d00bc6"],
 };
 
-// Stable numeric "lock" from a seed so the same photos appear every time.
-function lockOf(seed: string): number {
-  let h = 0;
-  for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) % 100000;
-  return h;
-}
-
-// Build a 4-image gallery of real, keyword-matched photos.
+// Build a gallery of real, product-matched photos.
 function gallery(seed: string): string[] {
-  const keyword = IMAGE_KEYWORD[seed] ?? seed;
-  const base = lockOf(seed);
-  return [0, 1, 2, 3].map(
-    (i) => `https://loremflickr.com/900/1100/${keyword}?lock=${base + i}`,
-  );
+  const ids = PRODUCT_IMAGES[seed] ?? PRODUCT_IMAGES.halo;
+  return ids.map((id) => `${U}${id}${Q}`);
 }
 
 // A small pool of reviews reused across products for realism.

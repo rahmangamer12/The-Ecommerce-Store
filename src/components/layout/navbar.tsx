@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  LayoutDashboard,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -136,16 +137,28 @@ export function Navbar() {
             )}
           </Link>
           {isSignedIn ? (
-            <div className="hidden h-10 w-10 place-items-center sm:grid">
-              <UserButton />
+            <div className="ml-1 hidden h-10 items-center sm:flex">
+              <UserButton>
+                <UserButton.MenuItems>
+                  <UserButton.Link
+                    label="My account"
+                    labelIcon={<User className="h-4 w-4" />}
+                    href="/account"
+                  />
+                  <UserButton.Link
+                    label="Admin dashboard"
+                    labelIcon={<LayoutDashboard className="h-4 w-4" />}
+                    href="/admin"
+                  />
+                </UserButton.MenuItems>
+              </UserButton>
             </div>
           ) : (
             <Link
               href="/login"
-              className="hidden h-10 w-10 place-items-center rounded-full hover:bg-ink/5 sm:grid"
-              aria-label="Sign in"
+              className="ml-1 hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-gold hover:text-white sm:inline-flex"
             >
-              <User className="h-[1.1rem] w-[1.1rem]" />
+              Sign In
             </Link>
           )}
           <button
@@ -298,15 +311,36 @@ export function Navbar() {
                   ))}
                 </div>
               </div>
-              <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
-                <Link
-                  href="/account"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 text-sm font-medium"
-                >
-                  <User className="h-4 w-4" /> Account
-                </Link>
-                <ThemeToggle />
+              <div className="mt-auto border-t border-border pt-4">
+                {isSignedIn ? (
+                  <div className="space-y-1">
+                    <Link
+                      href="/account"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium hover:bg-ink/5"
+                    >
+                      <User className="h-4 w-4" /> My account
+                    </Link>
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium hover:bg-ink/5"
+                    >
+                      <LayoutDashboard className="h-4 w-4" /> Admin dashboard
+                    </Link>
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-paper"
+                  >
+                    <User className="h-4 w-4" /> Sign In / Register
+                  </Link>
+                )}
+                <div className="mt-3 flex justify-end">
+                  <ThemeToggle />
+                </div>
               </div>
             </motion.div>
           </>

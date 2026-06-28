@@ -1,15 +1,41 @@
 import Link from "next/link";
-import { Package, Heart, MapPin, ArrowRight } from "lucide-react";
+import { Package, Heart, MapPin, ArrowRight, LayoutDashboard } from "lucide-react";
+import { currentUser } from "@clerk/nextjs/server";
 import { sampleOrders } from "@/data/orders";
 import { OrderStatusBadge } from "@/components/order-status-badge";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
+import { adminEmails } from "@/config/env";
 
-export default function AccountOverview() {
+export default async function AccountOverview() {
   const recent = sampleOrders.slice(0, 3);
+  const user = await currentUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress?.toLowerCase();
+  const isAdmin = !!email && adminEmails.includes(email);
 
   return (
     <div className="space-y-8">
+      {/* Admin shortcut (only visible to admins) */}
+      {isAdmin && (
+        <Link
+          href="/admin"
+          className="card-lift group flex items-center justify-between gap-4 rounded-2xl bg-ink p-6 text-paper"
+        >
+          <div className="flex items-center gap-4">
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-gold text-white">
+              <LayoutDashboard className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="font-display text-lg font-semibold">Admin Dashboard</p>
+              <p className="text-sm text-paper/70">
+                Manage products, orders, customers and settings
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+        </Link>
+      )}
+
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
         {[

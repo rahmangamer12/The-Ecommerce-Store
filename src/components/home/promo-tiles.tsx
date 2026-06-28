@@ -7,13 +7,13 @@ const tiles = [
     title: "Sound, perfected",
     subtitle: "Up to 20% off Audio",
     href: "/categories/audio",
-    image: "https://loremflickr.com/800/600/headphones?lock=901",
+    image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80",
   },
   {
     title: "Timeless on the wrist",
     subtitle: "New-season Watches",
     href: "/categories/watches-jewelry",
-    image: "https://loremflickr.com/800/600/watch?lock=902",
+    image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80",
   },
 ];
 
