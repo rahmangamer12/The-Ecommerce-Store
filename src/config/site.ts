@@ -29,6 +29,17 @@ export const siteConfig = {
   // immediately with this ID — change it to your own Formspree form.
   formspreeId: "mwvdqvkn",
 
+  // ---- Which payment methods to show at checkout ----
+  // (Card also needs MYFATOORAH_API_KEY set to actually appear.)
+  // COD is OFF by default: in dropshipping the cash goes to the courier,
+  // not you — so prefer prepaid methods (WhatsApp / bank / card).
+  payments: {
+    card: true,
+    whatsapp: true,
+    bank: true,
+    cod: false,
+  },
+
   // ---- Bank details (shown for the "Bank Transfer" payment option) ----
   bank: {
     name: "Your Bank Name", // e.g. Qatar National Bank (QNB)

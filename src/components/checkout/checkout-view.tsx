@@ -28,7 +28,42 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
   const router = useRouter();
   const { items, totals, coupon, clearCart, mounted } = useStore();
   const [form, setForm] = useState(initialForm);
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+
+  // Build the list of payment methods enabled in config (card also needs a
+  // configured gateway). COD is off by default for dropshipping.
+  const methods = [
+    cardEnabled && siteConfig.payments.card && {
+      key: "card",
+      icon: CreditCard,
+      title: "Card / Apple Pay",
+      desc: "Pay securely online — you'll be taken to our payment page.",
+    },
+    siteConfig.payments.whatsapp && {
+      key: "whatsapp",
+      icon: MessageCircle,
+      title: "Order on WhatsApp",
+      desc: "Send your order to us on WhatsApp and pay however suits you.",
+    },
+    siteConfig.payments.bank && {
+      key: "bank",
+      icon: Landmark,
+      title: "Bank Transfer",
+      desc: "Transfer to our account, then we ship your order.",
+    },
+    siteConfig.payments.cod && {
+      key: "cod",
+      icon: Banknote,
+      title: "Cash on Delivery",
+      desc: "Pay with cash when your order is delivered.",
+    },
+  ].filter(Boolean) as {
+    key: string;
+    icon: typeof CreditCard;
+    title: string;
+    desc: string;
+  }[];
+
+  const [paymentMethod, setPaymentMethod] = useState(methods[0]?.key ?? "whatsapp");
   const [loading, setLoading] = useState(false);
 
   if (!mounted) return <div className="h-96" />;
@@ -179,36 +214,7 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
         <section>
           <h2 className="font-display text-xl font-semibold">Payment method</h2>
           <div className="mt-4 grid gap-3">
-            {[
-              ...(cardEnabled
-                ? [
-                    {
-                      key: "card",
-                      icon: CreditCard,
-                      title: "Card / Apple Pay",
-                      desc: "Pay securely online — you'll be taken to our payment page.",
-                    },
-                  ]
-                : []),
-              {
-                key: "cod",
-                icon: Banknote,
-                title: "Cash on Delivery",
-                desc: "Pay with cash when your order is delivered.",
-              },
-              {
-                key: "whatsapp",
-                icon: MessageCircle,
-                title: "Order on WhatsApp",
-                desc: "Send your order to us on WhatsApp and pay however suits you.",
-              },
-              {
-                key: "bank",
-                icon: Landmark,
-                title: "Bank Transfer",
-                desc: "Transfer to our account, then we ship your order.",
-              },
-            ].map((m) => {
+            {methods.map((m) => {
               const selected = paymentMethod === m.key;
               return (
                 <button
