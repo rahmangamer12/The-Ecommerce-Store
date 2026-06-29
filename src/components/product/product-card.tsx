@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingBag, ExternalLink } from "lucide-react";
 import type { Product } from "@/types";
-import { cn, formatPrice, discountPercent } from "@/lib/utils";
+import { cn, discountPercent } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Rating } from "@/components/ui/rating";
 import { useStore } from "@/components/providers/store-provider";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 export function ProductCard({
   product,
@@ -19,6 +20,7 @@ export function ProductCard({
   className?: string;
 }) {
   const { addItem, toggleWishlist, isWishlisted } = useStore();
+  const { formatPrice } = usePrefs();
   const wished = isWishlisted(product.id);
   const discount = discountPercent(product.price, product.compareAtPrice);
   const outOfStock = product.stock <= 0;
@@ -129,11 +131,11 @@ export function ProductCard({
         </div>
         <div className="mt-2 flex items-center gap-2">
           <span className="font-semibold text-ink">
-            {formatPrice(product.price, product.currency)}
+            {formatPrice(product.price)}
           </span>
           {product.compareAtPrice && (
             <span className="text-sm text-muted line-through">
-              {formatPrice(product.compareAtPrice, product.currency)}
+              {formatPrice(product.compareAtPrice)}
             </span>
           )}
           {lowStock && (

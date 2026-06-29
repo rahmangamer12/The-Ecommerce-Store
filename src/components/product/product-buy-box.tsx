@@ -16,13 +16,15 @@ import {
 } from "lucide-react";
 import type { Product } from "@/types";
 import { useStore } from "@/components/providers/store-provider";
+import { usePrefs } from "@/components/providers/prefs-provider";
 import { Rating } from "@/components/ui/rating";
 import { Badge } from "@/components/ui/badge";
-import { formatPrice, discountPercent, cn } from "@/lib/utils";
+import { discountPercent, cn } from "@/lib/utils";
 
 export function ProductBuyBox({ product }: { product: Product }) {
   const router = useRouter();
   const { addItem, toggleWishlist, isWishlisted, setCartOpen } = useStore();
+  const { formatPrice } = usePrefs();
   const [qty, setQty] = useState(1);
   const [variant, setVariant] = useState<Record<string, string>>(() =>
     Object.fromEntries((product.variants ?? []).map((v) => [v.name, v.values[0]])),
@@ -79,11 +81,11 @@ export function ProductBuyBox({ product }: { product: Product }) {
       {/* Price */}
       <div className="mt-5 flex items-end gap-3">
         <span className="font-display text-3xl font-semibold text-ink">
-          {formatPrice(product.price, product.currency)}
+          {formatPrice(product.price)}
         </span>
         {product.compareAtPrice && (
           <span className="pb-1 text-lg text-muted line-through">
-            {formatPrice(product.compareAtPrice, product.currency)}
+            {formatPrice(product.compareAtPrice)}
           </span>
         )}
         {discount && (

@@ -6,7 +6,8 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Plus, Minus, ShoppingBag, Tag, ArrowRight, Trash2 } from "lucide-react";
 import { useStore, variantKeyOf } from "@/components/providers/store-provider";
-import { formatPrice, cn } from "@/lib/utils";
+import { usePrefs } from "@/components/providers/prefs-provider";
+import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { getFeatured } from "@/data/products";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ export function CartDrawer() {
     removeCoupon,
     addItem,
   } = useStore();
+  const { formatPrice } = usePrefs();
   const [code, setCode] = useState("");
 
   const threshold = siteConfig.freeShippingThreshold;
@@ -79,7 +81,7 @@ export function CartDrawer() {
                     <p className="text-sm text-ink-soft">
                       You&apos;re{" "}
                       <span className="font-semibold text-ink">
-                        {formatPrice(remaining, siteConfig.currency)}
+                        {formatPrice(remaining)}
                       </span>{" "}
                       away from free shipping
                     </p>
@@ -163,7 +165,7 @@ export function CartDrawer() {
                                 </button>
                               </div>
                               <span className="text-sm font-semibold">
-                                {formatPrice(item.price * item.quantity, siteConfig.currency)}
+                                {formatPrice(item.price * item.quantity)}
                               </span>
                             </div>
                           </div>
@@ -191,7 +193,7 @@ export function CartDrawer() {
                         <div className="min-w-0 flex-1">
                           <p className="line-clamp-1 text-sm font-medium">{upsell.name}</p>
                           <p className="text-sm text-gold-strong">
-                            {formatPrice(upsell.price, upsell.currency)}
+                            {formatPrice(upsell.price)}
                           </p>
                         </div>
                         <button
@@ -246,11 +248,11 @@ export function CartDrawer() {
                   )}
 
                   <div className="space-y-1.5 text-sm">
-                    <Row label="Subtotal" value={formatPrice(totals.subtotal, siteConfig.currency)} />
+                    <Row label="Subtotal" value={formatPrice(totals.subtotal)} />
                     {totals.discount > 0 && (
                       <Row
                         label="Discount"
-                        value={`- ${formatPrice(totals.discount, siteConfig.currency)}`}
+                        value={`- ${formatPrice(totals.discount)}`}
                         accent="text-success"
                       />
                     )}
@@ -259,14 +261,14 @@ export function CartDrawer() {
                       value={
                         totals.shipping === 0
                           ? "Free"
-                          : formatPrice(totals.shipping, siteConfig.currency)
+                          : formatPrice(totals.shipping)
                       }
                     />
-                    <Row label="Tax" value={formatPrice(totals.tax, siteConfig.currency)} />
+                    <Row label="Tax" value={formatPrice(totals.tax)} />
                     <div className="hairline my-2" />
                     <Row
                       label="Total"
-                      value={formatPrice(totals.total, siteConfig.currency)}
+                      value={formatPrice(totals.total)}
                       bold
                     />
                   </div>

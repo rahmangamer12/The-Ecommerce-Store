@@ -21,18 +21,20 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useStore } from "@/components/providers/store-provider";
 import { categories } from "@/data/categories";
 import { searchProducts } from "@/data/products";
-import { formatPrice } from "@/lib/utils";
+import { usePrefs } from "@/components/providers/prefs-provider";
+import { PrefsSwitcher } from "@/components/layout/prefs-switcher";
 
 const navLinks = [
-  { label: "Shop", href: "/shop" },
-  { label: "Categories", href: "/categories" },
-  { label: "Journal", href: "/blog" },
-  { label: "Contact", href: "/contact" },
-];
+  { label: "Shop", href: "/shop", k: "nav.shop" },
+  { label: "Categories", href: "/categories", k: "nav.categories" },
+  { label: "Journal", href: "/blog", k: "nav.journal" },
+  { label: "Contact", href: "/contact", k: "nav.contact" },
+] as const;
 
 export function Navbar() {
   const router = useRouter();
   const { isSignedIn } = useUser();
+  const { t, formatPrice } = usePrefs();
   const { cartCount, wishlist, setCartOpen, mounted } = useStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -71,7 +73,7 @@ export function Navbar() {
                   href={link.href}
                   className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:text-ink"
                 >
-                  {link.label}
+                  {t(link.k)}
                 </Link>
                 {/* Mega menu */}
                 <div className="invisible absolute left-1/2 top-full w-[640px] -translate-x-1/2 pt-3 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
@@ -108,7 +110,7 @@ export function Navbar() {
                 href={link.href}
                 className="rounded-full px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:text-ink"
               >
-                {link.label}
+                {t(link.k)}
               </Link>
             ),
           )}
@@ -123,6 +125,7 @@ export function Navbar() {
           >
             <Search className="h-[1.1rem] w-[1.1rem]" />
           </button>
+          <PrefsSwitcher />
           <ThemeToggle className="hidden sm:grid" />
           <Link
             href="/account/wishlist"
@@ -158,7 +161,7 @@ export function Navbar() {
               href="/login"
               className="ml-1 hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-gold hover:text-white sm:inline-flex"
             >
-              Sign In
+              {t("nav.signin")}
             </Link>
           )}
           <button
@@ -228,7 +231,7 @@ export function Navbar() {
                           <p className="text-xs text-muted">{p.brand}</p>
                         </div>
                         <span className="text-sm font-semibold">
-                          {formatPrice(p.price, p.currency)}
+                          {formatPrice(p.price)}
                         </span>
                       </Link>
                     </li>
@@ -289,7 +292,7 @@ export function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-between border-b border-border py-3.5 text-base font-medium"
                   >
-                    {link.label}
+                    {t(link.k)}
                     <ChevronRight className="h-4 w-4 text-muted" />
                   </Link>
                 ))}

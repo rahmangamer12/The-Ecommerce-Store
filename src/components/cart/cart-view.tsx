@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { Minus, Plus, Trash2, Tag, ArrowRight, ShoppingBag } from "lucide-react";
 import { useStore, variantKeyOf } from "@/components/providers/store-provider";
+import { usePrefs } from "@/components/providers/prefs-provider";
 import { Button } from "@/components/ui/button";
-import { formatPrice, cn } from "@/lib/utils";
-import { siteConfig } from "@/config/site";
+import { cn } from "@/lib/utils";
 
 export function CartView() {
   const {
@@ -20,6 +20,7 @@ export function CartView() {
     removeCoupon,
     mounted,
   } = useStore();
+  const { formatPrice } = usePrefs();
   const [code, setCode] = useState("");
 
   if (!mounted) return <div className="h-96" />;
@@ -75,7 +76,7 @@ export function CartView() {
                       )}
                     </div>
                     <span className="font-semibold">
-                      {formatPrice(item.price * item.quantity, siteConfig.currency)}
+                      {formatPrice(item.price * item.quantity)}
                     </span>
                   </div>
                   <div className="mt-auto flex items-center justify-between pt-3">
@@ -155,21 +156,21 @@ export function CartView() {
           </div>
 
           <div className="mt-6 space-y-2.5 text-sm">
-            <Row label="Subtotal" value={formatPrice(totals.subtotal, siteConfig.currency)} />
+            <Row label="Subtotal" value={formatPrice(totals.subtotal)} />
             {totals.discount > 0 && (
               <Row
                 label="Discount"
-                value={`- ${formatPrice(totals.discount, siteConfig.currency)}`}
+                value={`- ${formatPrice(totals.discount)}`}
                 accent="text-success"
               />
             )}
             <Row
               label="Shipping"
-              value={totals.shipping === 0 ? "Free" : formatPrice(totals.shipping, siteConfig.currency)}
+              value={totals.shipping === 0 ? "Free" : formatPrice(totals.shipping)}
             />
-            <Row label="Tax" value={formatPrice(totals.tax, siteConfig.currency)} />
+            <Row label="Tax" value={formatPrice(totals.tax)} />
             <div className="hairline my-3" />
-            <Row label="Total" value={formatPrice(totals.total, siteConfig.currency)} bold />
+            <Row label="Total" value={formatPrice(totals.total)} bold />
           </div>
 
           <Button href="/checkout" variant="gold" size="lg" className="mt-6 w-full">

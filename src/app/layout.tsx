@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { PrefsProvider } from "@/components/providers/prefs-provider";
 import { StoreProvider } from "@/components/providers/store-provider";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { Navbar } from "@/components/layout/navbar";
@@ -47,6 +48,7 @@ export default function RootLayout({
           </noscript>
         )}
         <ThemeProvider>
+          <PrefsProvider>
           <StoreProvider>
             <AnnouncementBar />
             <Navbar />
@@ -64,6 +66,7 @@ export default function RootLayout({
               }}
             />
           </StoreProvider>
+          </PrefsProvider>
         </ThemeProvider>
         <Analytics />
         </body>

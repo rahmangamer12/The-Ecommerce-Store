@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Banknote, Landmark, CreditCard, MessageCircle, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
+import { usePrefs } from "@/components/providers/prefs-provider";
 import { Input, Label } from "@/components/ui/input";
-import { formatPrice } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { placeOrder } from "@/app/checkout/actions";
 
@@ -27,6 +27,7 @@ const initialForm = {
 export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean }) {
   const router = useRouter();
   const { items, totals, coupon, clearCart, mounted } = useStore();
+  const { formatPrice } = usePrefs();
   const [form, setForm] = useState(initialForm);
 
   // Build the list of payment methods enabled in config (card also needs a
@@ -118,12 +119,12 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
         const lines = items
           .map(
             (i) =>
-              `• ${i.name} x${i.quantity} — ${formatPrice(i.price * i.quantity, siteConfig.currency)}`,
+              `• ${i.name} x${i.quantity} — ${formatPrice(i.price * i.quantity)}`,
           )
           .join("\n");
         const msg =
           `Hi! I'd like to confirm my order ${result.orderNumber}.\n\n${lines}\n\n` +
-          `Total: ${formatPrice(totals.total, siteConfig.currency)}\n` +
+          `Total: ${formatPrice(totals.total)}\n` +
           `Name: ${form.fullName}\n` +
           `Address: ${form.line1}, ${form.city}, ${form.country}\n` +
           `Phone: ${form.phone}`;
@@ -288,7 +289,7 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
                 <div className="flex flex-1 items-center justify-between gap-2">
                   <span className="line-clamp-2 text-sm">{i.name}</span>
                   <span className="text-sm font-medium">
-                    {formatPrice(i.price * i.quantity, siteConfig.currency)}
+                    {formatPrice(i.price * i.quantity)}
                   </span>
                 </div>
               </li>
@@ -298,25 +299,25 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
           <div className="mt-6 space-y-2.5 border-t border-border pt-5 text-sm">
             <div className="flex justify-between">
               <span className="text-ink-soft">Subtotal</span>
-              <span>{formatPrice(totals.subtotal, siteConfig.currency)}</span>
+              <span>{formatPrice(totals.subtotal)}</span>
             </div>
             {totals.discount > 0 && (
               <div className="flex justify-between text-success">
                 <span>Discount</span>
-                <span>- {formatPrice(totals.discount, siteConfig.currency)}</span>
+                <span>- {formatPrice(totals.discount)}</span>
               </div>
             )}
             <div className="flex justify-between">
               <span className="text-ink-soft">Shipping</span>
-              <span>{totals.shipping === 0 ? "Free" : formatPrice(totals.shipping, siteConfig.currency)}</span>
+              <span>{totals.shipping === 0 ? "Free" : formatPrice(totals.shipping)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-ink-soft">Tax</span>
-              <span>{formatPrice(totals.tax, siteConfig.currency)}</span>
+              <span>{formatPrice(totals.tax)}</span>
             </div>
             <div className="flex justify-between border-t border-border pt-3 text-base font-semibold">
               <span>Total</span>
-              <span>{formatPrice(totals.total, siteConfig.currency)}</span>
+              <span>{formatPrice(totals.total)}</span>
             </div>
           </div>
 

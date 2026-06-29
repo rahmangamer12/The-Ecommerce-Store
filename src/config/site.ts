@@ -57,10 +57,21 @@ export const siteConfig = {
   },
 
   // ---- Commerce settings ----
-  currency: "USD",
-  currencySymbol: "$",
+  // Base currency: all product prices are stored in THIS currency.
+  currency: "QAR",
+  currencySymbol: "QAR",
   locale: "en-US",
-  // Free shipping above this subtotal (in currency units). 0 = always charge.
+  // Currencies the shopper can switch between. `rate` = how much 1 base
+  // currency (QAR) is worth in that currency (approximate — edit anytime).
+  currencies: [
+    { code: "QAR", rate: 1 },
+    { code: "USD", rate: 0.2747 },
+    { code: "AED", rate: 1.009 },
+    { code: "SAR", rate: 1.03 },
+    { code: "GBP", rate: 0.216 },
+    { code: "PKR", rate: 76.5 },
+  ],
+  // Free shipping above this subtotal (in base currency). 0 = always charge.
   freeShippingThreshold: 100,
   shippingFlatRate: 9.0,
   // Tax rate as a decimal (0.08 = 8%). Set 0 to disable tax.
