@@ -5,30 +5,34 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { X } from "lucide-react";
+import type { Product } from "@/types";
 import { Input, Textarea, Label } from "@/components/ui/input";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { categories } from "@/data/categories";
-import { createProduct } from "@/lib/product-actions";
+import { createProduct, updateProduct } from "@/lib/product-actions";
 
 const badges = ["", "New", "Bestseller", "Limited", "Sale", "Editor's Pick"];
 
-export function ProductForm() {
+// Used for both creating a new product and editing an existing one
+// (pass `product` to edit).
+export function ProductForm({ product }: { product?: Product }) {
   const router = useRouter();
+  const isEdit = Boolean(product);
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>(product?.images ?? []);
   const [form, setForm] = useState({
-    name: "",
-    brand: "",
-    categorySlug: categories[0].slug,
-    price: "",
-    compareAtPrice: "",
-    stock: "",
-    shortDescription: "",
-    description: "",
-    features: "",
-    tags: "",
-    badge: "",
-    affiliateUrl: "",
+    name: product?.name ?? "",
+    brand: product?.brand ?? "",
+    categorySlug: product?.categorySlug ?? categories[0].slug,
+    price: product ? String(product.price) : "",
+    compareAtPrice: product?.compareAtPrice ? String(product.compareAtPrice) : "",
+    stock: product ? String(product.stock) : "",
+    shortDescription: product?.shortDescription ?? "",
+    description: product?.description ?? "",
+    features: product?.features.join(", ") ?? "",
+    tags: product?.tags.join(", ") ?? "",
+    badge: product?.badge ?? "",
+    affiliateUrl: product?.affiliateUrl ?? "",
   });
 
   function set(k: keyof typeof form, v: string) {
@@ -39,7 +43,7 @@ export function ProductForm() {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await createProduct({
+      const payload = {
         name: form.name,
         brand: form.brand,
         categorySlug: form.categorySlug,
@@ -53,13 +57,19 @@ export function ProductForm() {
         tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
         badge: form.badge || undefined,
         affiliateUrl: form.affiliateUrl.trim() || undefined,
-      });
+      };
+
+      const result = isEdit
+        ? await updateProduct({ id: product!.id, ...payload })
+        : await createProduct(payload);
 
       if (!result.ok) {
         toast.error(result.error);
         return;
       }
-      toast.success("Product published", { description: form.name });
+      toast.success(isEdit ? "Product updated" : "Product published", {
+        description: form.name,
+      });
       router.push("/admin/products");
       router.refresh();
     } finally {
@@ -179,7 +189,7 @@ export function ProductForm() {
           disabled={loading}
           className="rounded-full bg-gold px-7 py-3 text-sm font-medium text-white shadow-gold transition-colors hover:bg-gold-strong disabled:opacity-60"
         >
-          {loading ? "Publishing…" : "Publish product"}
+          {loading ? "Saving…" : isEdit ? "Save changes" : "Publish product"}
         </button>
         <button
           type="button"
