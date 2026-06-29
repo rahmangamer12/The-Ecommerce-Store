@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { adminEmails } from "@/config/env";
 import { slugify } from "@/lib/utils";
 import { products as localProducts } from "@/data/products";
+import { categories as localCategories } from "@/data/categories";
 
 const productSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -158,6 +159,23 @@ export async function importStarterProducts(): Promise<{
   const admin = createAdminClient();
   if (!admin) return { ok: false, error: "Database not connected." };
 
+  // 1) Make sure the categories exist first — products reference them via a
+  //    foreign key, so the categories must be in the table beforehand.
+  const { error: catError } = await admin.from("categories").upsert(
+    localCategories.map((c) => ({
+      name: c.name,
+      slug: c.slug,
+      description: c.description,
+      image: c.image,
+      icon: c.icon,
+    })),
+    { onConflict: "slug" },
+  );
+  if (catError) {
+    return { ok: false, error: `Categories: ${catError.message}` };
+  }
+
+  // 2) Then import the products (skipping any slug already in the DB).
   const { data: existing } = await admin.from("products").select("slug");
   const have = new Set((existing ?? []).map((r) => String(r.slug)));
 
