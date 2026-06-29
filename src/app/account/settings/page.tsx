@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
 import { Input, Label } from "@/components/ui/input";
 
 export default function SettingsPage() {
+  const { user } = useUser();
   const [profile, setProfile] = useState({
-    fullName: "Alex Morgan",
-    email: "alex@example.com",
-    phone: "+44 7700 000000",
+    fullName: user?.fullName ?? "",
+    email: user?.primaryEmailAddress?.emailAddress ?? "",
+    phone: user?.primaryPhoneNumber?.phoneNumber ?? "",
   });
   const [prefs, setPrefs] = useState({ marketing: true, orders: true });
 

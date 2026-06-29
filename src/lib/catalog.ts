@@ -41,6 +41,7 @@ function mapRow(r: Row): Product {
     tags: asArray(r.tags),
     featured: Boolean(r.featured),
     trending: Boolean(r.trending),
+    affiliateUrl: r.affiliate_url ? String(r.affiliate_url) : undefined,
   };
 }
 

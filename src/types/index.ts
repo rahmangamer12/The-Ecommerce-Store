@@ -46,6 +46,9 @@ export type Product = {
   tags: string[];
   featured?: boolean;
   trending?: boolean;
+  // If set, this is an AFFILIATE product: the buy button links out to this
+  // URL (e.g. an Amazon affiliate link) instead of using the cart.
+  affiliateUrl?: string;
   // Per-product SEO overrides (optional)
   seo?: {
     title?: string;

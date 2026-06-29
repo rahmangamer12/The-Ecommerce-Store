@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag, ExternalLink } from "lucide-react";
 import type { Product } from "@/types";
 import { cn, formatPrice, discountPercent } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,11 @@ export function ProductCard({
 
   function quickAdd(e: React.MouseEvent) {
     e.preventDefault();
+    // Affiliate product → send the shopper to the partner link.
+    if (product.affiliateUrl) {
+      window.open(product.affiliateUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (outOfStock) return;
     addItem({
       productId: product.id,
@@ -88,16 +93,25 @@ export function ProductCard({
           <button
             type="button"
             onClick={quickAdd}
-            disabled={outOfStock}
+            disabled={!product.affiliateUrl && outOfStock}
             className={cn(
               "flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium shadow-luxe transition-colors",
-              outOfStock
+              !product.affiliateUrl && outOfStock
                 ? "cursor-not-allowed bg-ink/40 text-paper"
                 : "bg-ink text-paper hover:bg-gold hover:text-white",
             )}
           >
-            <ShoppingBag className="h-4 w-4" />
-            {outOfStock ? "Sold out" : "Add to cart"}
+            {product.affiliateUrl ? (
+              <>
+                <ExternalLink className="h-4 w-4" />
+                View deal
+              </>
+            ) : (
+              <>
+                <ShoppingBag className="h-4 w-4" />
+                {outOfStock ? "Sold out" : "Add to cart"}
+              </>
+            )}
           </button>
         </div>
       </div>

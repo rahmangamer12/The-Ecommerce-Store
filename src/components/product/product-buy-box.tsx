@@ -12,6 +12,7 @@ import {
   RefreshCw,
   ShieldCheck,
   ChevronDown,
+  ExternalLink,
 } from "lucide-react";
 import type { Product } from "@/types";
 import { useStore } from "@/components/providers/store-provider";
@@ -163,24 +164,41 @@ export function ProductBuyBox({ product }: { product: Product }) {
         </button>
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-        <button
-          onClick={add}
-          disabled={outOfStock}
-          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 font-medium text-paper shadow-luxe transition-all hover:-translate-y-0.5 hover:bg-gold hover:text-white disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <ShoppingBag className="h-5 w-5" />
-          Add to cart
-        </button>
-        <button
-          onClick={buyNow}
-          disabled={outOfStock}
-          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 font-medium text-white shadow-gold transition-all hover:-translate-y-0.5 hover:bg-gold-strong disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Zap className="h-5 w-5" />
-          Buy it now
-        </button>
-      </div>
+      {product.affiliateUrl ? (
+        <div className="mt-4">
+          <a
+            href={product.affiliateUrl}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 font-medium text-white shadow-gold transition-all hover:-translate-y-0.5 hover:bg-gold-strong"
+          >
+            <ExternalLink className="h-5 w-5" />
+            Buy now
+          </a>
+          <p className="mt-2 text-center text-xs text-muted">
+            You&apos;ll be taken to our trusted partner to complete your purchase.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+          <button
+            onClick={add}
+            disabled={outOfStock}
+            className="flex flex-1 items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 font-medium text-paper shadow-luxe transition-all hover:-translate-y-0.5 hover:bg-gold hover:text-white disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            Add to cart
+          </button>
+          <button
+            onClick={buyNow}
+            disabled={outOfStock}
+            className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 font-medium text-white shadow-gold transition-all hover:-translate-y-0.5 hover:bg-gold-strong disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Zap className="h-5 w-5" />
+            Buy it now
+          </button>
+        </div>
+      )}
 
       {/* Trust row */}
       <div className="mt-6 grid grid-cols-3 gap-3 rounded-2xl border border-border bg-card p-4 text-center">

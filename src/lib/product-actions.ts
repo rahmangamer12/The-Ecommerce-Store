@@ -20,6 +20,7 @@ const productSchema = z.object({
   features: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
   badge: z.string().optional(),
+  affiliateUrl: z.string().url().optional().or(z.literal("")),
 });
 
 export type CreateProductResult =
@@ -69,6 +70,7 @@ export async function createProduct(input: unknown): Promise<CreateProductResult
     tags: d.tags,
     stock: d.stock,
     badge: d.badge || null,
+    affiliate_url: d.affiliateUrl || null,
     rating: 5,
     review_count: 0,
   });

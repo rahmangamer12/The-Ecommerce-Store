@@ -79,8 +79,7 @@ export function TrackOrderView() {
           {loading ? "Searching…" : "Track order"}
         </button>
         <p className="mt-3 text-xs text-muted">
-          Tip: try order <span className="font-medium">LX-100246</span> with email{" "}
-          <span className="font-medium">aisha@example.com</span>.
+          Your order number is in your confirmation email (e.g. LX-100xxx).
         </p>
       </form>
 

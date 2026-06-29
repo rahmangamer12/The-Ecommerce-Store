@@ -28,6 +28,7 @@ export function ProductForm() {
     features: "",
     tags: "",
     badge: "",
+    affiliateUrl: "",
   });
 
   function set(k: keyof typeof form, v: string) {
@@ -51,6 +52,7 @@ export function ProductForm() {
         features: form.features.split(",").map((s) => s.trim()).filter(Boolean),
         tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
         badge: form.badge || undefined,
+        affiliateUrl: form.affiliateUrl.trim() || undefined,
       });
 
       if (!result.ok) {
@@ -154,6 +156,19 @@ export function ProductForm() {
           <div className="sm:col-span-2">
             <Label>Tags (comma separated)</Label>
             <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="charger, desk, gift" />
+          </div>
+          <div className="sm:col-span-2">
+            <Label>Affiliate link (optional)</Label>
+            <Input
+              type="url"
+              value={form.affiliateUrl}
+              onChange={(e) => set("affiliateUrl", e.target.value)}
+              placeholder="https://www.amazon.com/dp/XXXX?tag=youraffiliate-20"
+            />
+            <p className="mt-1 text-xs text-muted">
+              If set, the buy button sends shoppers to this link (e.g. your Amazon
+              affiliate URL) instead of using the cart — so you earn commission.
+            </p>
           </div>
         </div>
       </section>

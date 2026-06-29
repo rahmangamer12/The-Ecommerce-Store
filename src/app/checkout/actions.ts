@@ -86,7 +86,7 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
       .insert({
         number: orderNumber,
         customer_name: data.fullName,
-        customer_email: data.email,
+        customer_email: data.email.toLowerCase(),
         status: "paid",
         subtotal,
         shipping,
