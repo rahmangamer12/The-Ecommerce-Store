@@ -19,7 +19,7 @@ export const faqs: Faq[] = [
   {
     question: "Is checkout secure?",
     answer:
-      "Absolutely. Payments are processed by Polar over an encrypted connection. We never see or store your full card details on our servers.",
+      "Yes. We offer Cash on Delivery so you pay only when your order arrives. Your personal details are always kept private and secure.",
   },
   {
     question: "Can I change or cancel my order?",

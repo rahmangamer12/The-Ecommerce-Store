@@ -2,7 +2,6 @@ import { CheckCircle2, Circle } from "lucide-react";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import {
   isSupabaseConfigured,
-  isPolarConfigured,
   isCloudinaryConfigured,
   isEmailConfigured,
   analytics,
@@ -13,7 +12,6 @@ import {
 export function IntegrationStatus() {
   const rows = [
     { name: "Supabase (database + auth)", ok: isSupabaseConfigured, env: "NEXT_PUBLIC_SUPABASE_URL" },
-    { name: "Polar (payments)", ok: isPolarConfigured, env: "POLAR_ACCESS_TOKEN" },
     { name: "Cloudinary (images)", ok: isCloudinaryConfigured, env: "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME" },
     { name: "Email (Resend)", ok: isEmailConfigured, env: "RESEND_API_KEY" },
     { name: "Google Analytics 4", ok: Boolean(analytics.ga4), env: "NEXT_PUBLIC_GA4_ID" },

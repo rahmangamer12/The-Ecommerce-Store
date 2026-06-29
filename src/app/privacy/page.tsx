@@ -37,7 +37,7 @@ export default function PrivacyPage() {
         {
           heading: "Payments",
           body: [
-            "Payments are processed securely by our payment provider, Polar. We never see or store your full card details on our servers.",
+            "We offer Cash on Delivery, so you pay when your order arrives. If card payment is enabled, it is handled by a secure third-party provider and we never store your full card details.",
           ],
         },
         {

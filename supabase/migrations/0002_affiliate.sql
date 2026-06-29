@@ -1,13 +1,19 @@
 -- =============================================================
---  Migration 0002 — Affiliate products
+--  Migration 0002 — Affiliate links + payment method
 -- =============================================================
---  Adds an optional affiliate link to products. When set, the
---  storefront shows a "Buy now" button that sends the shopper to
---  this URL (e.g. an Amazon affiliate link) instead of using the
---  cart — so you can earn affiliate commission.
+--  affiliate_url: when set on a product, the storefront shows a
+--  "Buy now" button that links out to this URL (e.g. an Amazon
+--  affiliate link) so you can earn affiliate commission.
 --
---  How to apply: paste into Supabase SQL Editor and Run.
+--  payment_method: how the customer chose to pay (e.g. Cash on
+--  Delivery). Physical-goods stores in Qatar/GCC commonly use COD.
+--
+--  How to apply: paste into Supabase SQL Editor and Run. Safe to
+--  re-run (uses "if not exists").
 -- =============================================================
 
 alter table products
   add column if not exists affiliate_url text;
+
+alter table orders
+  add column if not exists payment_method text default 'cod';

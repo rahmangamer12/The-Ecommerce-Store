@@ -3,8 +3,7 @@
 import { z } from "zod";
 import { getProductById } from "@/data/products";
 import { findCoupon } from "@/data/coupons";
-import { siteConfig, siteUrl } from "@/config/site";
-import { createPolarCheckout } from "@/lib/polar";
+import { siteConfig } from "@/config/site";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateOrderNumber } from "@/data/orders";
 
@@ -19,6 +18,7 @@ const checkoutSchema = z.object({
   country: z.string().min(2),
   phone: z.string().min(5),
   couponCode: z.string().optional(),
+  paymentMethod: z.string().optional(),
   items: z
     .array(
       z.object({
@@ -75,10 +75,10 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
   const total = +(taxable + shipping + tax).toFixed(2);
 
   const orderNumber = generateOrderNumber(Math.floor(total * 100));
+  const paymentMethod = data.paymentMethod || "cod";
 
-  // Persist the order if a database is configured (otherwise it's a
-  // successful demo order — the manual-fulfilment flow still works:
-  // the order would appear in the admin dashboard once DB is connected).
+  // Persist the order. Cash-on-Delivery orders start as "pending" (awaiting
+  // delivery + payment); other methods can mark "paid" once confirmed.
   const admin = createAdminClient();
   if (admin) {
     const { data: order, error } = await admin
@@ -87,7 +87,8 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
         number: orderNumber,
         customer_name: data.fullName,
         customer_email: data.email.toLowerCase(),
-        status: "paid",
+        status: "pending",
+        payment_method: paymentMethod,
         subtotal,
         shipping,
         tax,
@@ -115,13 +116,5 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
     }
   }
 
-  // Try Polar for live payment; falls back to the success page if not set up.
-  const successUrl = `${siteUrl}/order-success?order=${orderNumber}`;
-  const polarUrl = await createPolarCheckout({
-    orderNumber,
-    email: data.email,
-    successUrl,
-  });
-
-  return { ok: true, orderNumber, redirectUrl: polarUrl ?? undefined };
+  return { ok: true, orderNumber };
 }

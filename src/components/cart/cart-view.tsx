@@ -177,7 +177,7 @@ export function CartView() {
             <ArrowRight className="h-4 w-4" />
           </Button>
           <p className="mt-3 text-center text-xs text-muted">
-            Secure checkout · Encrypted by Polar
+            Secure checkout · Cash on Delivery available
           </p>
         </div>
       </aside>

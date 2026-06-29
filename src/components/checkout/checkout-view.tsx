@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Lock, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
+import { Banknote, Landmark, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { Input, Label } from "@/components/ui/input";
 import { formatPrice } from "@/lib/utils";
@@ -28,6 +28,7 @@ export function CheckoutView() {
   const router = useRouter();
   const { items, totals, coupon, clearCart, mounted } = useStore();
   const [form, setForm] = useState(initialForm);
+  const [paymentMethod, setPaymentMethod] = useState("cod");
   const [loading, setLoading] = useState(false);
 
   if (!mounted) return <div className="h-96" />;
@@ -63,6 +64,7 @@ export function CheckoutView() {
       const result = await placeOrder({
         ...form,
         couponCode: coupon?.code,
+        paymentMethod,
         items: items.map((i) => ({
           productId: i.productId,
           quantity: i.quantity,
@@ -77,11 +79,7 @@ export function CheckoutView() {
       }
 
       clearCart();
-      if (result.redirectUrl) {
-        window.location.href = result.redirectUrl; // hosted Polar checkout
-      } else {
-        router.push(`/order-success?order=${result.orderNumber}`);
-      }
+      router.push(`/order-success?order=${result.orderNumber}`);
     } catch {
       toast.error("Could not place your order. Please try again.");
       setLoading(false);
@@ -152,15 +150,56 @@ export function CheckoutView() {
           </div>
         </section>
 
-        {/* Payment note */}
-        <section className="rounded-2xl border border-border bg-card p-5">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <Lock className="h-4 w-4 text-gold-strong" /> Secure payment
+        {/* Payment method */}
+        <section>
+          <h2 className="font-display text-xl font-semibold">Payment method</h2>
+          <div className="mt-4 grid gap-3">
+            {[
+              {
+                key: "cod",
+                icon: Banknote,
+                title: "Cash on Delivery",
+                desc: "Pay with cash when your order is delivered.",
+              },
+              {
+                key: "bank",
+                icon: Landmark,
+                title: "Bank Transfer",
+                desc: "We'll email you transfer details after you order.",
+              },
+            ].map((m) => {
+              const selected = paymentMethod === m.key;
+              return (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => setPaymentMethod(m.key)}
+                  className={`flex items-center gap-4 rounded-2xl border p-4 text-left transition-colors ${
+                    selected ? "border-gold bg-gold/5" : "border-border hover:border-ink/30"
+                  }`}
+                >
+                  <span
+                    className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${
+                      selected ? "bg-gold text-white" : "bg-paper-2 text-ink-soft"
+                    }`}
+                  >
+                    <m.icon className="h-5 w-5" />
+                  </span>
+                  <span className="flex-1">
+                    <span className="block font-medium">{m.title}</span>
+                    <span className="block text-sm text-muted">{m.desc}</span>
+                  </span>
+                  <span
+                    className={`grid h-5 w-5 place-items-center rounded-full border-2 ${
+                      selected ? "border-gold" : "border-border"
+                    }`}
+                  >
+                    {selected && <span className="h-2.5 w-2.5 rounded-full bg-gold" />}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          <p className="mt-2 text-sm text-ink-soft">
-            You&apos;ll complete payment securely via Polar. We never store your
-            card details. Click &ldquo;Place order&rdquo; to continue to payment.
-          </p>
         </section>
       </div>
 
@@ -217,11 +256,15 @@ export function CheckoutView() {
             disabled={loading}
             className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 font-medium text-white shadow-gold transition-all hover:-translate-y-0.5 hover:bg-gold-strong disabled:translate-y-0 disabled:opacity-60"
           >
-            {loading ? "Processing…" : "Place order"}
+            {loading
+              ? "Placing order…"
+              : paymentMethod === "cod"
+                ? "Place order (Cash on Delivery)"
+                : "Place order"}
             {!loading && <ArrowRight className="h-4 w-4" />}
           </button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted">
-            <ShieldCheck className="h-3.5 w-3.5" /> 256-bit encrypted · Polar secure
+            <ShieldCheck className="h-3.5 w-3.5" /> Your details are kept private &amp; secure
           </p>
         </div>
       </aside>

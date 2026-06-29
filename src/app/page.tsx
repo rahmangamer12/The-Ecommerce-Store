@@ -151,7 +151,7 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
           {[
             { icon: Truck, title: "Free worldwide shipping", text: "On orders over $100" },
-            { icon: ShieldCheck, title: "Secure payments", text: "Encrypted via Polar" },
+            { icon: ShieldCheck, title: "Cash on Delivery", text: "Pay when it arrives" },
             { icon: RefreshCw, title: "30-day returns", text: "Shop with confidence" },
             { icon: Headphones, title: "24/7 support", text: "Real people, fast replies" },
           ].map((b) => (
