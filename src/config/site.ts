@@ -10,39 +10,39 @@
 
 export const siteConfig = {
   // ---- Brand ----
-  name: "Luxora",
-  legalName: "Luxora Commerce Ltd.",
+  name: "Souq Al Qatar",
+  legalName: "Souq Al Qatar",
   // Short tagline shown in the hero / SEO
-  tagline: "The world's finest, curated for you",
+  tagline: "Qatar's home for everything you love",
   description:
-    "Luxora is a premium global marketplace. Discover thoughtfully curated products across tech, home, fashion, beauty and more — delivered worldwide with white-glove care.",
+    "Souq Al Qatar is an online store for shoppers in Qatar. Discover great products across tech, home, fashion, beauty and more — with fast delivery and Cash on Delivery.",
   // Logo: an emoji/letter mark by default. Replace `logoText` or set `logoImage`.
-  logoText: "Luxora",
-  logoMark: "L",
+  logoText: "Souq Al Qatar",
+  logoMark: "S",
   logoImage: "", // e.g. "/logo.svg" (leave empty to use the text mark)
 
   // ---- Contact ----
-  supportEmail: "support@luxora.store",
-  whatsapp: "+1 (555) 000-0000", // shown in UI
-  whatsappNumber: "15550000000", // wa.me format, no + or spaces
+  supportEmail: "islamic.official.content.creator@gmail.com",
+  whatsapp: "+92 320 9203728", // shown in UI
+  whatsappNumber: "923209203728", // wa.me format, no + or spaces
   // Formspree form ID for the contact form (formspree.io). The form works
   // immediately with this ID — change it to your own Formspree form.
   formspreeId: "mwvdqvkn",
 
   // ---- Bank details (shown for the "Bank Transfer" payment option) ----
   bank: {
-    name: "Your Bank Name",
-    accountName: "Your Business Name",
-    iban: "QA00 0000 0000 0000 0000 0000 000",
+    name: "Your Bank Name", // e.g. Qatar National Bank (QNB)
+    accountName: "Sheeraz",
+    iban: "QA00 0000 0000 0000 0000 0000 000", // replace with your real IBAN
   },
 
   // ---- Address ----
   address: {
-    line1: "1 Commerce Avenue",
-    city: "New York",
-    state: "NY",
-    zip: "10001",
-    country: "United States",
+    line1: "Al Sadd",
+    city: "Doha",
+    state: "",
+    zip: "",
+    country: "Qatar",
   },
 
   // ---- Commerce settings ----
