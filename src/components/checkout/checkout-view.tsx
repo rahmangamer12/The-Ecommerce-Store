@@ -256,7 +256,9 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
               <div className="mt-2 space-y-0.5 text-ink-soft">
                 <p>Bank: {siteConfig.bank.name}</p>
                 <p>Account name: {siteConfig.bank.accountName}</p>
+                <p>Account no: {siteConfig.bank.accountNumber}</p>
                 <p>IBAN: {siteConfig.bank.iban}</p>
+                <p>SWIFT: {siteConfig.bank.swift}</p>
               </div>
               <p className="mt-2 text-xs text-muted">
                 Use your order number as the transfer reference. We ship once the

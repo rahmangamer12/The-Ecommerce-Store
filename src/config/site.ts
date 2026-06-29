@@ -42,9 +42,12 @@ export const siteConfig = {
 
   // ---- Bank details (shown for the "Bank Transfer" payment option) ----
   bank: {
-    name: "Your Bank Name", // e.g. Qatar National Bank (QNB)
-    accountName: "Sheeraz",
-    iban: "QA00 0000 0000 0000 0000 0000 000", // replace with your real IBAN
+    name: "Commercial Bank (QSC)",
+    accountName: "SHEERAZ SHAHJAHAN",
+    accountNumber: "4060366234001",
+    iban: "QA71CBQA000000004060366234001",
+    swift: "CBQAQAQA",
+    address: "Commercial Bank Plaza, 380 Al Markhi Street, 60 Al Dafna Area, Doha",
   },
 
   // ---- Address ----
