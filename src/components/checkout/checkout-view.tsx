@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Banknote, Landmark, CreditCard, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
+import { Banknote, Landmark, CreditCard, MessageCircle, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { Input, Label } from "@/components/ui/input";
 import { formatPrice } from "@/lib/utils";
@@ -76,6 +76,26 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
         toast.error(result.error);
         setLoading(false);
         return;
+      }
+
+      // WhatsApp order → open a pre-filled message to the store.
+      if (paymentMethod === "whatsapp") {
+        const lines = items
+          .map(
+            (i) =>
+              `• ${i.name} x${i.quantity} — ${formatPrice(i.price * i.quantity, siteConfig.currency)}`,
+          )
+          .join("\n");
+        const msg =
+          `Hi! I'd like to confirm my order ${result.orderNumber}.\n\n${lines}\n\n` +
+          `Total: ${formatPrice(totals.total, siteConfig.currency)}\n` +
+          `Name: ${form.fullName}\n` +
+          `Address: ${form.line1}, ${form.city}, ${form.country}\n` +
+          `Phone: ${form.phone}`;
+        window.open(
+          `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(msg)}`,
+          "_blank",
+        );
       }
 
       clearCart();
@@ -177,10 +197,16 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
                 desc: "Pay with cash when your order is delivered.",
               },
               {
+                key: "whatsapp",
+                icon: MessageCircle,
+                title: "Order on WhatsApp",
+                desc: "Send your order to us on WhatsApp and pay however suits you.",
+              },
+              {
                 key: "bank",
                 icon: Landmark,
                 title: "Bank Transfer",
-                desc: "We'll email you transfer details after you order.",
+                desc: "Transfer to our account, then we ship your order.",
               },
             ].map((m) => {
               const selected = paymentMethod === m.key;
@@ -215,6 +241,28 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
               );
             })}
           </div>
+
+          {/* Extra details for the selected method */}
+          {paymentMethod === "bank" && (
+            <div className="mt-4 rounded-2xl border border-border bg-paper-2 p-4 text-sm">
+              <p className="font-medium">Bank transfer details</p>
+              <div className="mt-2 space-y-0.5 text-ink-soft">
+                <p>Bank: {siteConfig.bank.name}</p>
+                <p>Account name: {siteConfig.bank.accountName}</p>
+                <p>IBAN: {siteConfig.bank.iban}</p>
+              </div>
+              <p className="mt-2 text-xs text-muted">
+                Use your order number as the transfer reference. We ship once the
+                transfer is received.
+              </p>
+            </div>
+          )}
+          {paymentMethod === "whatsapp" && (
+            <div className="mt-4 rounded-2xl border border-border bg-paper-2 p-4 text-sm text-ink-soft">
+              When you place the order, WhatsApp will open with your order details
+              pre-filled. Send it to us and we&apos;ll confirm payment & delivery.
+            </div>
+          )}
         </section>
       </div>
 
@@ -275,9 +323,11 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
               ? "Placing order…"
               : paymentMethod === "card"
                 ? "Continue to payment"
-                : paymentMethod === "cod"
-                  ? "Place order (Cash on Delivery)"
-                  : "Place order"}
+                : paymentMethod === "whatsapp"
+                  ? "Place order & open WhatsApp"
+                  : paymentMethod === "cod"
+                    ? "Place order (Cash on Delivery)"
+                    : "Place order"}
             {!loading && <ArrowRight className="h-4 w-4" />}
           </button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted">

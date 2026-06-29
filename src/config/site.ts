@@ -29,6 +29,13 @@ export const siteConfig = {
   // immediately with this ID — change it to your own Formspree form.
   formspreeId: "mwvdqvkn",
 
+  // ---- Bank details (shown for the "Bank Transfer" payment option) ----
+  bank: {
+    name: "Your Bank Name",
+    accountName: "Your Business Name",
+    iban: "QA00 0000 0000 0000 0000 0000 000",
+  },
+
   // ---- Address ----
   address: {
     line1: "1 Commerce Avenue",
