@@ -25,6 +25,9 @@ export const siteConfig = {
   supportEmail: "support@luxora.store",
   whatsapp: "+1 (555) 000-0000", // shown in UI
   whatsappNumber: "15550000000", // wa.me format, no + or spaces
+  // Formspree form ID for the contact form (formspree.io). The form works
+  // immediately with this ID — change it to your own Formspree form.
+  formspreeId: "mwvdqvkn",
 
   // ---- Address ----
   address: {

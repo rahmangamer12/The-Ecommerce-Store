@@ -17,6 +17,7 @@ import { CategoryIcon } from "@/components/category-icon";
 import { BrandStrip } from "@/components/home/brand-strip";
 import { PromoTiles } from "@/components/home/promo-tiles";
 import { FlashDeal } from "@/components/home/flash-deal";
+import { ShopByPrice } from "@/components/home/shop-by-price";
 import { categories } from "@/data/categories";
 import {
   getFeatured,
@@ -296,6 +297,9 @@ export default function HomePage() {
           </Stagger>
         </div>
       </section>
+
+      {/* ===================== SHOP BY PRICE ===================== */}
+      <ShopByPrice />
 
       {/* ===================== TESTIMONIALS ===================== */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">

@@ -12,7 +12,7 @@ export function BrandStrip() {
         Trusted brands we carry
       </p>
       <div className="relative overflow-hidden">
-        <div className="flex w-max animate-marquee items-center gap-12 px-6">
+        <div className="flex w-max animate-marquee-slow items-center gap-12 px-6">
           {row.map((brand, i) => (
             <span
               key={`${brand}-${i}`}

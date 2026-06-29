@@ -15,6 +15,8 @@ const shopLinks = [
 
 const companyLinks = [
   { label: "Journal", href: "/blog" },
+  { label: "Track Order", href: "/track-order" },
+  { label: "Affiliate Program", href: "/affiliate" },
   { label: "Contact", href: "/contact" },
   { label: "FAQ", href: "/faq" },
   { label: "Privacy Policy", href: "/privacy" },
