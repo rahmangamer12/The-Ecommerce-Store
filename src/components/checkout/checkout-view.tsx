@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Banknote, Landmark, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
+import { Banknote, Landmark, CreditCard, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { Input, Label } from "@/components/ui/input";
 import { formatPrice } from "@/lib/utils";
@@ -24,7 +24,7 @@ const initialForm = {
   phone: "",
 };
 
-export function CheckoutView() {
+export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean }) {
   const router = useRouter();
   const { items, totals, coupon, clearCart, mounted } = useStore();
   const [form, setForm] = useState(initialForm);
@@ -79,7 +79,12 @@ export function CheckoutView() {
       }
 
       clearCart();
-      router.push(`/order-success?order=${result.orderNumber}`);
+      if (result.redirectUrl) {
+        // Card payment → hosted gateway page.
+        window.location.href = result.redirectUrl;
+      } else {
+        router.push(`/order-success?order=${result.orderNumber}`);
+      }
     } catch {
       toast.error("Could not place your order. Please try again.");
       setLoading(false);
@@ -155,6 +160,16 @@ export function CheckoutView() {
           <h2 className="font-display text-xl font-semibold">Payment method</h2>
           <div className="mt-4 grid gap-3">
             {[
+              ...(cardEnabled
+                ? [
+                    {
+                      key: "card",
+                      icon: CreditCard,
+                      title: "Card / Apple Pay",
+                      desc: "Pay securely online — you'll be taken to our payment page.",
+                    },
+                  ]
+                : []),
               {
                 key: "cod",
                 icon: Banknote,
@@ -258,9 +273,11 @@ export function CheckoutView() {
           >
             {loading
               ? "Placing order…"
-              : paymentMethod === "cod"
-                ? "Place order (Cash on Delivery)"
-                : "Place order"}
+              : paymentMethod === "card"
+                ? "Continue to payment"
+                : paymentMethod === "cod"
+                  ? "Place order (Cash on Delivery)"
+                  : "Place order"}
             {!loading && <ArrowRight className="h-4 w-4" />}
           </button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted">

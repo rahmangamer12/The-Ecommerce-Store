@@ -3,8 +3,9 @@
 import { z } from "zod";
 import { getProductById } from "@/data/products";
 import { findCoupon } from "@/data/coupons";
-import { siteConfig } from "@/config/site";
+import { siteConfig, siteUrl } from "@/config/site";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createCardPayment } from "@/lib/payments";
 import { generateOrderNumber } from "@/data/orders";
 
 const checkoutSchema = z.object({
@@ -116,5 +117,20 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
     }
   }
 
+  // Online card payment → create a hosted MyFatoorah payment and redirect.
+  if (paymentMethod === "card") {
+    const cardUrl = await createCardPayment({
+      orderNumber,
+      name: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      amount: total,
+      callbackUrl: `${siteUrl}/api/payments/myfatoorah/callback`,
+      errorUrl: `${siteUrl}/checkout?error=payment`,
+    });
+    if (cardUrl) return { ok: true, orderNumber, redirectUrl: cardUrl };
+  }
+
+  // COD / bank transfer (or card not configured) → straight to confirmation.
   return { ok: true, orderNumber };
 }

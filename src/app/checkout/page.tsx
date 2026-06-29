@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CheckoutView } from "@/components/checkout/checkout-view";
 import { buildMetadata } from "@/lib/seo";
+import { isCardPaymentConfigured } from "@/config/env";
 
 export const metadata: Metadata = buildMetadata({
   title: "Checkout",
@@ -16,7 +17,8 @@ export default function CheckoutPage() {
         Checkout
       </h1>
       <div className="mt-10">
-        <CheckoutView />
+        {/* Card option only appears once a gateway (MyFatoorah) is configured. */}
+        <CheckoutView cardEnabled={isCardPaymentConfigured} />
       </div>
     </div>
   );

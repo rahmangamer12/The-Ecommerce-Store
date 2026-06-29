@@ -13,13 +13,11 @@ export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 export const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 export const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 
-// ---- Polar (payments) ----
-export const polarAccessToken = process.env.POLAR_ACCESS_TOKEN ?? "";
-export const polarWebhookSecret = process.env.POLAR_WEBHOOK_SECRET ?? "";
-export const polarSuccessUrl = process.env.POLAR_SUCCESS_URL ?? "";
-// "sandbox" or "production"
-export const polarServer =
-  (process.env.POLAR_SERVER as "sandbox" | "production") ?? "sandbox";
+// ---- Card payments (MyFatoorah — works for physical goods in GCC) ----
+export const myfatoorahApiKey = process.env.MYFATOORAH_API_KEY ?? "";
+// Sandbox: https://apitest.myfatoorah.com  |  Qatar live: https://api.myfatoorah.com
+export const myfatoorahBaseUrl =
+  process.env.MYFATOORAH_BASE_URL ?? "https://apitest.myfatoorah.com";
 
 // ---- Cloudinary (image hosting / upload) ----
 export const cloudinaryCloudName =
@@ -56,7 +54,7 @@ export const analytics = {
 //  a live integration is available or we should use a fallback.
 // -------------------------------------------------------------
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
-export const isPolarConfigured = Boolean(polarAccessToken);
+export const isCardPaymentConfigured = Boolean(myfatoorahApiKey);
 export const isCloudinaryConfigured = Boolean(cloudinaryCloudName);
 export const isEmailConfigured = Boolean(
   resendApiKey || mailchimpApiKey || convertkitApiKey,
