@@ -31,8 +31,10 @@ import { getAllPosts } from "@/data/blog";
 import { siteConfig } from "@/config/site";
 import { formatDate } from "@/lib/utils";
 import { jsonLd, websiteSchema, organizationSchema } from "@/lib/seo";
+import { getLocale, getT } from "@/i18n/server";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const t = getT(await getLocale());
   const featured = getFeatured(8);
   const trending = getTrending(4);
   const onSale = getOnSale(4);
@@ -55,26 +57,22 @@ export default function HomePage() {
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full border border-border glass px-4 py-1.5 text-sm">
               <Sparkles className="h-4 w-4 text-gold-strong" />
-              <span className="text-ink-soft">
-                Curated from the world&apos;s finest makers
-              </span>
+              <span className="text-ink-soft">{t("home.heroBadge")}</span>
             </div>
             <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl lg:text-7xl">
-              Modern luxury,{" "}
-              <span className="text-gradient-gold">delivered worldwide</span>
+              {t("home.heroTitlePre")}{" "}
+              <span className="text-gradient-gold">{t("home.heroTitleGold")}</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft">
-              {siteConfig.name} brings together exceptional products across tech,
-              home, fashion and beauty — chosen for quality you can feel and
-              design you&apos;ll love for years.
+              {t("home.heroSubtitle")}
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button href="/shop" variant="gold" size="lg">
-                Shop the collection
+                {t("home.shopCollection")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
               <Button href="/categories" variant="outline" size="lg">
-                Browse categories
+                {t("home.browseCategories")}
               </Button>
             </div>
             {/* Trust row */}
@@ -95,10 +93,7 @@ export default function HomePage() {
                     <Star key={i} className="h-4 w-4 fill-current" />
                   ))}
                 </div>
-                <p className="mt-0.5 text-sm text-ink-soft">
-                  Loved by <span className="font-semibold text-ink">25,000+</span>{" "}
-                  customers
-                </p>
+                <p className="mt-0.5 text-sm text-ink-soft">{t("home.lovedBy")}</p>
               </div>
             </div>
           </Reveal>
@@ -150,10 +145,10 @@ export default function HomePage() {
       <section className="border-y border-border bg-card">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
           {[
-            { icon: Truck, title: "Free worldwide shipping", text: "On orders over $100" },
-            { icon: ShieldCheck, title: "Cash on Delivery", text: "Pay when it arrives" },
-            { icon: RefreshCw, title: "30-day returns", text: "Shop with confidence" },
-            { icon: Headphones, title: "24/7 support", text: "Real people, fast replies" },
+            { icon: Truck, title: t("home.benefitShipT"), text: t("home.benefitShipD") },
+            { icon: ShieldCheck, title: t("home.benefitCodT"), text: t("home.benefitCodD") },
+            { icon: RefreshCw, title: t("home.benefitReturnT"), text: t("home.benefitReturnD") },
+            { icon: Headphones, title: t("home.benefitSupportT"), text: t("home.benefitSupportD") },
           ].map((b) => (
             <div key={b.title} className="flex items-center gap-3 py-6">
               <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-paper-2 text-gold-strong">
@@ -175,9 +170,9 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <Reveal>
           <SectionHeader
-            eyebrow="Explore"
-            title="Shop by category"
-            description="Eight worlds of considered design, each curated by our team."
+            eyebrow={t("home.catEyebrow")}
+            title={t("home.catTitle")}
+            description={t("home.catDesc")}
             href="/categories"
           />
         </Reveal>
@@ -214,9 +209,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <Reveal>
             <SectionHeader
-              eyebrow="Handpicked"
-              title="Featured this season"
-              description="Our editors' current obsessions — the pieces everyone's talking about."
+              eyebrow={t("home.featEyebrow")}
+              title={t("home.featTitle")}
+              description={t("home.featDesc")}
               href="/shop"
             />
           </Reveal>
@@ -238,9 +233,9 @@ export default function HomePage() {
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <Reveal>
             <SectionHeader
-              eyebrow="Just landed"
-              title="New arrivals"
-              description="The latest additions to the Luxora collection."
+              eyebrow={t("home.newEyebrow")}
+              title={t("home.newTitle")}
+              description={t("home.newDesc")}
               href="/shop?sort=newest"
             />
           </Reveal>
@@ -260,17 +255,13 @@ export default function HomePage() {
           <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-paper sm:px-16 sm:py-24">
             <div className="absolute inset-0 bg-aura opacity-60" aria-hidden />
             <div className="relative max-w-xl">
-              <p className="eyebrow text-gold-soft">The Luxora promise</p>
+              <p className="eyebrow text-gold-soft">{siteConfig.name}</p>
               <h2 className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-5xl">
-                Buy it nice, not twice.
+                {t("home.ctaTitle")}
               </h2>
-              <p className="mt-5 text-lg text-paper/80">
-                We obsess over materials, makers and the little details — so every
-                order feels like a gift to yourself. If you don&apos;t love it,
-                send it back within 30 days. Simple.
-              </p>
+              <p className="mt-5 text-lg text-paper/80">{t("home.ctaDesc")}</p>
               <Button href="/shop" variant="gold" size="lg" className="mt-8">
-                Discover why
+                {t("home.ctaButton")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
@@ -283,8 +274,8 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <Reveal>
             <SectionHeader
-              eyebrow="Right now"
-              title="Trending products"
+              eyebrow={t("home.trendEyebrow")}
+              title={t("home.trendTitle")}
               href="/shop?sort=popular"
             />
           </Reveal>
@@ -305,8 +296,8 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <Reveal>
           <SectionHeader
-            eyebrow="Loved worldwide"
-            title="What our customers say"
+            eyebrow={t("home.testiEyebrow")}
+            title={t("home.testiTitle")}
             center
           />
         </Reveal>
@@ -342,9 +333,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <Reveal>
             <SectionHeader
-              eyebrow="The Journal"
-              title="Stories & guides"
-              description="Considered reading on style, living and buying well."
+              eyebrow={t("home.journalEyebrow")}
+              title={t("home.journalTitle")}
+              description={t("home.journalDesc")}
               href="/blog"
             />
           </Reveal>

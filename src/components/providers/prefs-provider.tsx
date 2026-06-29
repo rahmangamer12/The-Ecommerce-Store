@@ -7,6 +7,7 @@ import {
   useState,
   useCallback,
 } from "react";
+import { useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { translations, type Locale, type TranslationKey } from "@/i18n/translations";
 
@@ -26,6 +27,7 @@ const LS_CUR = "souq.currency";
 const LS_LOC = "souq.locale";
 
 export function PrefsProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [currency, setCurrencyState] = useState<string>(siteConfig.currency);
   const [locale, setLocaleState] = useState<Locale>("en");
   const [mounted, setMounted] = useState(false);
@@ -57,12 +59,19 @@ export function PrefsProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
-  const setLocale = useCallback((l: Locale) => {
-    setLocaleState(l);
-    try {
-      window.localStorage.setItem(LS_LOC, l);
-    } catch {}
-  }, []);
+  const setLocale = useCallback(
+    (l: Locale) => {
+      setLocaleState(l);
+      try {
+        window.localStorage.setItem(LS_LOC, l);
+        // Cookie so SERVER components can render in the right language.
+        document.cookie = `${LS_LOC}=${l}; path=/; max-age=31536000; samesite=lax`;
+      } catch {}
+      // Re-render server components in the new language.
+      router.refresh();
+    },
+    [router],
+  );
 
   const formatPrice = useCallback(
     (baseAmount: number) => {
