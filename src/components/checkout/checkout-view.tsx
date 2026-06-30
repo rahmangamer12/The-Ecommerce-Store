@@ -27,7 +27,7 @@ const initialForm = {
 export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean }) {
   const router = useRouter();
   const { items, totals, coupon, clearCart, mounted } = useStore();
-  const { formatPrice } = usePrefs();
+  const { formatPrice, t } = usePrefs();
   const [form, setForm] = useState(initialForm);
 
   // Build the list of payment methods enabled in config (card also needs a
@@ -36,26 +36,26 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
     cardEnabled && siteConfig.payments.card && {
       key: "card",
       icon: CreditCard,
-      title: "Card / Apple Pay",
+      title: t("checkout.cardT"),
       desc: "Pay securely online — you'll be taken to our payment page.",
     },
     siteConfig.payments.whatsapp && {
       key: "whatsapp",
       icon: MessageCircle,
-      title: "Order on WhatsApp",
-      desc: "Send your order to us on WhatsApp and pay however suits you.",
+      title: t("checkout.whatsappT"),
+      desc: t("checkout.whatsappD"),
     },
     siteConfig.payments.bank && {
       key: "bank",
       icon: Landmark,
-      title: "Bank Transfer",
-      desc: "Transfer to our account, then we ship your order.",
+      title: t("checkout.bankT"),
+      desc: t("checkout.bankD"),
     },
     siteConfig.payments.cod && {
       key: "cod",
       icon: Banknote,
-      title: "Cash on Delivery",
-      desc: "Pay with cash when your order is delivered.",
+      title: t("checkout.codT"),
+      desc: t("checkout.codD"),
     },
   ].filter(Boolean) as {
     key: string;
@@ -154,13 +154,13 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
         {/* Contact */}
         <section>
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-xl font-semibold">Contact</h2>
+            <h2 className="font-display text-xl font-semibold">{t("checkout.contact")}</h2>
             <Link href="/login" className="text-sm text-gold-strong hover:underline">
               Sign in for faster checkout
             </Link>
           </div>
           <div className="mt-4">
-            <Label htmlFor="email">Email address</Label>
+            <Label htmlFor="email">{t("checkout.emailAddr")}</Label>
             <Input
               id="email"
               type="email"
@@ -174,14 +174,14 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
 
         {/* Shipping */}
         <section>
-          <h2 className="font-display text-xl font-semibold">Shipping address</h2>
+          <h2 className="font-display text-xl font-semibold">{t("checkout.shippingAddress")}</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <Label htmlFor="fullName">Full name</Label>
+              <Label htmlFor="fullName">{t("checkout.fullName")}</Label>
               <Input id="fullName" required value={form.fullName} onChange={(e) => set("fullName", e.target.value)} />
             </div>
             <div className="sm:col-span-2">
-              <Label htmlFor="line1">Address</Label>
+              <Label htmlFor="line1">{t("checkout.addressLine")}</Label>
               <Input id="line1" required value={form.line1} onChange={(e) => set("line1", e.target.value)} />
             </div>
             <div className="sm:col-span-2">
@@ -189,23 +189,23 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
               <Input id="line2" value={form.line2} onChange={(e) => set("line2", e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="city">City</Label>
+              <Label htmlFor="city">{t("checkout.city")}</Label>
               <Input id="city" required value={form.city} onChange={(e) => set("city", e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="state">State / Region</Label>
+              <Label htmlFor="state">{t("checkout.stateRegion")}</Label>
               <Input id="state" value={form.state} onChange={(e) => set("state", e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="zip">Postal code</Label>
+              <Label htmlFor="zip">{t("checkout.zip")}</Label>
               <Input id="zip" required value={form.zip} onChange={(e) => set("zip", e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="country">Country</Label>
+              <Label htmlFor="country">{t("checkout.country")}</Label>
               <Input id="country" required value={form.country} onChange={(e) => set("country", e.target.value)} />
             </div>
             <div className="sm:col-span-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t("checkout.phone")}</Label>
               <Input id="phone" required value={form.phone} onChange={(e) => set("phone", e.target.value)} />
             </div>
           </div>
@@ -213,7 +213,7 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
 
         {/* Payment method */}
         <section>
-          <h2 className="font-display text-xl font-semibold">Payment method</h2>
+          <h2 className="font-display text-xl font-semibold">{t("checkout.paymentMethod")}</h2>
           <div className="mt-4 grid gap-3">
             {methods.map((m) => {
               const selected = paymentMethod === m.key;
@@ -278,7 +278,7 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
       {/* Summary */}
       <aside className="h-fit lg:sticky lg:top-24">
         <div className="rounded-2xl border border-border bg-card p-6">
-          <h2 className="font-display text-xl font-semibold">Order summary</h2>
+          <h2 className="font-display text-xl font-semibold">{t("cart.orderSummary")}</h2>
           <ul className="mt-5 space-y-4">
             {items.map((i) => (
               <li key={`${i.productId}-${JSON.stringify(i.variant)}`} className="flex gap-3">

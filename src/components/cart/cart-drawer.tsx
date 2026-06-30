@@ -26,7 +26,7 @@ export function CartDrawer() {
     removeCoupon,
     addItem,
   } = useStore();
-  const { formatPrice } = usePrefs();
+  const { formatPrice, t } = usePrefs();
   const [code, setCode] = useState("");
 
   const threshold = siteConfig.freeShippingThreshold;
@@ -60,7 +60,7 @@ export function CartDrawer() {
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div className="flex items-center gap-2">
                 <ShoppingBag className="h-5 w-5" />
-                <h2 className="font-display text-lg font-semibold">Your Cart</h2>
+                <h2 className="font-display text-lg font-semibold">{t("cart.yourCart")}</h2>
               </div>
               <button
                 onClick={() => setCartOpen(false)}
@@ -87,7 +87,7 @@ export function CartDrawer() {
                     </p>
                   ) : (
                     <p className="text-sm font-medium text-success">
-                      🎉 You&apos;ve unlocked free shipping!
+                      🎉 {t("cart.unlockedFree")}
                     </p>
                   )}
                   <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-paper-2">
@@ -178,7 +178,7 @@ export function CartDrawer() {
                   {upsell && (
                     <div className="mt-6 rounded-xl border border-border bg-card p-3">
                       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
-                        You may also like
+                        {t("cart.youMayLike")}
                       </p>
                       <div className="flex items-center gap-3">
                         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-paper-2">
@@ -248,10 +248,10 @@ export function CartDrawer() {
                   )}
 
                   <div className="space-y-1.5 text-sm">
-                    <Row label="Subtotal" value={formatPrice(totals.subtotal)} />
+                    <Row label={t("cart.subtotal")} value={formatPrice(totals.subtotal)} />
                     {totals.discount > 0 && (
                       <Row
-                        label="Discount"
+                        label={t("cart.discount")}
                         value={`- ${formatPrice(totals.discount)}`}
                         accent="text-success"
                       />
@@ -260,11 +260,11 @@ export function CartDrawer() {
                       label="Shipping"
                       value={
                         totals.shipping === 0
-                          ? "Free"
+                          ? t("cart.free")
                           : formatPrice(totals.shipping)
                       }
                     />
-                    <Row label="Tax" value={formatPrice(totals.tax)} />
+                    <Row label={t("cart.tax")} value={formatPrice(totals.tax)} />
                     <div className="hairline my-2" />
                     <Row
                       label="Total"

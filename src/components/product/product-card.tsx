@@ -20,7 +20,7 @@ export function ProductCard({
   className?: string;
 }) {
   const { addItem, toggleWishlist, isWishlisted } = useStore();
-  const { formatPrice } = usePrefs();
+  const { formatPrice, t } = usePrefs();
   const wished = isWishlisted(product.id);
   const discount = discountPercent(product.price, product.compareAtPrice);
   const outOfStock = product.stock <= 0;
@@ -106,12 +106,12 @@ export function ProductCard({
             {product.affiliateUrl ? (
               <>
                 <ExternalLink className="h-4 w-4" />
-                View deal
+                {t("common.viewDeal")}
               </>
             ) : (
               <>
                 <ShoppingBag className="h-4 w-4" />
-                {outOfStock ? "Sold out" : "Add to cart"}
+                {outOfStock ? t("common.soldOut") : t("common.addToCart")}
               </>
             )}
           </button>

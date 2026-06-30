@@ -24,7 +24,7 @@ import { discountPercent, cn } from "@/lib/utils";
 export function ProductBuyBox({ product }: { product: Product }) {
   const router = useRouter();
   const { addItem, toggleWishlist, isWishlisted, setCartOpen } = useStore();
-  const { formatPrice } = usePrefs();
+  const { formatPrice, t } = usePrefs();
   const [qty, setQty] = useState(1);
   const [variant, setVariant] = useState<Record<string, string>>(() =>
     Object.fromEntries((product.variants ?? []).map((v) => [v.name, v.values[0]])),
@@ -90,7 +90,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
         )}
         {discount && (
           <span className="mb-1 rounded-full bg-success/15 px-2 py-0.5 text-sm font-semibold text-success">
-            Save {discount}%
+            {t("product.save")} {discount}%
           </span>
         )}
       </div>
@@ -125,13 +125,13 @@ export function ProductBuyBox({ product }: { product: Product }) {
       {/* Stock note */}
       <div className="mt-6 flex items-center gap-2 text-sm">
         {outOfStock ? (
-          <span className="font-medium text-danger">Currently sold out</span>
+          <span className="font-medium text-danger">{t("product.soldOut")}</span>
         ) : lowStock ? (
           <span className="font-medium text-danger">
             Hurry — only {product.stock} left in stock
           </span>
         ) : (
-          <span className="font-medium text-success">In stock & ready to ship</span>
+          <span className="font-medium text-success">{t("product.inStock")}</span>
         )}
       </div>
 
@@ -175,7 +175,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
             className="flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 font-medium text-white shadow-gold transition-all hover:-translate-y-0.5 hover:bg-gold-strong"
           >
             <ExternalLink className="h-5 w-5" />
-            Buy now
+            {t("product.buyNowExt")}
           </a>
           <p className="mt-2 text-center text-xs text-muted">
             You&apos;ll be taken to our trusted partner to complete your purchase.
@@ -189,7 +189,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
             className="flex flex-1 items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 font-medium text-paper shadow-luxe transition-all hover:-translate-y-0.5 hover:bg-gold hover:text-white disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <ShoppingBag className="h-5 w-5" />
-            Add to cart
+            {t("common.addToCart")}
           </button>
           <button
             onClick={buyNow}
@@ -197,7 +197,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
             className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 font-medium text-white shadow-gold transition-all hover:-translate-y-0.5 hover:bg-gold-strong disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Zap className="h-5 w-5" />
-            Buy it now
+            {t("common.buyNow")}
           </button>
         </div>
       )}
@@ -205,9 +205,9 @@ export function ProductBuyBox({ product }: { product: Product }) {
       {/* Trust row */}
       <div className="mt-6 grid grid-cols-3 gap-3 rounded-2xl border border-border bg-card p-4 text-center">
         {[
-          { icon: Truck, text: "Free shipping" },
-          { icon: RefreshCw, text: "30-day returns" },
-          { icon: ShieldCheck, text: "Secure checkout" },
+          { icon: Truck, text: t("product.freeShipping") },
+          { icon: RefreshCw, text: t("product.returns30") },
+          { icon: ShieldCheck, text: t("product.secureCheckout") },
         ].map((t) => (
           <div key={t.text} className="flex flex-col items-center gap-1.5">
             <t.icon className="h-5 w-5 text-gold-strong" />
@@ -220,7 +220,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
       <div className="mt-6 divide-y divide-border border-y border-border">
         <InfoRow
           id="shipping"
-          title="Shipping information"
+          title={t("product.shippingInfo")}
           open={openInfo === "shipping"}
           onToggle={(id) => setOpenInfo(openInfo === id ? null : id)}
         >
@@ -230,7 +230,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
         </InfoRow>
         <InfoRow
           id="returns"
-          title="Returns & warranty"
+          title={t("product.returnsInfo")}
           open={openInfo === "returns"}
           onToggle={(id) => setOpenInfo(openInfo === id ? null : id)}
         >
@@ -240,7 +240,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
         </InfoRow>
         <InfoRow
           id="details"
-          title="Product details"
+          title={t("product.productDetails")}
           open={openInfo === "details"}
           onToggle={(id) => setOpenInfo(openInfo === id ? null : id)}
         >

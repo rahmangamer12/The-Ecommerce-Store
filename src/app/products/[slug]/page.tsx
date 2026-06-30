@@ -17,6 +17,7 @@ import {
   breadcrumbSchema,
   jsonLd,
 } from "@/lib/seo";
+import { getLocale, getT } from "@/i18n/server";
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -48,6 +49,7 @@ export default async function ProductPage({
   const product = await getCatalogProductBySlug(slug);
   if (!product) notFound();
 
+  const t = getT(await getLocale());
   const category = getCategory(product.categorySlug);
   const related = await getCatalogRelated(product, 4);
 
@@ -110,12 +112,12 @@ export default async function ProductPage({
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-10 rounded-3xl border border-border bg-card p-8 lg:grid-cols-2 lg:p-12">
           <div>
-            <h2 className="font-display text-2xl font-semibold">About this product</h2>
+            <h2 className="font-display text-2xl font-semibold">{t("product.about")}</h2>
             <p className="mt-4 leading-relaxed text-ink-soft">{product.description}</p>
           </div>
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
-              Highlights
+              {t("product.highlights")}
             </h3>
             <ul className="mt-4 space-y-3">
               {product.features.map((f) => (
@@ -136,7 +138,7 @@ export default async function ProductPage({
       {related.length > 0 && (
         <section className="bg-paper-2">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-            <SectionHeader eyebrow="You may also like" title="Complete the look" />
+            <SectionHeader eyebrow={t("product.related")} title={t("product.completeLook")} />
             <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
               {related.map((p) => (
                 <ProductCard key={p.id} product={p} />

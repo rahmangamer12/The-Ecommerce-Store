@@ -22,9 +22,9 @@ export const siteConfig = {
   logoImage: "", // e.g. "/logo.svg" (leave empty to use the text mark)
 
   // ---- Contact ----
-  supportEmail: "islamic.official.content.creator@gmail.com",
-  whatsapp: "+92 320 9203728", // shown in UI
-  whatsappNumber: "923209203728", // wa.me format, no + or spaces
+  supportEmail: "sheerazshahbaloch@gmail.com",
+  whatsapp: "+974 3126 9934", // shown in UI
+  whatsappNumber: "97431269934", // wa.me format, no + or spaces
   // Formspree form ID for the contact form (formspree.io). The form works
   // immediately with this ID — change it to your own Formspree form.
   formspreeId: "mwvdqvkn",

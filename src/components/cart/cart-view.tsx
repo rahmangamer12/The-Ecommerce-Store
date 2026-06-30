@@ -20,7 +20,7 @@ export function CartView() {
     removeCoupon,
     mounted,
   } = useStore();
-  const { formatPrice } = usePrefs();
+  const { formatPrice, t } = usePrefs();
   const [code, setCode] = useState("");
 
   if (!mounted) return <div className="h-96" />;
@@ -31,12 +31,12 @@ export function CartView() {
         <div className="grid h-24 w-24 place-items-center rounded-full bg-paper-2">
           <ShoppingBag className="h-10 w-10 text-muted" />
         </div>
-        <h2 className="mt-6 font-display text-2xl font-semibold">Your cart is empty</h2>
+        <h2 className="mt-6 font-display text-2xl font-semibold">{t("cart.empty")}</h2>
         <p className="mt-2 max-w-sm text-ink-soft">
           Looks like you haven&apos;t added anything yet. Let&apos;s change that.
         </p>
         <Button href="/shop" variant="gold" size="lg" className="mt-7">
-          Start shopping
+          {t("cart.startShopping")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
@@ -101,7 +101,7 @@ export function CartView() {
                       onClick={() => removeItem(item.productId, key)}
                       className="flex items-center gap-1.5 text-sm text-muted hover:text-danger"
                     >
-                      <Trash2 className="h-4 w-4" /> Remove
+                      <Trash2 className="h-4 w-4" /> {t("cart.remove")}
                     </button>
                   </div>
                 </div>
@@ -113,14 +113,14 @@ export function CartView() {
           href="/shop"
           className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink"
         >
-          ← Continue shopping
+          ← {t("common.continueShopping")}
         </Link>
       </div>
 
       {/* Summary */}
       <aside className="h-fit lg:sticky lg:top-24">
         <div className="rounded-2xl border border-border bg-card p-6">
-          <h2 className="font-display text-xl font-semibold">Order summary</h2>
+          <h2 className="font-display text-xl font-semibold">{t("cart.orderSummary")}</h2>
 
           {/* Coupon */}
           <div className="mt-5">
@@ -138,14 +138,14 @@ export function CartView() {
                 <input
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  placeholder="Promo code"
+                  placeholder={t("cart.promo")}
                   className="h-11 flex-1 rounded-full border border-border bg-paper px-4 text-sm focus:border-gold focus-visible:outline-none"
                 />
                 <button
                   onClick={() => applyCoupon(code) && setCode("")}
                   className="rounded-full bg-ink px-5 text-sm font-medium text-paper hover:bg-gold hover:text-white"
                 >
-                  Apply
+                  {t("cart.apply")}
                 </button>
               </div>
             )}
@@ -156,25 +156,25 @@ export function CartView() {
           </div>
 
           <div className="mt-6 space-y-2.5 text-sm">
-            <Row label="Subtotal" value={formatPrice(totals.subtotal)} />
+            <Row label={t("cart.subtotal")} value={formatPrice(totals.subtotal)} />
             {totals.discount > 0 && (
               <Row
-                label="Discount"
+                label={t("cart.discount")}
                 value={`- ${formatPrice(totals.discount)}`}
                 accent="text-success"
               />
             )}
             <Row
-              label="Shipping"
-              value={totals.shipping === 0 ? "Free" : formatPrice(totals.shipping)}
+              label={t("cart.shipping")}
+              value={totals.shipping === 0 ? t("cart.free") : formatPrice(totals.shipping)}
             />
-            <Row label="Tax" value={formatPrice(totals.tax)} />
+            <Row label={t("cart.tax")} value={formatPrice(totals.tax)} />
             <div className="hairline my-3" />
-            <Row label="Total" value={formatPrice(totals.total)} bold />
+            <Row label={t("cart.total")} value={formatPrice(totals.total)} bold />
           </div>
 
           <Button href="/checkout" variant="gold" size="lg" className="mt-6 w-full">
-            Proceed to checkout
+            {t("cart.proceed")}
             <ArrowRight className="h-4 w-4" />
           </Button>
           <p className="mt-3 text-center text-xs text-muted">
