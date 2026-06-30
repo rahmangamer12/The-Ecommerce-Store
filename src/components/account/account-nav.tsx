@@ -12,17 +12,19 @@ import {
 } from "lucide-react";
 import { useClerk } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 const links = [
-  { href: "/account", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/account/orders", label: "Orders", icon: Package },
-  { href: "/account/wishlist", label: "Wishlist", icon: Heart },
-  { href: "/account/addresses", label: "Addresses", icon: MapPin },
-  { href: "/account/settings", label: "Settings", icon: Settings },
-];
+  { href: "/account", tk: "acct.dashboard", icon: LayoutDashboard },
+  { href: "/account/orders", tk: "acct.orders", icon: Package },
+  { href: "/account/wishlist", tk: "acct.wishlist", icon: Heart },
+  { href: "/account/addresses", tk: "acct.addresses", icon: MapPin },
+  { href: "/account/settings", tk: "acct.settings", icon: Settings },
+] as const;
 
 export function AccountNav() {
   const pathname = usePathname();
+  const { t } = usePrefs();
   const { signOut } = useClerk();
 
   function handleSignOut() {
@@ -43,7 +45,7 @@ export function AccountNav() {
             )}
           >
             <link.icon className="h-4 w-4" />
-            {link.label}
+            {t(link.tk)}
           </Link>
         );
       })}
@@ -52,7 +54,7 @@ export function AccountNav() {
         className="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-danger transition-colors hover:bg-danger/10"
       >
         <LogOut className="h-4 w-4" />
-        Sign out
+        {t("acct.signOut")}
       </button>
     </nav>
   );

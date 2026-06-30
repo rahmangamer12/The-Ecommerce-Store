@@ -5,16 +5,17 @@ import { SlidersHorizontal, X, Check, ChevronDown } from "lucide-react";
 import type { Product } from "@/types";
 import { categories } from "@/data/categories";
 import { ProductCard } from "@/components/product/product-card";
+import { usePrefs } from "@/components/providers/prefs-provider";
 import { cn } from "@/lib/utils";
 
 type SortKey = "featured" | "newest" | "price-asc" | "price-desc" | "popular";
 
-const sortOptions: { key: SortKey; label: string }[] = [
-  { key: "featured", label: "Featured" },
-  { key: "newest", label: "Newest" },
-  { key: "popular", label: "Best rated" },
-  { key: "price-asc", label: "Price: Low to High" },
-  { key: "price-desc", label: "Price: High to Low" },
+const sortOptions: { key: SortKey; tk: string }[] = [
+  { key: "featured", tk: "shop.sortFeatured" },
+  { key: "newest", tk: "shop.sortNewest" },
+  { key: "popular", tk: "shop.sortPopular" },
+  { key: "price-asc", tk: "shop.sortPriceAsc" },
+  { key: "price-desc", tk: "shop.sortPriceDesc" },
 ];
 
 const PAGE_SIZE = 8;
@@ -30,6 +31,7 @@ export function ShopView({
   initialSort?: SortKey;
   initialSale?: boolean;
 }) {
+  const { t } = usePrefs();
   const [selectedCats, setSelectedCats] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState(500);
   const [onSale, setOnSale] = useState(initialSale);
@@ -77,7 +79,7 @@ export function ShopView({
   const filterPanel = (
     <div className="space-y-8">
       {!lockedCategory && (
-        <FilterGroup title="Category">
+        <FilterGroup title={t("shop.filterCategory")}>
           <div className="space-y-2.5">
             {categories.map((cat) => (
               <label
@@ -107,7 +109,7 @@ export function ShopView({
         </FilterGroup>
       )}
 
-      <FilterGroup title={`Max price: $${maxPrice}`}>
+      <FilterGroup title={`${t("shop.filterMaxPrice")}: ${maxPrice}`}>
         <input
           type="range"
           min={20}
@@ -126,10 +128,10 @@ export function ShopView({
         </div>
       </FilterGroup>
 
-      <FilterGroup title="Availability">
+      <FilterGroup title={t("shop.filterAvailability")}>
         <div className="space-y-2.5">
-          <Toggle label="On sale" checked={onSale} onChange={() => { setPage(1); setOnSale((v) => !v); }} />
-          <Toggle label="In stock only" checked={inStock} onChange={() => { setPage(1); setInStock((v) => !v); }} />
+          <Toggle label={t("shop.onSale")} checked={onSale} onChange={() => { setPage(1); setOnSale((v) => !v); }} />
+          <Toggle label={t("shop.inStockOnly")} checked={inStock} onChange={() => { setPage(1); setInStock((v) => !v); }} />
         </div>
       </FilterGroup>
     </div>
@@ -146,14 +148,14 @@ export function ShopView({
         {/* Toolbar */}
         <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
           <p className="text-sm text-muted">
-            <span className="font-semibold text-ink">{filtered.length}</span> products
+            <span className="font-semibold text-ink">{filtered.length}</span> {t("shop.products")}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setMobileFilters(true)}
               className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm lg:hidden"
             >
-              <SlidersHorizontal className="h-4 w-4" /> Filters
+              <SlidersHorizontal className="h-4 w-4" /> {t("shop.filters")}
             </button>
             <div className="relative">
               <select
@@ -164,7 +166,7 @@ export function ShopView({
               >
                 {sortOptions.map((o) => (
                   <option key={o.key} value={o.key}>
-                    {o.label}
+                    {t(o.tk as never)}
                   </option>
                 ))}
               </select>
@@ -176,9 +178,9 @@ export function ShopView({
         {/* Grid */}
         {visible.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <p className="font-display text-xl font-semibold">No products match</p>
+            <p className="font-display text-xl font-semibold">{t("shop.noMatch")}</p>
             <p className="mt-2 text-sm text-muted">
-              Try widening your filters or clearing them.
+              {t("shop.noMatchDesc")}
             </p>
             <button
               onClick={() => {
@@ -189,7 +191,7 @@ export function ShopView({
               }}
               className="mt-5 rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper"
             >
-              Clear filters
+              {t("shop.clearFilters")}
             </button>
           </div>
         ) : (
@@ -207,7 +209,7 @@ export function ShopView({
               onClick={() => setPage((p) => p + 1)}
               className="rounded-full border border-ink/20 px-8 py-3 text-sm font-medium transition-colors hover:border-gold hover:text-gold-strong"
             >
-              Load more
+              {t("shop.loadMore")}
             </button>
           </div>
         )}
@@ -222,7 +224,7 @@ export function ShopView({
           />
           <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-3xl bg-paper p-6">
             <div className="mb-5 flex items-center justify-between">
-              <h3 className="font-display text-lg font-semibold">Filters</h3>
+              <h3 className="font-display text-lg font-semibold">{t("shop.filters")}</h3>
               <button
                 onClick={() => setMobileFilters(false)}
                 className="grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5"
@@ -235,7 +237,7 @@ export function ShopView({
               onClick={() => setMobileFilters(false)}
               className="mt-6 w-full rounded-full bg-ink py-3 text-sm font-medium text-paper"
             >
-              Show {filtered.length} results
+              {t("shop.showResults")} ({filtered.length})
             </button>
           </div>
         </div>

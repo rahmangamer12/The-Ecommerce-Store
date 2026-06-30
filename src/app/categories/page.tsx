@@ -7,25 +7,24 @@ import { getProductsByCategory } from "@/data/products";
 import { CategoryIcon } from "@/components/category-icon";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { buildMetadata } from "@/lib/seo";
+import { getLocale, getT } from "@/i18n/server";
 
 export const metadata: Metadata = buildMetadata({
   title: "Categories",
-  description: "Explore every Luxora category — from technology and audio to fashion, beauty and wellness.",
+  description: "Explore every Souq Al Qatar category — from technology and audio to fashion, beauty and wellness.",
   path: "/categories",
 });
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+  const t = getT(await getLocale());
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
       <header className="mb-12 text-center">
-        <p className="eyebrow">Browse</p>
+        <p className="eyebrow">{t("cats.eyebrow")}</p>
         <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-          Shop by category
+          {t("cats.title")}
         </h1>
-        <p className="mx-auto mt-3 max-w-xl text-ink-soft">
-          Eight curated worlds of considered design. Find exactly what you&apos;re
-          looking for.
-        </p>
+        <p className="mx-auto mt-3 max-w-xl text-ink-soft">{t("cats.subtitle")}</p>
       </header>
 
       <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -50,7 +49,7 @@ export default function CategoriesPage() {
                   <h2 className="mt-3 font-display text-2xl font-semibold">{cat.name}</h2>
                   <p className="mt-1 line-clamp-2 text-sm text-paper/80">{cat.description}</p>
                   <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-gold-soft">
-                    {count} products
+                    {count} {t("cats.products")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
