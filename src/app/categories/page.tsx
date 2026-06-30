@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { categories } from "@/data/categories";
+import { getCategories } from "@/lib/categories";
 import { getProductsByCategory } from "@/data/products";
 import { CategoryIcon } from "@/components/category-icon";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
@@ -17,6 +17,7 @@ export const metadata: Metadata = buildMetadata({
 
 export default async function CategoriesPage() {
   const t = getT(await getLocale());
+  const categories = await getCategories();
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
       <header className="mb-12 text-center">

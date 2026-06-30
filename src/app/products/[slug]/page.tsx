@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { products } from "@/data/products";
 import { getCatalogProductBySlug, getCatalogRelated } from "@/lib/catalog";
-import { getCategory } from "@/data/categories";
+import { getCategoryBySlug } from "@/lib/categories";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductBuyBox } from "@/components/product/product-buy-box";
 import { Reviews } from "@/components/product/reviews";
@@ -50,7 +50,7 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const t = getT(await getLocale());
-  const category = getCategory(product.categorySlug);
+  const category = await getCategoryBySlug(product.categorySlug);
   const related = await getCatalogRelated(product, 4);
 
   return (

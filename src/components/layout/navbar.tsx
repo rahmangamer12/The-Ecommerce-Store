@@ -19,7 +19,8 @@ import {
 import { Logo } from "./logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useStore } from "@/components/providers/store-provider";
-import { categories } from "@/data/categories";
+import { categories as localCategories } from "@/data/categories";
+import type { Category } from "@/types";
 import { searchProducts } from "@/data/products";
 import { usePrefs } from "@/components/providers/prefs-provider";
 import { PrefsSwitcher } from "@/components/layout/prefs-switcher";
@@ -31,7 +32,7 @@ const navLinks = [
   { label: "Contact", href: "/contact", k: "nav.contact" },
 ] as const;
 
-export function Navbar() {
+export function Navbar({ categories = localCategories }: { categories?: Category[] }) {
   const router = useRouter();
   const { isSignedIn } = useUser();
   const { t, formatPrice } = usePrefs();

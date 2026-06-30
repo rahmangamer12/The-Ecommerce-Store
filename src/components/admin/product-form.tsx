@@ -8,14 +8,21 @@ import { X } from "lucide-react";
 import type { Product } from "@/types";
 import { Input, Textarea, Label } from "@/components/ui/input";
 import { ImageUploader } from "@/components/admin/image-uploader";
-import { categories } from "@/data/categories";
+import { categories as localCategories } from "@/data/categories";
+import type { Category } from "@/types";
 import { createProduct, updateProduct } from "@/lib/product-actions";
 
 const badges = ["", "New", "Bestseller", "Limited", "Sale", "Editor's Pick"];
 
 // Used for both creating a new product and editing an existing one
 // (pass `product` to edit).
-export function ProductForm({ product }: { product?: Product }) {
+export function ProductForm({
+  product,
+  categories = localCategories,
+}: {
+  product?: Product;
+  categories?: Category[];
+}) {
   const router = useRouter();
   const isEdit = Boolean(product);
   const [loading, setLoading] = useState(false);
@@ -23,7 +30,7 @@ export function ProductForm({ product }: { product?: Product }) {
   const [form, setForm] = useState({
     name: product?.name ?? "",
     brand: product?.brand ?? "",
-    categorySlug: product?.categorySlug ?? categories[0].slug,
+    categorySlug: product?.categorySlug ?? categories[0]?.slug ?? "",
     price: product ? String(product.price) : "",
     compareAtPrice: product?.compareAtPrice ? String(product.compareAtPrice) : "",
     stock: product ? String(product.stock) : "",

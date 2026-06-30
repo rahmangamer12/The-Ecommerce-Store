@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X, Check, ChevronDown } from "lucide-react";
 import type { Product } from "@/types";
-import { categories } from "@/data/categories";
+import { categories as localCategories } from "@/data/categories";
+import type { Category } from "@/types";
 import { ProductCard } from "@/components/product/product-card";
 import { usePrefs } from "@/components/providers/prefs-provider";
 import { cn } from "@/lib/utils";
@@ -25,11 +26,13 @@ export function ShopView({
   lockedCategory,
   initialSort = "featured",
   initialSale = false,
+  categories = localCategories,
 }: {
   products: Product[];
   lockedCategory?: string; // when used on a category page
   initialSort?: SortKey;
   initialSale?: boolean;
+  categories?: Category[];
 }) {
   const { t } = usePrefs();
   const [selectedCats, setSelectedCats] = useState<string[]>([]);

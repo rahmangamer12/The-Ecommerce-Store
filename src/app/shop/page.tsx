@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ShopView } from "@/components/shop/shop-view";
 import { getCatalog } from "@/lib/catalog";
+import { getCategories } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
 
@@ -24,6 +25,7 @@ export default async function ShopPage({
   const sp = await searchParams;
   const t = getT(await getLocale());
   const products = await getCatalog();
+  const categories = await getCategories();
   const validSorts: SortKey[] = ["featured", "newest", "price-asc", "price-desc", "popular"];
   const sort = (validSorts.includes(sp.sort as SortKey) ? sp.sort : "featured") as SortKey;
 
@@ -36,7 +38,7 @@ export default async function ShopPage({
         </h1>
         <p className="mt-3 max-w-xl text-ink-soft">{t("shop.subtitle")}</p>
       </header>
-      <ShopView products={products} initialSort={sort} initialSale={sp.sale === "true"} />
+      <ShopView products={products} categories={categories} initialSort={sort} initialSale={sp.sale === "true"} />
     </div>
   );
 }

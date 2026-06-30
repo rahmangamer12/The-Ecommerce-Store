@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { ProductForm } from "@/components/admin/product-form";
 import { getCatalog } from "@/lib/catalog";
+import { getCategories } from "@/lib/categories";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,7 @@ export default async function EditProductPage({
 }) {
   const { id } = await params;
   const product = (await getCatalog()).find((p) => p.id === id);
+  const categories = await getCategories();
 
   return (
     <div className="space-y-6">
@@ -41,7 +43,7 @@ export default async function EditProductPage({
           that copies them into your database so you can edit and delete them.
         </div>
       ) : (
-        <ProductForm product={product} />
+        <ProductForm product={product} categories={categories} />
       )}
     </div>
   );

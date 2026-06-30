@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { ProductForm } from "@/components/admin/product-form";
+import { getCategories } from "@/lib/categories";
 
-export default function NewProductPage() {
+export const dynamic = "force-dynamic";
+
+export default async function NewProductPage() {
+  const categories = await getCategories();
   return (
     <div className="space-y-6">
       <div>
@@ -20,7 +24,7 @@ export default function NewProductPage() {
           instantly.
         </p>
       </div>
-      <ProductForm />
+      <ProductForm categories={categories} />
     </div>
   );
 }

@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { categories, getCategory } from "@/data/categories";
+import { categories } from "@/data/categories";
+import { getCategoryBySlug } from "@/lib/categories";
 import { getCatalogByCategory } from "@/lib/catalog";
 import { ShopView } from "@/components/shop/shop-view";
 import { buildMetadata, breadcrumbSchema, jsonLd } from "@/lib/seo";
@@ -21,7 +22,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const cat = getCategory(slug);
+  const cat = await getCategoryBySlug(slug);
   if (!cat) return buildMetadata({ title: "Category" });
   return buildMetadata({
     title: cat.name,
@@ -37,7 +38,7 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const cat = getCategory(slug);
+  const cat = await getCategoryBySlug(slug);
   if (!cat) notFound();
   const products = await getCatalogByCategory(slug);
 

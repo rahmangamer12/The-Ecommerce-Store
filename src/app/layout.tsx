@@ -13,6 +13,7 @@ import { CartDrawer } from "@/components/cart/cart-drawer";
 import { Analytics } from "@/components/analytics";
 import { buildMetadata } from "@/lib/seo";
 import { analytics } from "@/config/env";
+import { getCategories } from "@/lib/categories";
 
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -24,9 +25,10 @@ const display = Fraunces({
 
 export const metadata: Metadata = buildMetadata();
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const categories = await getCategories();
   return (
     <ClerkProvider>
       <html
@@ -51,9 +53,9 @@ export default function RootLayout({
           <PrefsProvider>
           <StoreProvider>
             <AnnouncementBar />
-            <Navbar />
+            <Navbar categories={categories} />
             <main>{children}</main>
-            <Footer />
+            <Footer categories={categories} />
             <CartDrawer />
             <Toaster
               position="bottom-right"

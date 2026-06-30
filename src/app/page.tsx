@@ -18,7 +18,7 @@ import { BrandStrip } from "@/components/home/brand-strip";
 import { PromoTiles } from "@/components/home/promo-tiles";
 import { FlashDeal } from "@/components/home/flash-deal";
 import { ShopByPrice } from "@/components/home/shop-by-price";
-import { categories } from "@/data/categories";
+import { getCategories } from "@/lib/categories";
 import {
   getFeatured,
   getTrending,
@@ -35,6 +35,7 @@ import { getLocale, getT } from "@/i18n/server";
 
 export default async function HomePage() {
   const t = getT(await getLocale());
+  const categories = await getCategories();
   const featured = getFeatured(8);
   const trending = getTrending(4);
   const onSale = getOnSale(4);

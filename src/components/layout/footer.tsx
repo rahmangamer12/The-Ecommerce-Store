@@ -3,7 +3,8 @@ import { Mail, MapPin, MessageCircle } from "lucide-react";
 import { Logo } from "./logo";
 import { Newsletter } from "./newsletter";
 import { siteConfig } from "@/config/site";
-import { categories } from "@/data/categories";
+import { categories as localCategories } from "@/data/categories";
+import type { Category } from "@/types";
 
 const shopLinks = [
   { label: "All Products", href: "/shop" },
@@ -23,7 +24,7 @@ const companyLinks = [
   { label: "Terms of Service", href: "/terms" },
 ];
 
-export function Footer() {
+export function Footer({ categories = localCategories }: { categories?: Category[] }) {
   return (
     <footer className="border-t border-border bg-paper-2">
       {/* Newsletter band */}
