@@ -13,9 +13,9 @@ export const siteConfig = {
   name: "Souq Al Qatar",
   legalName: "Souq Al Qatar",
   // Short tagline shown in the hero / SEO
-  tagline: "Qatar's home for everything you love",
+  tagline: "Premium finds, delivered worldwide",
   description:
-    "Souq Al Qatar is an online store for shoppers in Qatar. Discover great products across tech, home, fashion, beauty and more — with fast delivery and Cash on Delivery.",
+    "Souq Al Qatar is a global online store. Discover great products across tech, home, fashion, beauty and more — shipped worldwide, with secure online payment.",
   // Logo: an emoji/letter mark by default. Replace `logoText` or set `logoImage`.
   logoText: "Souq Al Qatar",
   logoMark: "S",
@@ -34,6 +34,7 @@ export const siteConfig = {
   // COD is OFF by default: in dropshipping the cash goes to the courier,
   // not you — so prefer prepaid methods (WhatsApp / bank / card).
   payments: {
+    paypal: true, // global — needs PAYPAL_CLIENT_ID + PAYPAL_CLIENT_SECRET set
     card: true,
     whatsapp: true,
     bank: true,
@@ -60,19 +61,21 @@ export const siteConfig = {
   },
 
   // ---- Commerce settings ----
-  // Base currency: all product prices are stored in THIS currency.
-  currency: "QAR",
-  currencySymbol: "QAR",
+  // Base currency: all product prices are stored in THIS currency (USD).
+  // Enter your product prices in USD in the admin — that's what you pay the
+  // supplier in, so your margins stay clear.
+  currency: "USD",
+  currencySymbol: "$",
   locale: "en-US",
   // Currencies the shopper can switch between. `rate` = how much 1 base
-  // currency (QAR) is worth in that currency (approximate — edit anytime).
+  // currency (1 USD) is worth in that currency (approximate — edit anytime).
   currencies: [
-    { code: "QAR", rate: 1 },
-    { code: "USD", rate: 0.2747 },
-    { code: "AED", rate: 1.009 },
-    { code: "SAR", rate: 1.03 },
-    { code: "GBP", rate: 0.216 },
-    { code: "PKR", rate: 76.5 },
+    { code: "USD", rate: 1 },
+    { code: "QAR", rate: 3.64 },
+    { code: "AED", rate: 3.67 },
+    { code: "SAR", rate: 3.75 },
+    { code: "GBP", rate: 0.79 },
+    { code: "PKR", rate: 278 },
   ],
   // Free shipping above this subtotal (in base currency). 0 = always charge.
   freeShippingThreshold: 100,

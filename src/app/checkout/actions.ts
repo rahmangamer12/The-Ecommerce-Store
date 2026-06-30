@@ -6,6 +6,7 @@ import { findCoupon } from "@/data/coupons";
 import { siteConfig, siteUrl } from "@/config/site";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createCardPayment } from "@/lib/payments";
+import { createPaypalOrder } from "@/lib/paypal";
 import { generateOrderNumber } from "@/data/orders";
 
 const checkoutSchema = z.object({
@@ -115,6 +116,17 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
         lineItems.map((li) => ({ ...li, order_id: order.id })),
       );
     }
+  }
+
+  // PayPal → create a PayPal order and redirect to its approval page.
+  if (paymentMethod === "paypal") {
+    const payUrl = await createPaypalOrder({
+      orderNumber,
+      amount: total,
+      returnUrl: `${siteUrl}/api/payments/paypal/return?order=${orderNumber}`,
+      cancelUrl: `${siteUrl}/checkout?error=payment`,
+    });
+    if (payUrl) return { ok: true, orderNumber, redirectUrl: payUrl };
   }
 
   // Online card payment → create a hosted MyFatoorah payment and redirect.

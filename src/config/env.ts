@@ -19,6 +19,17 @@ export const myfatoorahApiKey = process.env.MYFATOORAH_API_KEY ?? "";
 export const myfatoorahBaseUrl =
   process.env.MYFATOORAH_BASE_URL ?? "https://apitest.myfatoorah.com";
 
+// ---- PayPal (global checkout — PayPal balance + any card) ----
+export const paypalClientId =
+  process.env.PAYPAL_CLIENT_ID ?? process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "";
+export const paypalClientSecret = process.env.PAYPAL_CLIENT_SECRET ?? "";
+// "sandbox" for testing, "live" once your PayPal app is approved.
+export const paypalEnv = (process.env.PAYPAL_ENV ?? "sandbox").toLowerCase();
+export const paypalBaseUrl =
+  paypalEnv === "live"
+    ? "https://api-m.paypal.com"
+    : "https://api-m.sandbox.paypal.com";
+
 // ---- Cloudinary (image hosting / upload) ----
 export const cloudinaryCloudName =
   process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
@@ -55,6 +66,7 @@ export const analytics = {
 // -------------------------------------------------------------
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 export const isCardPaymentConfigured = Boolean(myfatoorahApiKey);
+export const isPaypalConfigured = Boolean(paypalClientId && paypalClientSecret);
 export const isCloudinaryConfigured = Boolean(cloudinaryCloudName);
 export const isEmailConfigured = Boolean(
   resendApiKey || mailchimpApiKey || convertkitApiKey,

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Banknote, Landmark, CreditCard, MessageCircle, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
+import { Banknote, Landmark, CreditCard, Wallet, MessageCircle, ShieldCheck, ArrowRight, ShoppingBag } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { usePrefs } from "@/components/providers/prefs-provider";
 import { Input, Label } from "@/components/ui/input";
@@ -24,7 +24,13 @@ const initialForm = {
   phone: "",
 };
 
-export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean }) {
+export function CheckoutView({
+  cardEnabled = false,
+  paypalEnabled = false,
+}: {
+  cardEnabled?: boolean;
+  paypalEnabled?: boolean;
+}) {
   const router = useRouter();
   const { items, totals, coupon, clearCart, mounted } = useStore();
   const { formatPrice, t } = usePrefs();
@@ -33,6 +39,12 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
   // Build the list of payment methods enabled in config (card also needs a
   // configured gateway). COD is off by default for dropshipping.
   const methods = [
+    paypalEnabled && siteConfig.payments.paypal && {
+      key: "paypal",
+      icon: Wallet,
+      title: t("checkout.paypalT"),
+      desc: t("checkout.paypalD"),
+    },
     cardEnabled && siteConfig.payments.card && {
       key: "card",
       icon: CreditCard,
@@ -330,6 +342,8 @@ export function CheckoutView({ cardEnabled = false }: { cardEnabled?: boolean })
           >
             {loading
               ? "Placing order…"
+              : paymentMethod === "paypal"
+                ? "Continue to PayPal"
               : paymentMethod === "card"
                 ? "Continue to payment"
                 : paymentMethod === "whatsapp"
