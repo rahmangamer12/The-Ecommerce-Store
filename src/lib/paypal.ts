@@ -73,6 +73,9 @@ export async function createPaypalOrder(input: {
           brand_name: siteConfig.name,
           user_action: "PAY_NOW",
           shipping_preference: "GET_FROM_FILE",
+          // Show the card / billing form FIRST so shoppers without a PayPal
+          // account can pay by debit/credit card without logging in.
+          landing_page: "BILLING",
           return_url: input.returnUrl,
           cancel_url: input.cancelUrl,
         },
