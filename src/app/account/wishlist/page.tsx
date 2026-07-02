@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
-import { getProductsByIds } from "@/data/products";
+import { useCatalog } from "@/components/providers/catalog-provider";
 import { ProductCard } from "@/components/product/product-card";
 
 export default function WishlistPage() {
   const { wishlist, mounted } = useStore();
+  const { getByIds } = useCatalog();
   if (!mounted) return <div className="h-64" />;
 
-  const products = getProductsByIds(wishlist);
+  const products = getByIds(wishlist);
 
   if (products.length === 0) {
     return (

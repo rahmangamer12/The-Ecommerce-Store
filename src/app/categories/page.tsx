@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getCategories } from "@/lib/categories";
-import { getProductsByCategory } from "@/data/products";
+import { getCatalog } from "@/lib/catalog";
 import { CategoryIcon } from "@/components/category-icon";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { buildMetadata } from "@/lib/seo";
@@ -15,9 +15,18 @@ export const metadata: Metadata = buildMetadata({
   path: "/categories",
 });
 
+// Render at request time so counts reflect real (admin-added) products.
+export const dynamic = "force-dynamic";
+
 export default async function CategoriesPage() {
   const t = getT(await getLocale());
   const categories = await getCategories();
+  // Count products per category from the live catalogue.
+  const catalog = await getCatalog();
+  const counts = catalog.reduce<Record<string, number>>((acc, p) => {
+    acc[p.categorySlug] = (acc[p.categorySlug] ?? 0) + 1;
+    return acc;
+  }, {});
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
       <header className="mb-12 text-center">
@@ -30,7 +39,7 @@ export default async function CategoriesPage() {
 
       <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((cat) => {
-          const count = getProductsByCategory(cat.slug).length;
+          const count = counts[cat.slug] ?? 0;
           return (
             <StaggerItem key={cat.slug}>
               <Link

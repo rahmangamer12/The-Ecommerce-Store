@@ -92,33 +92,38 @@ export async function updateCategory(
 }
 
 // ---------------- Delete a category ----------------
-// Blocked if products still reference it (the DB has a foreign key), so we
-// check first and return a friendly message instead of a raw constraint error.
+// Deleting a category also removes every product inside it, so the admin never
+// has to empty a category by hand first. Products are deleted BEFORE the
+// category itself to satisfy the products -> categories foreign key.
 export async function deleteCategory(
   slug: string,
-): Promise<{ ok: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string; deletedProducts?: number }> {
   if (!(await requireAdmin())) return { ok: false, error: "Not authorised." };
 
   const admin = createAdminClient();
   if (!admin) return { ok: false, error: "Database isn't connected." };
 
+  // How many products this will take with it (for the confirmation message).
   const { count } = await admin
     .from("products")
     .select("*", { count: "exact", head: true })
     .eq("category_slug", slug);
 
+  // 1) Remove the products in this category first (FK requires it).
   if ((count ?? 0) > 0) {
-    return {
-      ok: false,
-      error: `This category still has ${count} product${count === 1 ? "" : "s"}. Move or delete them first, then remove the category.`,
-    };
+    const { error: prodError } = await admin
+      .from("products")
+      .delete()
+      .eq("category_slug", slug);
+    if (prodError) return { ok: false, error: prodError.message };
   }
 
+  // 2) Then remove the category itself.
   const { error } = await admin.from("categories").delete().eq("slug", slug);
   if (error) return { ok: false, error: error.message };
 
   refresh();
-  return { ok: true };
+  return { ok: true, deletedProducts: count ?? 0 };
 }
 
 // ---------------- Load the default categories into the DB ----------------

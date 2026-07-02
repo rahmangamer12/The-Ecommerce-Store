@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { getProductById } from "@/data/products";
+import { getCatalogProductById } from "@/lib/catalog";
 import { findCoupon } from "@/data/coupons";
 import { siteConfig, siteUrl } from "@/config/site";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -47,7 +47,7 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
   let subtotal = 0;
   const lineItems = [];
   for (const item of data.items) {
-    const product = getProductById(item.productId);
+    const product = await getCatalogProductById(item.productId);
     if (!product) return { ok: false, error: "One of the products is unavailable." };
     subtotal += product.price * item.quantity;
     lineItems.push({

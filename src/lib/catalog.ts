@@ -61,11 +61,22 @@ export async function getDbProducts(): Promise<Product[]> {
   }
 }
 
-/** Full catalogue: DB products first, then the starter catalogue (deduped). */
+/**
+ * Full catalogue. Once you've added your own products in the admin, ONLY those
+ * real products are shown — the built-in sample catalogue is used solely as a
+ * starter/demo while the DB is still empty. (Same pattern as categories.) This
+ * means the demo products disappear automatically the moment you add a real one.
+ */
 export async function getCatalog(): Promise<Product[]> {
   const db = await getDbProducts();
-  const seen = new Set(db.map((p) => p.slug));
-  return [...db, ...localProducts.filter((p) => !seen.has(p.slug))];
+  if (db.length > 0) return db;
+  return localProducts;
+}
+
+/** True once the store has at least one real product in the DB. */
+export async function hasDbProducts(): Promise<boolean> {
+  const db = await getDbProducts();
+  return db.length > 0;
 }
 
 export async function getCatalogProductBySlug(
@@ -75,11 +86,51 @@ export async function getCatalogProductBySlug(
   return all.find((p) => p.slug === slug);
 }
 
+/** Look a product up by id across the live catalogue (DB or demo fallback). */
+export async function getCatalogProductById(
+  id: string,
+): Promise<Product | undefined> {
+  const all = await getCatalog();
+  return all.find((p) => p.id === id);
+}
+
 export async function getCatalogByCategory(
   categorySlug: string,
 ): Promise<Product[]> {
   const all = await getCatalog();
   return all.filter((p) => p.categorySlug === categorySlug);
+}
+
+// ---------------- Homepage query helpers (DB-first) ----------------
+// These mirror the local data helpers but read the live catalogue, so the
+// homepage shows the store owner's real products once they've been added.
+// Each falls back to "any products" when nothing is flagged, so a brand-new
+// store never shows empty sections.
+
+export async function getCatalogFeatured(limit = 8): Promise<Product[]> {
+  const all = await getCatalog();
+  const featured = all.filter((p) => p.featured);
+  return (featured.length ? featured : all).slice(0, limit);
+}
+
+export async function getCatalogTrending(limit = 8): Promise<Product[]> {
+  const all = await getCatalog();
+  const trending = all.filter((p) => p.trending);
+  return (trending.length ? trending : all).slice(0, limit);
+}
+
+export async function getCatalogOnSale(limit = 8): Promise<Product[]> {
+  const all = await getCatalog();
+  return all
+    .filter((p) => p.compareAtPrice && p.compareAtPrice > p.price)
+    .slice(0, limit);
+}
+
+export async function getCatalogNewArrivals(limit = 8): Promise<Product[]> {
+  const all = await getCatalog();
+  const tagged = all.filter((p) => p.badge === "New");
+  // DB products are already newest-first; fall back to that ordering.
+  return (tagged.length ? tagged : all).slice(0, limit);
 }
 
 export async function getCatalogRelated(

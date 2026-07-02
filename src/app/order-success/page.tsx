@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CheckCircle2, Package, Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
-import { getBestsellers } from "@/data/products";
+import { getCatalogFeatured } from "@/lib/catalog";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
@@ -11,13 +11,16 @@ export const metadata: Metadata = buildMetadata({
   noindex: true,
 });
 
+// Recommendations come from the live catalogue, so real products show here too.
+export const dynamic = "force-dynamic";
+
 export default async function OrderSuccessPage({
   searchParams,
 }: {
   searchParams: Promise<{ order?: string }>;
 }) {
   const { order } = await searchParams;
-  const recommended = getBestsellers(4);
+  const recommended = await getCatalogFeatured(4);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 lg:py-24">

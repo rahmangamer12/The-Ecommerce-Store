@@ -21,7 +21,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useStore } from "@/components/providers/store-provider";
 import { categories as localCategories } from "@/data/categories";
 import type { Category } from "@/types";
-import { searchProducts } from "@/data/products";
+import { useCatalog } from "@/components/providers/catalog-provider";
 import { usePrefs } from "@/components/providers/prefs-provider";
 import { PrefsSwitcher } from "@/components/layout/prefs-switcher";
 
@@ -37,11 +37,12 @@ export function Navbar({ categories = localCategories }: { categories?: Category
   const { isSignedIn } = useUser();
   const { t, formatPrice } = usePrefs();
   const { cartCount, wishlist, setCartOpen, mounted } = useStore();
+  const { search } = useCatalog();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const results = query.trim() ? searchProducts(query).slice(0, 5) : [];
+  const results = search(query, 5);
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();

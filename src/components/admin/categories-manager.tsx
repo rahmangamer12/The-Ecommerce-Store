@@ -114,7 +114,11 @@ export function CategoriesManager({
   }
 
   async function handleDelete(cat: Cat) {
-    if (!confirm(`Remove the "${cat.name}" category?`)) return;
+    const warn =
+      cat.productCount > 0
+        ? `Remove the "${cat.name}" category?\n\nThis will also permanently delete its ${cat.productCount} product${cat.productCount === 1 ? "" : "s"}.`
+        : `Remove the "${cat.name}" category?`;
+    if (!confirm(warn)) return;
     setBusy(true);
     try {
       const res = await deleteCategory(cat.slug);
@@ -122,7 +126,11 @@ export function CategoriesManager({
         toast.error(res.error);
         return;
       }
-      toast.success(`"${cat.name}" removed`);
+      toast.success(
+        res.deletedProducts
+          ? `"${cat.name}" and ${res.deletedProducts} product${res.deletedProducts === 1 ? "" : "s"} removed`
+          : `"${cat.name}" removed`,
+      );
       router.refresh();
     } finally {
       setBusy(false);

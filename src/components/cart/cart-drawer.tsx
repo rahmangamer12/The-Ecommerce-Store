@@ -6,10 +6,10 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Plus, Minus, ShoppingBag, Tag, ArrowRight, Trash2 } from "lucide-react";
 import { useStore, variantKeyOf } from "@/components/providers/store-provider";
+import { useCatalog } from "@/components/providers/catalog-provider";
 import { usePrefs } from "@/components/providers/prefs-provider";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
-import { getFeatured } from "@/data/products";
 import { Button } from "@/components/ui/button";
 
 export function CartDrawer() {
@@ -27,6 +27,7 @@ export function CartDrawer() {
     addItem,
   } = useStore();
   const { formatPrice, t } = usePrefs();
+  const { featured } = useCatalog();
   const [code, setCode] = useState("");
 
   const threshold = siteConfig.freeShippingThreshold;
@@ -34,7 +35,7 @@ export function CartDrawer() {
   const progress = Math.min(100, (subtotal / threshold) * 100);
 
   // Upsell: a featured product not already in the cart.
-  const upsell = getFeatured(6).find(
+  const upsell = featured(6).find(
     (p) => !items.some((i) => i.productId === p.id),
   );
 

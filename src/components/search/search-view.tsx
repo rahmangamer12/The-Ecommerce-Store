@@ -3,15 +3,16 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
-import { searchProducts } from "@/data/products";
+import { useCatalog } from "@/components/providers/catalog-provider";
 import { ProductCard } from "@/components/product/product-card";
 
 export function SearchView() {
   const params = useSearchParams();
   const router = useRouter();
+  const { search } = useCatalog();
   const q = params.get("q") ?? "";
   const [query, setQuery] = useState(q);
-  const results = q ? searchProducts(q) : [];
+  const results = search(q);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();

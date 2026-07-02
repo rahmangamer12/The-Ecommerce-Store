@@ -1,11 +1,17 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/config/site";
-import { products } from "@/data/products";
-import { categories } from "@/data/categories";
+import { getCatalog } from "@/lib/catalog";
+import { getCategories } from "@/lib/categories";
 import { blogPosts } from "@/data/blog";
 
 // Auto-generated sitemap covering all public, indexable routes.
-export default function sitemap(): MetadataRoute.Sitemap {
+// Uses the live catalogue/categories so real products are indexed (and demo
+// products aren't listed once you've added your own).
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [products, categories] = await Promise.all([
+    getCatalog(),
+    getCategories(),
+  ]);
   const staticRoutes = ["", "/shop", "/categories", "/blog", "/contact", "/faq", "/privacy", "/terms"];
 
   const pages: MetadataRoute.Sitemap = staticRoutes.map((route) => ({

@@ -1,9 +1,12 @@
-import { getBrands } from "@/data/products";
+import { getCatalog } from "@/lib/catalog";
 
 // A quiet "as featured / our brands" marquee — a common trust signal on
-// premium e-commerce stores.
-export function BrandStrip() {
-  const brands = getBrands();
+// premium e-commerce stores. Reads the live catalogue so it shows your real
+// brands once products are added.
+export async function BrandStrip() {
+  const catalog = await getCatalog();
+  const brands = Array.from(new Set(catalog.map((p) => p.brand))).filter(Boolean);
+  if (brands.length === 0) return null;
   const row = [...brands, ...brands]; // duplicate for a seamless loop
 
   return (

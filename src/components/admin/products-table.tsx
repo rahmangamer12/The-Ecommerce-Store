@@ -43,8 +43,9 @@ export function ProductsTable({ products }: { products: Product[] }) {
 
   async function onDelete(p: Product) {
     if (!isDbProduct(p.id)) {
-      toast("Import first", {
-        description: "Import starter products to the database to delete them.",
+      toast("Sample product", {
+        description:
+          "Samples vanish automatically once you add your first real product — just click “Add product”.",
       });
       return;
     }
@@ -92,9 +93,11 @@ export function ProductsTable({ products }: { products: Product[] }) {
 
       {hasSamples && (
         <p className="mt-3 text-xs text-muted">
-          Tip: products marked <span className="font-medium">Sample</span> are
-          built-in. Click <span className="font-medium">Import starter products</span>{" "}
-          to make them editable, or add your own.
+          These are built-in <span className="font-medium">sample</span> products.
+          They disappear automatically the moment you{" "}
+          <span className="font-medium">add your first real product</span> — or
+          click <span className="font-medium">Import starter products</span> to
+          keep and edit them.
         </p>
       )}
 

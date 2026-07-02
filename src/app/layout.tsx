@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { PrefsProvider } from "@/components/providers/prefs-provider";
 import { StoreProvider } from "@/components/providers/store-provider";
+import { CatalogProvider } from "@/components/providers/catalog-provider";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -52,6 +53,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <PrefsProvider>
           <StoreProvider>
+            <CatalogProvider>
             <AnnouncementBar />
             <Navbar categories={categories} />
             <main>{children}</main>
@@ -67,6 +69,7 @@ export default async function RootLayout({
                 },
               }}
             />
+            </CatalogProvider>
           </StoreProvider>
           </PrefsProvider>
         </ThemeProvider>

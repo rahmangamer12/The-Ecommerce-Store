@@ -2,20 +2,21 @@
 
 import { useEffect } from "react";
 import { useStore } from "@/components/providers/store-provider";
-import { getProductsBySlugs } from "@/data/products";
+import { useCatalog } from "@/components/providers/catalog-provider";
 import { ProductCard } from "@/components/product/product-card";
 import { SectionHeader } from "@/components/sections/section-header";
 
 // Records the current product as "recently viewed" and shows the rest.
 export function RecentlyViewed({ currentSlug }: { currentSlug: string }) {
   const { recentlyViewed, pushRecentlyViewed, mounted } = useStore();
+  const { getBySlugs } = useCatalog();
 
   useEffect(() => {
     pushRecentlyViewed(currentSlug);
   }, [currentSlug, pushRecentlyViewed]);
 
   if (!mounted) return null;
-  const products = getProductsBySlugs(
+  const products = getBySlugs(
     recentlyViewed.filter((s) => s !== currentSlug),
   ).slice(0, 4);
   if (products.length === 0) return null;

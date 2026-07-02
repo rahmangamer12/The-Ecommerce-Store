@@ -20,12 +20,13 @@ import { FlashDeal } from "@/components/home/flash-deal";
 import { ShopByPrice } from "@/components/home/shop-by-price";
 import { getCategories } from "@/lib/categories";
 import {
-  getFeatured,
-  getTrending,
-  getProductsByCategory,
-  getOnSale,
-  getNewArrivals,
-} from "@/data/products";
+  getCatalogFeatured,
+  getCatalogTrending,
+  getCatalogOnSale,
+  getCatalogNewArrivals,
+  getCatalogByCategory,
+  getCatalog,
+} from "@/lib/catalog";
 import { testimonials } from "@/data/testimonials";
 import { getAllPosts } from "@/data/blog";
 import { siteConfig } from "@/config/site";
@@ -36,13 +37,15 @@ import { getLocale, getT } from "@/i18n/server";
 export default async function HomePage() {
   const t = getT(await getLocale());
   const categories = await getCategories();
-  const featured = getFeatured(8);
-  const trending = getTrending(4);
-  const onSale = getOnSale(4);
-  const newArrivals = getNewArrivals(4);
+  const featured = await getCatalogFeatured(8);
+  const trending = await getCatalogTrending(4);
+  const onSale = await getCatalogOnSale(4);
+  const newArrivals = await getCatalogNewArrivals(4);
   const posts = getAllPosts().slice(0, 3);
-  // Use a real product image for the hero.
-  const heroProduct = getProductsByCategory("watches-jewelry")[0];
+  // Use a real product image for the hero (first watch, else any product).
+  const heroProduct =
+    (await getCatalogByCategory("watches-jewelry"))[0] ??
+    (await getCatalog())[0];
 
   return (
     <>
