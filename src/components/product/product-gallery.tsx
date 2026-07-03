@@ -35,12 +35,12 @@ export function ProductGallery({
             key={img}
             onClick={() => setActive(i)}
             className={cn(
-              "relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors sm:h-20 sm:w-20",
+              "relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-white transition-colors sm:h-20 sm:w-20",
               active === i ? "border-gold" : "border-transparent hover:border-border",
             )}
             aria-label={`View image ${i + 1}`}
           >
-            <Image src={img} alt={`${name} ${i + 1}`} fill sizes="80px" className="object-cover" />
+            <Image src={img} alt={`${name} ${i + 1}`} fill sizes="80px" className="object-contain p-1" />
           </button>
         ))}
       </div>
@@ -51,7 +51,7 @@ export function ProductGallery({
         onMouseEnter={() => setZoom(true)}
         onMouseLeave={() => setZoom(false)}
         onMouseMove={onMove}
-        className="relative aspect-[4/5] flex-1 cursor-zoom-in overflow-hidden rounded-2xl bg-paper-2"
+        className="relative aspect-square flex-1 cursor-zoom-in overflow-hidden rounded-2xl bg-white p-3"
       >
         <Image
           src={images[active]}
@@ -60,7 +60,7 @@ export function ProductGallery({
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
           className={cn(
-            "object-cover transition-transform duration-200",
+            "object-contain transition-transform duration-200",
             zoom ? "scale-[1.8]" : "scale-100",
           )}
           style={zoom ? { transformOrigin: `${pos.x}% ${pos.y}%` } : undefined}
