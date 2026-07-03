@@ -30,6 +30,23 @@ export const paypalBaseUrl =
     ? "https://api-m.paypal.com"
     : "https://api-m.sandbox.paypal.com";
 
+// ---- CJ Dropshipping (auto product import + order fulfilment) ----
+// Get these from CJ Dropshipping → Authorization → API Key.
+// CJ_EMAIL is your CJ account email; CJ_API_KEY is the API key (used as the
+// "password" when requesting an access token).
+export const cjEmail = process.env.CJ_EMAIL ?? "";
+export const cjApiKey = process.env.CJ_API_KEY ?? "";
+export const cjBaseUrl =
+  process.env.CJ_API_BASE ?? "https://developers.cjdropshipping.com/api2.0/v1";
+// Optional: default markup applied when importing (2 = double the CJ cost).
+export const cjDefaultMarkup = Number(process.env.CJ_DEFAULT_MARKUP ?? "2");
+// Optional: preferred CJ shipping method name (e.g. "CJPacket Ordinary").
+// Left empty, we pick the cheapest available option automatically.
+export const cjLogistic = process.env.CJ_LOGISTIC ?? "";
+// Whether paid orders should be auto-forwarded to CJ (with a manual fallback
+// in the admin if the auto push fails). Set CJ_AUTO_FULFILL=off to disable.
+export const cjAutoFulfill = (process.env.CJ_AUTO_FULFILL ?? "on") !== "off";
+
 // ---- Cloudinary (image hosting / upload) ----
 export const cloudinaryCloudName =
   process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
@@ -68,6 +85,7 @@ export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 export const isCardPaymentConfigured = Boolean(myfatoorahApiKey);
 export const isPaypalConfigured = Boolean(paypalClientId && paypalClientSecret);
 export const isCloudinaryConfigured = Boolean(cloudinaryCloudName);
+export const isCjConfigured = Boolean(cjEmail && cjApiKey);
 export const isEmailConfigured = Boolean(
   resendApiKey || mailchimpApiKey || convertkitApiKey,
 );

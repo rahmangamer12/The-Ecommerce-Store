@@ -42,6 +42,11 @@ function mapRow(r: Row): Product {
     featured: Boolean(r.featured),
     trending: Boolean(r.trending),
     affiliateUrl: r.affiliate_url ? String(r.affiliate_url) : undefined,
+    source: (r.source as Product["source"]) || undefined,
+    cost: r.cost != null ? Number(r.cost) : undefined,
+    cjPid: r.cj_pid ? String(r.cj_pid) : undefined,
+    cjVid: r.cj_vid ? String(r.cj_vid) : undefined,
+    cjSku: r.cj_sku ? String(r.cj_sku) : undefined,
   };
 }
 

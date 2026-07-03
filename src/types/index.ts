@@ -49,6 +49,15 @@ export type Product = {
   // If set, this is an AFFILIATE product: the buy button links out to this
   // URL (e.g. an Amazon affiliate link) instead of using the cart.
   affiliateUrl?: string;
+  // Where the product came from — used to drive dropship fulfilment/UI.
+  source?: "manual" | "cj" | "affiliate";
+  // What you pay the supplier (USD) — lets the admin show your margin.
+  cost?: number;
+  // CJ Dropshipping mapping (set when imported from CJ). cjVid is the exact
+  // variant/SKU we forward to CJ when an order is placed.
+  cjPid?: string;
+  cjVid?: string;
+  cjSku?: string;
   // Per-product SEO overrides (optional)
   seo?: {
     title?: string;

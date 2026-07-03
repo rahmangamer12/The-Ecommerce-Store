@@ -17,6 +17,11 @@ export type OrderView = {
     zip?: string;
     country?: string;
   };
+  // CJ Dropshipping fulfilment
+  fulfillmentStatus?: string;
+  cjOrderId?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
 };
 
 type Row = Record<string, unknown>;
@@ -40,6 +45,10 @@ function mapOrder(r: Row): OrderView {
     total: Number(r.total ?? 0),
     items,
     address: (r.shipping_address as OrderView["address"]) ?? undefined,
+    fulfillmentStatus: r.fulfillment_status ? String(r.fulfillment_status) : undefined,
+    cjOrderId: r.cj_order_id ? String(r.cj_order_id) : undefined,
+    trackingNumber: r.tracking_number ? String(r.tracking_number) : undefined,
+    trackingUrl: r.tracking_url ? String(r.tracking_url) : undefined,
   };
 }
 

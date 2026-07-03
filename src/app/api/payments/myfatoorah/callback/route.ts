@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCardPaymentStatus } from "@/lib/payments";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fulfillPaidOrder } from "@/lib/cj-fulfillment";
 import { siteUrl } from "@/config/site";
 
 export const runtime = "nodejs";
@@ -28,6 +29,9 @@ export async function GET(request: Request) {
         .update({ status: "paid", updated_at: new Date().toISOString() })
         .eq("number", orderNumber);
     }
+    // Auto-forward the paid order to CJ for fulfilment (safe no-op if CJ
+    // isn't set up or the order has no CJ-linked items).
+    await fulfillPaidOrder(orderNumber);
     return NextResponse.redirect(`${siteUrl}/order-success?order=${orderNumber}`);
   }
 

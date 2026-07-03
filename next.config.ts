@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "fastly.picsum.photos" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
+      // CJ Dropshipping product images (imported products).
+      { protocol: "https", hostname: "**.cjdropshipping.com" },
+      { protocol: "https", hostname: "**.alicdn.com" },
+      { protocol: "https", hostname: "**.aliyuncs.com" },
     ],
   },
 };

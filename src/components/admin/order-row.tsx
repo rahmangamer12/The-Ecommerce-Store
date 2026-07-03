@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Truck, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import type { OrderView } from "@/lib/order-queries";
 import { updateOrderStatus } from "@/lib/order-actions";
+import { sendOrderToCj } from "@/lib/cj-fulfillment";
 import { OrderStatusBadge } from "@/components/order-status-badge";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
@@ -26,6 +27,9 @@ export function AdminOrderRow({ order }: { order: OrderView }) {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(order.status);
   const [saving, setSaving] = useState(false);
+  const [fulfillment, setFulfillment] = useState(order.fulfillmentStatus);
+  const [cjOrderId, setCjOrderId] = useState(order.cjOrderId);
+  const [sending, setSending] = useState(false);
 
   async function onStatusChange(next: string) {
     setStatus(next);
@@ -36,6 +40,22 @@ export function AdminOrderRow({ order }: { order: OrderView }) {
     else {
       toast.error(res.error ?? "Could not update");
       setStatus(order.status);
+    }
+  }
+
+  async function onSendToCj() {
+    setSending(true);
+    const res = await sendOrderToCj(order.id);
+    setSending(false);
+    setFulfillment(res.status);
+    if (res.ok && res.status === "sent") {
+      setCjOrderId(res.cjOrderId);
+      if (res.cjOrderId) setStatus("purchased");
+      toast.success(`Sent to CJ — order ${res.cjOrderId ?? ""}`.trim());
+    } else if (res.status === "skipped") {
+      toast.info(res.error ?? "No CJ items in this order.");
+    } else {
+      toast.error(res.error ?? "Could not send to CJ.");
     }
   }
 
@@ -106,6 +126,57 @@ export function AdminOrderRow({ order }: { order: OrderView }) {
                 <p className="mt-2 text-xs text-muted">
                   Manual fulfilment: buy from supplier, then set “Purchased” → “Shipped”.
                 </p>
+
+                {/* CJ Dropshipping fulfilment */}
+                <div className="mt-5 rounded-xl border border-border bg-card p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                      CJ Dropshipping
+                    </p>
+                    {fulfillment === "sent" ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-success">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Sent
+                      </span>
+                    ) : fulfillment === "failed" ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-danger">
+                        <AlertTriangle className="h-3.5 w-3.5" /> Failed
+                      </span>
+                    ) : fulfillment === "skipped" ? (
+                      <span className="text-xs text-muted">No CJ items</span>
+                    ) : (
+                      <span className="text-xs text-muted">Not sent</span>
+                    )}
+                  </div>
+
+                  {cjOrderId && (
+                    <p className="mt-2 text-xs text-ink-soft">
+                      CJ order: <span className="font-medium">{cjOrderId}</span>
+                    </p>
+                  )}
+                  {order.trackingNumber && (
+                    <p className="mt-1 text-xs text-ink-soft">
+                      Tracking: <span className="font-medium">{order.trackingNumber}</span>
+                    </p>
+                  )}
+
+                  {fulfillment !== "sent" && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSendToCj();
+                      }}
+                      disabled={sending}
+                      className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gold px-4 py-2.5 text-xs font-medium text-white transition-colors hover:bg-gold-strong disabled:opacity-60"
+                    >
+                      {sending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Truck className="h-4 w-4" />
+                      )}
+                      {fulfillment === "failed" ? "Retry send to CJ" : "Send to CJ"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </td>

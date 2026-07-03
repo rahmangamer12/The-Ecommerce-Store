@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Search, Plus, Pencil, Trash2, DownloadCloud } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, DownloadCloud, PackagePlus } from "lucide-react";
 import type { Product } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice, cn } from "@/lib/utils";
@@ -82,6 +82,12 @@ export function ProductsTable({ products }: { products: Product[] }) {
               {busy ? "Importing…" : "Import starter products"}
             </button>
           )}
+          <Link
+            href="/admin/products/import"
+            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-medium hover:border-gold"
+          >
+            <PackagePlus className="h-4 w-4" /> Import from CJ
+          </Link>
           <Link
             href="/admin/products/new"
             className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:bg-gold hover:text-white"
