@@ -21,7 +21,13 @@ import { Rating } from "@/components/ui/rating";
 import { Badge } from "@/components/ui/badge";
 import { discountPercent, cn } from "@/lib/utils";
 
-export function ProductBuyBox({ product }: { product: Product }) {
+export function ProductBuyBox({
+  product,
+  onVariantChange,
+}: {
+  product: Product;
+  onVariantChange?: (value: string) => void;
+}) {
   const router = useRouter();
   const { addItem, toggleWishlist, isWishlisted, setCartOpen } = useStore();
   const { formatPrice, t } = usePrefs();
@@ -107,7 +113,10 @@ export function ProductBuyBox({ product }: { product: Product }) {
             {v.values.map((val) => (
               <button
                 key={val}
-                onClick={() => setVariant((prev) => ({ ...prev, [v.name]: val }))}
+                onClick={() => {
+                  setVariant((prev) => ({ ...prev, [v.name]: val }));
+                  onVariantChange?.(val);
+                }}
                 className={cn(
                   "rounded-full border px-4 py-2 text-sm transition-colors",
                   variant[v.name] === val

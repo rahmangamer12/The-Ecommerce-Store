@@ -16,6 +16,21 @@ function asArray(v: unknown): string[] {
 
 function mapRow(r: Row): Product {
   const images = asArray(r.images);
+
+  // Variant option → its own photo (stored inside the variants jsonb as
+  // `valueImages` on CJ imports), so picking a colour swaps the main image.
+  const variantImages: Record<string, string> = {};
+  if (Array.isArray(r.variants)) {
+    for (const v of r.variants as Record<string, unknown>[]) {
+      const vi = v?.valueImages;
+      if (vi && typeof vi === "object") {
+        for (const [key, val] of Object.entries(vi as Record<string, unknown>)) {
+          if (typeof val === "string" && val) variantImages[key] = val;
+        }
+      }
+    }
+  }
+
   return {
     id: String(r.id),
     name: String(r.name ?? ""),
@@ -41,6 +56,7 @@ function mapRow(r: Row): Product {
     tags: asArray(r.tags),
     featured: Boolean(r.featured),
     trending: Boolean(r.trending),
+    variantImages: Object.keys(variantImages).length ? variantImages : undefined,
     affiliateUrl: r.affiliate_url ? String(r.affiliate_url) : undefined,
     source: (r.source as Product["source"]) || undefined,
     cost: r.cost != null ? Number(r.cost) : undefined,

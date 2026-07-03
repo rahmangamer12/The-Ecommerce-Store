@@ -133,13 +133,31 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
     .toString(36)
     .slice(-4)}`;
 
-  // Map CJ variants (if any) into the store's simple variant options.
+  // Map CJ variants (if any) into the store's simple variant options, and
+  // remember each option's own photo so picking it swaps the main image.
   const variantValues = detail.variants
     .map((v) => v.name.trim())
     .filter((v) => v.length > 0 && v.length <= 60);
+  const valueImages: Record<string, string> = {};
+  for (const v of detail.variants) {
+    const label = v.name.trim();
+    if (label && v.image && !valueImages[label]) valueImages[label] = v.image;
+  }
   const variants = variantValues.length
-    ? [{ name: "Option", values: Array.from(new Set(variantValues)) }]
+    ? [
+        {
+          name: "Option",
+          values: Array.from(new Set(variantValues)),
+          valueImages,
+        },
+      ]
     : [];
+
+  // Gallery = main photos + every variant photo (so switching a colour can
+  // jump straight to that photo), deduped and capped.
+  const galleryImages = Array.from(
+    new Set([...detail.images, ...Object.values(valueImages)]),
+  ).slice(0, 16);
 
   // A short, clean one-liner for cards/SEO — first line of the description,
   // falling back to the product name.
@@ -160,7 +178,7 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
     short_description: shortDescription,
     description: detail.description || detail.name,
     features: [],
-    images: detail.images.length ? detail.images : [],
+    images: galleryImages,
     variants,
     tags: detail.categoryName ? [detail.categoryName.toLowerCase()] : [],
     stock: 100,

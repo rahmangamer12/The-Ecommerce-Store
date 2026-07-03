@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.cjdropshipping.com" },
       { protocol: "https", hostname: "**.alicdn.com" },
       { protocol: "https", hostname: "**.aliyuncs.com" },
+      // Affiliate products can link images from any store (Amazon, eBay, …),
+      // so allow any https image host for imported product photos.
+      { protocol: "https", hostname: "**" },
     ],
   },
 };

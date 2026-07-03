@@ -46,6 +46,9 @@ export type Product = {
   tags: string[];
   featured?: boolean;
   trending?: boolean;
+  // Maps a variant option value (e.g. "Black") to its own photo, so picking
+  // that option swaps the main gallery image. Populated for CJ imports.
+  variantImages?: Record<string, string>;
   // If set, this is an AFFILIATE product: the buy button links out to this
   // URL (e.g. an Amazon affiliate link) instead of using the cart.
   affiliateUrl?: string;

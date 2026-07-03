@@ -1,18 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 // Image gallery with thumbnail rail and hover-to-zoom on the main image.
+// `activeImage` lets a parent (e.g. the buy box) drive which photo shows —
+// used to swap to a variant's own photo when a colour/option is picked.
 export function ProductGallery({
   images,
   name,
+  activeImage,
 }: {
   images: string[];
   name: string;
+  activeImage?: string | null;
 }) {
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (!activeImage) return;
+    const i = images.indexOf(activeImage);
+    if (i >= 0) setActive(i);
+  }, [activeImage, images]);
   const [zoom, setZoom] = useState(false);
   const [pos, setPos] = useState({ x: 50, y: 50 });
   const ref = useRef<HTMLDivElement>(null);

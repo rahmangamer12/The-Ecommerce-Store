@@ -5,8 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { products } from "@/data/products";
 import { getCatalogProductBySlug, getCatalogRelated } from "@/lib/catalog";
 import { getCategoryBySlug } from "@/lib/categories";
-import { ProductGallery } from "@/components/product/product-gallery";
-import { ProductBuyBox } from "@/components/product/product-buy-box";
+import { ProductViewer } from "@/components/product/product-viewer";
 import { Reviews } from "@/components/product/reviews";
 import { RecentlyViewed } from "@/components/product/recently-viewed";
 import { ProductCard } from "@/components/product/product-card";
@@ -102,10 +101,7 @@ export default async function ProductPage({
 
       {/* Gallery + buy box */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-          <ProductGallery images={product.images} name={product.name} />
-          <ProductBuyBox product={product} />
-        </div>
+        <ProductViewer product={product} />
       </div>
 
       {/* Description */}
