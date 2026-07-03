@@ -135,11 +135,19 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
 
   // Map CJ variants (if any) into the store's simple variant options.
   const variantValues = detail.variants
-    .map((v) => v.name)
-    .filter(Boolean);
+    .map((v) => v.name.trim())
+    .filter((v) => v.length > 0 && v.length <= 60);
   const variants = variantValues.length
     ? [{ name: "Option", values: Array.from(new Set(variantValues)) }]
     : [];
+
+  // A short, clean one-liner for cards/SEO — first line of the description,
+  // falling back to the product name.
+  const shortDescription =
+    (detail.description.split("\n").find((l) => l.trim().length > 20) ??
+      detail.name)
+      .slice(0, 150)
+      .trim();
 
   const { error } = await admin.from("products").insert({
     name: detail.name,
@@ -149,7 +157,7 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
     price,
     compare_at_price: Math.round(price * 1.4 * 100) / 100, // a natural "was" price
     currency: "USD",
-    short_description: detail.name.slice(0, 140),
+    short_description: shortDescription,
     description: detail.description || detail.name,
     features: [],
     images: detail.images.length ? detail.images : [],

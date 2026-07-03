@@ -113,7 +113,7 @@ export default async function ProductPage({
         <div className="grid gap-10 rounded-3xl border border-border bg-card p-8 lg:grid-cols-2 lg:p-12">
           <div>
             <h2 className="font-display text-2xl font-semibold">{t("product.about")}</h2>
-            <p className="mt-4 leading-relaxed text-ink-soft">{product.description}</p>
+            <p className="mt-4 whitespace-pre-line leading-relaxed text-ink-soft">{product.description}</p>
           </div>
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">

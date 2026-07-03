@@ -175,6 +175,71 @@ function num(v: unknown): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+// -------------------------------------------------------------
+//  CJ product data is raw: names repeat, descriptions are HTML
+//  with the detail photos embedded as <img> tags. These helpers
+//  turn that into a clean, professional product listing.
+// -------------------------------------------------------------
+
+function decodeEntities(s: string): string {
+  return s
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#3[49];/g, "'");
+}
+
+/** Pull every <img src="..."> URL out of an HTML blob (CJ detail photos). */
+function extractImgSrc(html: string): string[] {
+  const out: string[] = [];
+  const re = /<img[^>]+src=["']([^"']+)["']/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) {
+    const url = m[1].trim();
+    if (/^https?:\/\//i.test(url)) out.push(url);
+  }
+  return out;
+}
+
+/** Strip HTML to clean, readable text (keeps line breaks between blocks). */
+function htmlToText(html: string): string {
+  return decodeEntities(
+    html
+      .replace(/<\s*br\s*\/?\s*>/gi, "\n")
+      .replace(/<\/(p|div|li|tr|h[1-6])\s*>/gi, "\n")
+      .replace(/<[^>]+>/g, " "),
+  )
+    .split("\n")
+    .map((line) => line.replace(/[ \t]+/g, " ").trim())
+    .filter(Boolean)
+    .join("\n")
+    .trim();
+}
+
+/** Collapse repeated words CJ leaves in names (e.g. "... Watch Watch"). */
+function tidyName(s: string): string {
+  const words = s.trim().split(/\s+/);
+  const out: string[] = [];
+  for (const w of words) {
+    if (out.length && out[out.length - 1].toLowerCase() === w.toLowerCase()) {
+      continue;
+    }
+    out.push(w);
+  }
+  return out.join(" ").trim();
+}
+
+/** Shorten a variant label by removing the (long) product-name prefix. */
+function shortVariant(raw: string, productName: string): string {
+  let s = raw.trim();
+  const p = productName.trim().toLowerCase();
+  if (p && s.toLowerCase().startsWith(p)) s = s.slice(productName.length);
+  s = s.replace(/^[-–—:,\s]+/, "").trim();
+  return s || raw.trim();
+}
+
 /** Search CJ's catalogue by keyword (paged). */
 export async function cjSearchProducts(
   keyword: string,
@@ -231,18 +296,35 @@ export async function cjGetProduct(
   const d = env?.data;
   if (!d) return null;
 
+  const productName = tidyName(String(d.productNameEn ?? d.productName ?? ""));
+
+  // Main gallery images.
   const rawImages = d.productImageSet ?? d.productImage ?? [];
-  const images = Array.isArray(rawImages)
-    ? rawImages.map(String).filter(Boolean)
-    : [String(rawImages)].filter(Boolean);
+  const galleryImages = Array.isArray(rawImages)
+    ? rawImages.map(String)
+    : [String(rawImages)];
+
+  // CJ hides the "detail" photos inside the HTML description — pull those out
+  // and add them to the gallery so the listing looks like it does on CJ.
+  const rawDesc = String(d.description ?? d.productDescription ?? "");
+  const descImages = extractImgSrc(rawDesc);
+  const images = Array.from(
+    new Set([...galleryImages, ...descImages]),
+  )
+    .filter((u) => /^https?:\/\//i.test(u))
+    .slice(0, 12);
+
+  // Clean, readable description text (the raw HTML/img soup is dropped).
+  const description = htmlToText(rawDesc);
 
   const rawVariants = Array.isArray(d.variants) ? d.variants : [];
   const variants: CjVariant[] = rawVariants.map((v) => {
     const rv = v as Record<string, unknown>;
+    const label = String(rv.variantKey ?? rv.variantNameEn ?? "");
     return {
       vid: String(rv.vid ?? ""),
       sku: String(rv.variantSku ?? rv.variantKey ?? ""),
-      name: String(rv.variantNameEn ?? rv.variantKey ?? ""),
+      name: shortVariant(label, productName),
       price: num(rv.variantSellPrice ?? rv.variantSugSellPrice),
       image: rv.variantImage ? String(rv.variantImage) : undefined,
     };
@@ -256,8 +338,8 @@ export async function cjGetProduct(
 
   return {
     pid: String(d.pid ?? pid),
-    name: String(d.productNameEn ?? d.productName ?? ""),
-    description: String(d.description ?? d.productDescription ?? ""),
+    name: productName,
+    description,
     images,
     price: basePrice,
     categoryName: d.categoryName ? String(d.categoryName) : undefined,
