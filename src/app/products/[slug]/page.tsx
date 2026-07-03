@@ -18,6 +18,7 @@ import {
 } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
 import { cn } from "@/lib/utils";
+import { parseDescription } from "@/lib/product-specs";
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -52,6 +53,12 @@ export default async function ProductPage({
   const t = getT(await getLocale());
   const category = await getCategoryBySlug(product.categorySlug);
   const related = await getCatalogRelated(product, 4);
+
+  // Split the description into prose + a specs table. When a product is really
+  // a spec sheet (CJ imports), we show a clean two-column table instead of a
+  // wall of "Label: value" text — and skip the redundant highlights list.
+  const { intro, specs } = parseDescription(product.description);
+  const isSpecSheet = specs.length >= 3;
 
   return (
     <div>
@@ -107,32 +114,59 @@ export default async function ProductPage({
 
       {/* Description */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div
-          className={cn(
-            "grid gap-10 rounded-3xl border border-border bg-card p-8 lg:p-12",
-            product.features.length > 0 && "lg:grid-cols-2",
-          )}
-        >
-          <div>
+        {isSpecSheet ? (
+          /* Spec-sheet layout (CJ / supplier imports): intro + clean table. */
+          <div className="rounded-3xl border border-border bg-card p-8 lg:p-12">
             <h2 className="font-display text-2xl font-semibold">{t("product.about")}</h2>
-            <p className="mt-4 whitespace-pre-line leading-relaxed text-ink-soft">{product.description}</p>
+            {intro && (
+              <p className="mt-4 max-w-3xl leading-relaxed text-ink-soft">{intro}</p>
+            )}
+            <h3 className="mt-8 text-sm font-semibold uppercase tracking-wider text-muted">
+              {t("product.specifications")}
+            </h3>
+            <dl className="mt-4 grid gap-x-12 sm:grid-cols-2">
+              {specs.map((s) => (
+                <div
+                  key={s.label}
+                  className="flex items-baseline justify-between gap-4 border-b border-border/60 py-3"
+                >
+                  <dt className="shrink-0 text-sm text-muted">{s.label}</dt>
+                  <dd className="text-right text-sm font-medium text-ink">
+                    {s.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
-          {product.features.length > 0 && (
+        ) : (
+          /* Editorial layout (hand-written products): prose + highlights. */
+          <div
+            className={cn(
+              "grid gap-10 rounded-3xl border border-border bg-card p-8 lg:p-12",
+              product.features.length > 0 && "lg:grid-cols-2",
+            )}
+          >
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
-                {t("product.highlights")}
-              </h3>
-              <ul className="mt-4 space-y-3">
-                {product.features.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-ink-soft">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
+              <h2 className="font-display text-2xl font-semibold">{t("product.about")}</h2>
+              <p className="mt-4 whitespace-pre-line leading-relaxed text-ink-soft">{product.description}</p>
             </div>
-          )}
-        </div>
+            {product.features.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
+                  {t("product.highlights")}
+                </h3>
+                <ul className="mt-4 space-y-3">
+                  {product.features.map((f) => (
+                    <li key={f} className="flex items-start gap-3 text-ink-soft">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Reviews */}

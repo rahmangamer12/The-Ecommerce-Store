@@ -165,13 +165,16 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
   // description so the product page isn't left with empty sections.
   const features = featuresFromText(detail.description, 5);
 
-  // A short, clean one-liner for cards/SEO — first line of the description,
+  // A short, clean one-liner for cards/SEO — the first real prose sentence,
+  // skipping "Label: value" spec lines (which read badly as a tagline), and
   // falling back to the product name.
-  const shortDescription =
-    (detail.description.split("\n").find((l) => l.trim().length > 20) ??
-      detail.name)
-      .slice(0, 150)
-      .trim();
+  const proseLine = detail.description
+    .split("\n")
+    .map((l) => l.trim())
+    .find(
+      (l) => l.length > 30 && !/^[A-Za-z][A-Za-z0-9 /&()'-]{1,32}:\s/.test(l),
+    );
+  const shortDescription = (proseLine ?? detail.name).slice(0, 150).trim();
 
   const { error } = await admin.from("products").insert({
     name: detail.name,

@@ -222,6 +222,8 @@ export function featuresFromText(text: string, max = 5): string[] {
     const words = line.split(" ").length;
     // A good highlight: a short phrase, not a sentence-long paragraph.
     if (line.length < 8 || line.length > 70 || words < 2 || words > 11) continue;
+    // Skip bare section headers like "Product information:" (label, no value).
+    if (/:\s*$/.test(line)) continue;
     const key = line.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);

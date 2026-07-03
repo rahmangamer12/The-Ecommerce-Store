@@ -101,7 +101,12 @@ export function ProductBuyBox({
         )}
       </div>
 
-      <p className="mt-5 leading-relaxed text-ink-soft">{product.shortDescription}</p>
+      {product.shortDescription &&
+        !/^[A-Za-z][A-Za-z0-9 /&()'-]{1,32}:\s/.test(product.shortDescription) && (
+          <p className="mt-5 leading-relaxed text-ink-soft">
+            {product.shortDescription}
+          </p>
+        )}
 
       {/* Variants */}
       {product.variants?.map((v) => (

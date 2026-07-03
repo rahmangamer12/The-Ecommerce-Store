@@ -37,10 +37,10 @@ export function ProductGallery({
   }
 
   return (
-    <div className="flex flex-col-reverse gap-4 sm:flex-row">
+    <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-start">
       {/* Thumbnails — only when there's more than one photo to choose from. */}
       {images.length > 1 && (
-        <div className="flex gap-3 overflow-x-auto sm:flex-col sm:overflow-visible">
+        <div className="flex gap-3 overflow-x-auto sm:max-h-[520px] sm:flex-col sm:overflow-y-auto sm:overflow-x-visible">
           {images.map((img, i) => (
             <button
               key={img}
