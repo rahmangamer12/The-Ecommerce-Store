@@ -191,18 +191,6 @@ function decodeEntities(s: string): string {
     .replace(/&#3[49];/g, "'");
 }
 
-/** Pull every <img src="..."> URL out of an HTML blob (CJ detail photos). */
-function extractImgSrc(html: string): string[] {
-  const out: string[] = [];
-  const re = /<img[^>]+src=["']([^"']+)["']/gi;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(html))) {
-    const url = m[1].trim();
-    if (/^https?:\/\//i.test(url)) out.push(url);
-  }
-  return out;
-}
-
 /** Strip HTML to clean, readable text (keeps line breaks between blocks). */
 function htmlToText(html: string): string {
   return decodeEntities(
@@ -216,6 +204,32 @@ function htmlToText(html: string): string {
     .filter(Boolean)
     .join("\n")
     .trim();
+}
+
+/**
+ * Turn a cleaned description into a few short bullet "highlights", the way the
+ * hand-picked sample products have them. We take the shortest, punchiest lines
+ * (a real feature is a phrase, not a paragraph) and tidy them up.
+ */
+export function featuresFromText(text: string, max = 5): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of text.split(/\n|(?:[.;•·]|(?<=\w) - )/)) {
+    const line = raw
+      .replace(/^[\s\-–—*•·:]+/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const words = line.split(" ").length;
+    // A good highlight: a short phrase, not a sentence-long paragraph.
+    if (line.length < 8 || line.length > 70 || words < 2 || words > 11) continue;
+    const key = line.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    // Capitalise the first letter for a clean look.
+    out.push(line.charAt(0).toUpperCase() + line.slice(1));
+    if (out.length >= max) break;
+  }
+  return out;
 }
 
 /** Collapse repeated words CJ leaves in names (e.g. "... Watch Watch"). */
@@ -298,23 +312,22 @@ export async function cjGetProduct(
 
   const productName = tidyName(String(d.productNameEn ?? d.productName ?? ""));
 
-  // Main gallery images.
+  // Gallery = ONLY the clean, square product photos (productImageSet). We
+  // deliberately DON'T pull the <img> banners out of the HTML description —
+  // those are tall marketing strips of all shapes/sizes and dumping them in
+  // the gallery is exactly what made imports look messy. Keep it like the
+  // hand-picked sample products: a few consistent product shots.
   const rawImages = d.productImageSet ?? d.productImage ?? [];
   const galleryImages = Array.isArray(rawImages)
     ? rawImages.map(String)
     : [String(rawImages)];
-
-  // CJ hides the "detail" photos inside the HTML description — pull those out
-  // and add them to the gallery so the listing looks like it does on CJ.
-  const rawDesc = String(d.description ?? d.productDescription ?? "");
-  const descImages = extractImgSrc(rawDesc);
-  const images = Array.from(
-    new Set([...galleryImages, ...descImages]),
-  )
+  const images = Array.from(new Set(galleryImages))
+    .map((u) => u.trim())
     .filter((u) => /^https?:\/\//i.test(u))
-    .slice(0, 12);
+    .slice(0, 8);
 
   // Clean, readable description text (the raw HTML/img soup is dropped).
+  const rawDesc = String(d.description ?? d.productDescription ?? "");
   const description = htmlToText(rawDesc);
 
   const rawVariants = Array.isArray(d.variants) ? d.variants : [];

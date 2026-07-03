@@ -6,6 +6,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { adminEmails } from "@/config/env";
 import { slugify } from "@/lib/utils";
+import { featuresFromText } from "@/lib/cj";
 
 // =============================================================
 //  Affiliate product import.
@@ -193,6 +194,8 @@ export async function importAffiliateProduct(
   }
   name = (name || host).slice(0, 140);
 
+  const features = description ? featuresFromText(description, 5) : [];
+
   const slug = `${slugify(name).slice(0, 60)}-${Date.now()
     .toString(36)
     .slice(-4)}`;
@@ -207,7 +210,7 @@ export async function importAffiliateProduct(
     currency: "USD",
     short_description: (description || name).slice(0, 150),
     description: description || name,
-    features: [],
+    features,
     images: image ? [image] : [],
     tags: ["affiliate"],
     stock: 100,

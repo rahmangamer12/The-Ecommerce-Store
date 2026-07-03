@@ -247,18 +247,20 @@ export function ProductBuyBox({
           within 30 days for a full refund. Manufacturer warranty applies where
           relevant.
         </InfoRow>
-        <InfoRow
-          id="details"
-          title={t("product.productDetails")}
-          open={openInfo === "details"}
-          onToggle={(id) => setOpenInfo(openInfo === id ? null : id)}
-        >
-          <ul className="list-inside list-disc space-y-1">
-            {product.features.map((f) => (
-              <li key={f}>{f}</li>
-            ))}
-          </ul>
-        </InfoRow>
+        {product.features.length > 0 && (
+          <InfoRow
+            id="details"
+            title={t("product.productDetails")}
+            open={openInfo === "details"}
+            onToggle={(id) => setOpenInfo(openInfo === id ? null : id)}
+          >
+            <ul className="list-inside list-disc space-y-1">
+              {product.features.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+          </InfoRow>
+        )}
       </div>
     </div>
   );

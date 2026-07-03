@@ -9,6 +9,7 @@ import { slugify } from "@/lib/utils";
 import {
   cjSearchProducts,
   cjGetProduct,
+  featuresFromText,
   type CjListItem,
   type CjProductDetail,
 } from "@/lib/cj";
@@ -153,11 +154,16 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
       ]
     : [];
 
-  // Gallery = main photos + every variant photo (so switching a colour can
-  // jump straight to that photo), deduped and capped.
+  // Gallery = the clean product photos first, then any variant photo that
+  // isn't already shown (so switching a colour can jump straight to it),
+  // deduped and capped. detail.images is already just the tidy product shots.
   const galleryImages = Array.from(
     new Set([...detail.images, ...Object.values(valueImages)]),
-  ).slice(0, 16);
+  ).slice(0, 12);
+
+  // Bullet "highlights" like the sample products carry, derived from the
+  // description so the product page isn't left with empty sections.
+  const features = featuresFromText(detail.description, 5);
 
   // A short, clean one-liner for cards/SEO — first line of the description,
   // falling back to the product name.
@@ -177,7 +183,7 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
     currency: "USD",
     short_description: shortDescription,
     description: detail.description || detail.name,
-    features: [],
+    features,
     images: galleryImages,
     variants,
     tags: detail.categoryName ? [detail.categoryName.toLowerCase()] : [],

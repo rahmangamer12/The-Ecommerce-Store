@@ -17,6 +17,7 @@ import {
   jsonLd,
 } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
+import { cn } from "@/lib/utils";
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -106,24 +107,31 @@ export default async function ProductPage({
 
       {/* Description */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-10 rounded-3xl border border-border bg-card p-8 lg:grid-cols-2 lg:p-12">
+        <div
+          className={cn(
+            "grid gap-10 rounded-3xl border border-border bg-card p-8 lg:p-12",
+            product.features.length > 0 && "lg:grid-cols-2",
+          )}
+        >
           <div>
             <h2 className="font-display text-2xl font-semibold">{t("product.about")}</h2>
             <p className="mt-4 whitespace-pre-line leading-relaxed text-ink-soft">{product.description}</p>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
-              {t("product.highlights")}
-            </h3>
-            <ul className="mt-4 space-y-3">
-              {product.features.map((f) => (
-                <li key={f} className="flex items-start gap-3 text-ink-soft">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {product.features.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
+                {t("product.highlights")}
+              </h3>
+              <ul className="mt-4 space-y-3">
+                {product.features.map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-ink-soft">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
 
