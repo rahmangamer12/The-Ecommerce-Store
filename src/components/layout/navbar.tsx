@@ -53,11 +53,11 @@ export function Navbar({ categories = localCategories }: { categories?: Category
 
   return (
     <header className="sticky top-0 z-50 border-b border-border glass">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6 lg:px-8">
         {/* Left: mobile menu + logo */}
         <div className="flex items-center gap-2">
           <button
-            className="grid h-10 w-10 place-items-center rounded-full hover:bg-ink/5 lg:hidden"
+            className="grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5 sm:h-10 sm:w-10 lg:hidden"
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
           >
@@ -121,7 +121,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
         {/* Right: actions */}
         <div className="flex items-center gap-0.5">
           <button
-            className="grid h-10 w-10 place-items-center rounded-full hover:bg-ink/5"
+            className="grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5 sm:h-10 sm:w-10"
             onClick={() => setSearchOpen((v) => !v)}
             aria-label="Search"
           >
@@ -131,7 +131,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
           <ThemeToggle className="hidden sm:grid" />
           <Link
             href="/account/wishlist"
-            className="relative grid h-10 w-10 place-items-center rounded-full hover:bg-ink/5"
+            className="relative grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5 sm:h-10 sm:w-10"
             aria-label="Wishlist"
           >
             <Heart className="h-[1.1rem] w-[1.1rem]" />
@@ -168,7 +168,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
           )}
           <button
             onClick={() => setCartOpen(true)}
-            className="relative grid h-10 w-10 place-items-center rounded-full hover:bg-ink/5"
+            className="relative grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5 sm:h-10 sm:w-10"
             aria-label="Open cart"
           >
             <ShoppingBag className="h-[1.1rem] w-[1.1rem]" />

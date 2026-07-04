@@ -14,14 +14,14 @@ export function PrefsSwitcher() {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 rounded-full px-2.5 py-2 text-sm font-medium text-ink-soft hover:bg-ink/5"
+        className="flex items-center gap-1.5 rounded-full px-2 py-2 text-sm font-medium text-ink-soft hover:bg-ink/5 sm:px-2.5"
         aria-label="Currency and language"
       >
         <Globe className="h-4 w-4" />
         <span className="hidden sm:inline">
           {mounted ? currency : siteConfig.currency} · {locale.toUpperCase()}
         </span>
-        <ChevronDown className="h-3.5 w-3.5" />
+        <ChevronDown className="hidden h-3.5 w-3.5 sm:block" />
       </button>
 
       {open && (
