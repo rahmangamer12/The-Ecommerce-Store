@@ -61,22 +61,22 @@ export function ProductsTable({ products }: { products: Product[] }) {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4">
-          <Search className="h-4 w-4 text-muted" />
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 sm:w-64">
+          <Search className="h-4 w-4 shrink-0 text-muted" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search products…"
-            className="h-10 w-56 bg-transparent text-sm focus-visible:outline-none"
+            className="h-10 w-full bg-transparent text-sm focus-visible:outline-none"
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
           {hasSamples && (
             <button
               onClick={onImport}
               disabled={busy}
-              className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-medium hover:border-gold disabled:opacity-60"
+              className="col-span-2 inline-flex items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-medium hover:border-gold disabled:opacity-60 sm:col-span-1"
             >
               <DownloadCloud className="h-4 w-4" />
               {busy ? "Importing…" : "Import starter products"}
@@ -84,13 +84,13 @@ export function ProductsTable({ products }: { products: Product[] }) {
           )}
           <Link
             href="/admin/products/import"
-            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-medium hover:border-gold"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-medium hover:border-gold"
           >
             <PackagePlus className="h-4 w-4" /> Import from CJ
           </Link>
           <Link
             href="/admin/products/new"
-            className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:bg-gold hover:text-white"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:bg-gold hover:text-white"
           >
             <Plus className="h-4 w-4" /> Add product
           </Link>
@@ -107,7 +107,86 @@ export function ProductsTable({ products }: { products: Product[] }) {
         </p>
       )}
 
-      <div className="mt-5 overflow-x-auto rounded-2xl border border-border bg-card">
+      {/* Mobile: card list (tables don't work on small screens) */}
+      <div className="mt-5 space-y-3 md:hidden">
+        {filtered.map((p) => {
+          const editable = isDbProduct(p.id);
+          return (
+            <div
+              key={p.id}
+              className="rounded-2xl border border-border bg-card p-4"
+            >
+              <div className="flex gap-3">
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-paper-2">
+                  <Image src={p.images[0]} alt={p.name} fill sizes="64px" className="object-cover" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={`/products/${p.slug}`}
+                    className="line-clamp-2 font-medium leading-snug hover:text-gold-strong"
+                  >
+                    {p.name}
+                  </Link>
+                  <p className="text-xs text-muted">{p.brand}</p>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                    <span className="font-semibold">{formatPrice(p.price, p.currency)}</span>
+                    <span className="text-muted">·</span>
+                    <span className="capitalize text-ink-soft">
+                      {p.categorySlug.replace("-", " ")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                <div className="flex items-center gap-2 text-sm">
+                  {!editable ? (
+                    <span className="rounded-full bg-paper-2 px-2.5 py-0.5 text-xs font-medium text-muted">
+                      Sample
+                    </span>
+                  ) : p.stock === 0 ? (
+                    <Badge variant="Limited">Sold out</Badge>
+                  ) : p.badge ? (
+                    <Badge variant={p.badge}>{p.badge}</Badge>
+                  ) : (
+                    <span className="text-xs text-success">Active</span>
+                  )}
+                  <span
+                    className={cn(
+                      "text-xs",
+                      p.stock === 0
+                        ? "text-danger"
+                        : p.stock <= 8
+                          ? "text-gold-strong"
+                          : "text-muted",
+                    )}
+                  >
+                    {p.stock} in stock
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Link
+                    href={`/admin/products/${p.id}/edit`}
+                    className="grid h-9 w-9 place-items-center rounded-lg border border-border hover:bg-ink/5"
+                    aria-label="Edit"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Link>
+                  <button
+                    onClick={() => onDelete(p)}
+                    className="grid h-9 w-9 place-items-center rounded-lg border border-border text-danger hover:bg-danger/10"
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop: full table */}
+      <div className="mt-5 hidden overflow-x-auto rounded-2xl border border-border bg-card md:block">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead className="border-b border-border bg-paper-2 text-xs uppercase tracking-wider text-muted">
             <tr>
