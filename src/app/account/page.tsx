@@ -70,8 +70,8 @@ export default async function AccountOverview() {
             You haven&apos;t placed any orders yet.
           </div>
         ) : (
-          <div className="mt-4 overflow-hidden rounded-2xl border border-border">
-            <table className="w-full text-left text-sm">
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-border">
+            <table className="w-full min-w-[460px] text-left text-sm">
               <thead className="bg-paper-2 text-xs uppercase tracking-wider text-muted">
                 <tr>
                   <th className="px-5 py-3 font-medium">Order</th>

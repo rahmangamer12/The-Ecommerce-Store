@@ -68,7 +68,7 @@ export default async function BlogPage({
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
             </div>
-            <div className="flex flex-col justify-center p-8 lg:p-12">
+            <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-12">
               <p className="eyebrow">{featured.category}</p>
               <h2 className="mt-3 font-display text-3xl font-semibold leading-tight group-hover:text-gold-strong">
                 {featured.title}

@@ -127,7 +127,11 @@ export function Navbar({ categories = localCategories }: { categories?: Category
           >
             <Search className="h-[1.1rem] w-[1.1rem]" />
           </button>
-          <PrefsSwitcher />
+          {/* Currency/language: hidden on very narrow phones (moved into the
+              mobile drawer) so the cart icon always fits. */}
+          <div className="hidden min-[360px]:block">
+            <PrefsSwitcher />
+          </div>
           <ThemeToggle className="hidden sm:grid" />
           <Link
             href="/account/wishlist"
@@ -343,7 +347,10 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                     <User className="h-4 w-4" /> Sign In / Register
                   </Link>
                 )}
-                <div className="mt-3 flex justify-end">
+                <div className="mt-3 flex items-center justify-between min-[360px]:justify-end">
+                  <div className="min-[360px]:hidden">
+                    <PrefsSwitcher />
+                  </div>
                   <ThemeToggle />
                 </div>
               </div>

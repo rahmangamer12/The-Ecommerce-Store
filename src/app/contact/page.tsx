@@ -51,7 +51,7 @@ export default async function ContactPage() {
         </div>
 
         {/* Form */}
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-luxe">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-luxe sm:p-8">
           <h2 className="font-display text-2xl font-semibold">{t("contact.sendTitle")}</h2>
           <p className="mt-1 text-sm text-ink-soft">{t("contact.sendDesc")}</p>
           <div className="mt-6">

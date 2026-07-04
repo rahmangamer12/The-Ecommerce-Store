@@ -63,7 +63,7 @@ export default async function HomePage() {
               <Sparkles className="h-4 w-4 text-gold-strong" />
               <span className="text-ink-soft">{t("home.heroBadge")}</span>
             </div>
-            <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+            <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-6xl sm:leading-[1.05] lg:text-7xl">
               {t("home.heroTitlePre")}{" "}
               <span className="text-gradient-gold">{t("home.heroTitleGold")}</span>
             </h1>

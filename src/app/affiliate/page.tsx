@@ -100,7 +100,7 @@ export default function AffiliatePage() {
             1–2 business days.
           </p>
         </div>
-        <div className="mt-10 rounded-3xl border border-border bg-card p-8 shadow-luxe">
+        <div className="mt-10 rounded-3xl border border-border bg-card p-6 shadow-luxe sm:p-8">
           <AffiliateForm />
         </div>
       </section>

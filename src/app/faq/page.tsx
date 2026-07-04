@@ -33,7 +33,7 @@ export default async function FaqPage() {
         <Accordion items={faqs} />
       </div>
 
-      <div className="mt-10 rounded-2xl border border-border bg-card p-8 text-center">
+      <div className="mt-10 rounded-2xl border border-border bg-card p-6 text-center sm:p-8">
         <MessageCircle className="mx-auto h-7 w-7 text-gold-strong" />
         <h2 className="mt-3 font-display text-xl font-semibold">{t("faq.still")}</h2>
         <p className="mt-2 text-sm text-ink-soft">{t("faq.stillDesc")}</p>

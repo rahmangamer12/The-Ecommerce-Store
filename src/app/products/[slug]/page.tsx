@@ -116,7 +116,7 @@ export default async function ProductPage({
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {isSpecSheet ? (
           /* Spec-sheet layout (CJ / supplier imports): intro + clean table. */
-          <div className="rounded-3xl border border-border bg-card p-8 lg:p-12">
+          <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 lg:p-12">
             <h2 className="font-display text-2xl font-semibold">{t("product.about")}</h2>
             {intro && (
               <p className="mt-4 max-w-3xl leading-relaxed text-ink-soft">{intro}</p>
@@ -142,7 +142,7 @@ export default async function ProductPage({
           /* Editorial layout (hand-written products): prose + highlights. */
           <div
             className={cn(
-              "grid gap-10 rounded-3xl border border-border bg-card p-8 lg:p-12",
+              "grid gap-8 rounded-3xl border border-border bg-card p-6 sm:gap-10 sm:p-8 lg:p-12",
               product.features.length > 0 && "lg:grid-cols-2",
             )}
           >
