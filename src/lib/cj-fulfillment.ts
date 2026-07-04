@@ -5,6 +5,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { adminEmails, cjAutoFulfill, isCjConfigured } from "@/config/env";
 import { createCjOrder, type CjOrderInput } from "@/lib/cj";
+import { toCountryCode } from "@/lib/countries";
 
 // =============================================================
 //  Forward a paid order to CJ Dropshipping for fulfilment.
@@ -107,14 +108,18 @@ async function pushOrderToCj(order: OrderRow): Promise<FulfillResult> {
   }
 
   const addr = order.shipping_address ?? {};
+  const city = addr.city ?? "";
   const cjInput: CjOrderInput = {
     orderNumber: order.number,
     shipping: {
       name: addr.fullName ?? "",
-      countryCode: (addr.country ?? "").toUpperCase(),
-      province: addr.state,
-      city: addr.city ?? "",
-      address: [addr.line1, addr.line2].filter(Boolean).join(", "),
+      // CJ needs the 2-letter ISO code (checkout stores the full name).
+      countryCode: toCountryCode(addr.country),
+      // CJ requires a non-empty province — fall back to the city when the
+      // checkout didn't capture a state/province.
+      province: (addr.state && addr.state.trim()) || city,
+      city,
+      address: [addr.line1, addr.line2].filter(Boolean).join(", ") || city,
       zip: addr.zip ?? "",
       phone: addr.phone ?? "",
       email: order.customer_email ?? undefined,
