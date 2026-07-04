@@ -39,7 +39,7 @@ export default async function AdminLayout({
   return (
     <div className="mx-auto max-w-[100rem] px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid gap-8 lg:grid-cols-[230px_1fr]">
-        <aside className="lg:sticky lg:top-24 lg:h-fit">
+        <aside className="min-w-0 lg:sticky lg:top-24 lg:h-fit">
           <div className="mb-4">
             <p className="font-display text-lg font-semibold">Admin</p>
             <p className="text-xs text-muted">Store management</p>
