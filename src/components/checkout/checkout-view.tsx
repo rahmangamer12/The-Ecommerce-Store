@@ -151,7 +151,9 @@ export function CheckoutView({
         // Card payment → hosted gateway page.
         window.location.href = result.redirectUrl;
       } else {
-        router.push(`/order-success?order=${result.orderNumber}`);
+        router.push(
+          `/order-success?order=${result.orderNumber}&method=${paymentMethod}`,
+        );
       }
     } catch {
       toast.error("Could not place your order. Please try again.");

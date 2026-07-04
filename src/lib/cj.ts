@@ -388,36 +388,43 @@ export type CjOrderResult = {
   error?: string;
 };
 
+// CJ requires a non-empty logisticName on every order. This is a widely
+// available default used when the freight lookup returns nothing.
+const DEFAULT_LOGISTIC = "CJPacket Ordinary";
+
 /**
  * Ask CJ for available shipping methods and return the cheapest one's name.
- * Falls back to the configured CJ_LOGISTIC (or undefined) if this fails.
+ * ALWAYS returns a name (falls back to CJ_LOGISTIC env, then a safe default)
+ * because CJ rejects the order if logisticName is empty.
  */
-async function pickLogistic(input: CjOrderInput): Promise<string | undefined> {
+async function pickLogistic(input: CjOrderInput): Promise<string> {
   if (cjLogistic) return cjLogistic;
   try {
-    const env = await cjRequest<{ name?: string; logisticPrice?: number }[]>(
-      `/logistic/freightCalculate`,
-      {
-        method: "POST",
-        body: {
-          startCountryCode: "CN",
-          endCountryCode: input.shipping.countryCode,
-          products: input.products.map((p) => ({
-            quantity: p.quantity,
-            vid: p.vid,
-          })),
-        },
+    const env = await cjRequest<
+      { logisticName?: string; name?: string; logisticPrice?: number }[]
+    >(`/logistic/freightCalculate`, {
+      method: "POST",
+      body: {
+        startCountryCode: "CN",
+        endCountryCode: input.shipping.countryCode,
+        products: input.products.map((p) => ({
+          quantity: p.quantity,
+          vid: p.vid,
+        })),
       },
-    );
+    });
     const options = Array.isArray(env?.data) ? env!.data! : [];
-    if (!options.length) return undefined;
-    const cheapest = options
-      .slice()
-      .sort((a, b) => num(a.logisticPrice) - num(b.logisticPrice))[0];
-    return cheapest?.name ? String(cheapest.name) : undefined;
+    if (options.length) {
+      const cheapest = options
+        .slice()
+        .sort((a, b) => num(a.logisticPrice) - num(b.logisticPrice))[0];
+      const nm = cheapest?.logisticName ?? cheapest?.name;
+      if (nm) return String(nm);
+    }
   } catch {
-    return undefined;
+    // fall through to the default
   }
+  return DEFAULT_LOGISTIC;
 }
 
 /** Forward an order to CJ for fulfilment. */
@@ -446,7 +453,7 @@ export async function createCjOrder(
         shippingPhone: input.shipping.phone,
         email: input.shipping.email ?? "",
         fromCountryCode: "CN",
-        ...(logisticName ? { logisticName } : {}),
+        logisticName,
         products: input.products.map((p) => ({
           vid: p.vid,
           quantity: p.quantity,
