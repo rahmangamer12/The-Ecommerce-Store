@@ -68,7 +68,7 @@ function sampleReviews(seed: string): ProductReview[] {
       author: "Daniel K.",
       rating: 5,
       title: "Worth every penny",
-      body: "Fast worldwide shipping and the product is flawless. This is my third order from Luxora.",
+      body: "Fast worldwide shipping and the product is flawless. This is my third order from Souq Empire.",
       date: "2026-04-30",
       verified: true,
     },

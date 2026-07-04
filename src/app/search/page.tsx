@@ -5,7 +5,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Search",
-  description: "Search the Luxora catalogue.",
+  description: "Search the Souq Empire catalogue.",
   path: "/search",
   noindex: true,
 });

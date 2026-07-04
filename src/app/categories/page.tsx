@@ -11,7 +11,7 @@ import { getLocale, getT } from "@/i18n/server";
 
 export const metadata: Metadata = buildMetadata({
   title: "Categories",
-  description: "Explore every Souq Al Qatar category — from technology and audio to fashion, beauty and wellness.",
+  description: "Explore every Souq Empire category — from technology and audio to fashion, beauty and wellness.",
   path: "/categories",
 });
 

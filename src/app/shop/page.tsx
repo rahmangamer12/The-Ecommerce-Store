@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata({
   title: "Shop All",
   description:
-    "Browse the full Luxora collection — premium products across tech, home, fashion, beauty and more, with worldwide shipping.",
+    "Browse the full Souq Empire collection — premium products across tech, home, fashion, beauty and more, with worldwide shipping.",
   path: "/shop",
 });
 

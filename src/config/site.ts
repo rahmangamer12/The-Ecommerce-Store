@@ -10,14 +10,14 @@
 
 export const siteConfig = {
   // ---- Brand ----
-  name: "Souq Al Qatar",
-  legalName: "Souq Al Qatar",
+  name: "Souq Empire",
+  legalName: "Souq Empire",
   // Short tagline shown in the hero / SEO
   tagline: "Premium finds, delivered worldwide",
   description:
-    "Souq Al Qatar is a global online store. Discover great products across tech, home, fashion, beauty and more — shipped worldwide, with secure online payment.",
+    "Souq Empire is a global online store. Discover great products across tech, home, fashion, beauty and more — shipped worldwide, with secure online payment.",
   // Logo: an emoji/letter mark by default. Replace `logoText` or set `logoImage`.
-  logoText: "Souq Al Qatar",
+  logoText: "Souq Empire",
   logoMark: "S",
   logoImage: "", // e.g. "/logo.svg" (leave empty to use the text mark)
 
