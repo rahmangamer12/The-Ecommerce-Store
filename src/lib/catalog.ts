@@ -1,6 +1,7 @@
 import type { Product } from "@/types";
 import { products as localProducts } from "@/data/products";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { regroupVariants } from "@/lib/variant-utils";
 
 // -------------------------------------------------------------
 //  Unified catalogue: merges products created in the admin
@@ -17,16 +18,19 @@ function asArray(v: unknown): string[] {
 function mapRow(r: Row): Product {
   const images = asArray(r.images);
 
-  // Variant option → its own photo (stored inside the variants jsonb as
-  // `valueImages` on CJ imports), so picking a colour swaps the main image.
+  // Normalise variants for display: split CJ's combined "Black-14 inches"
+  // style options into clean, separate Color / Size groups (like the sample
+  // products). Runs at render time so already-imported products benefit too.
+  const variants = Array.isArray(r.variants)
+    ? regroupVariants(r.variants as Record<string, unknown>[])
+    : undefined;
+
+  // Variant option → its own photo, so picking a colour swaps the main image.
   const variantImages: Record<string, string> = {};
-  if (Array.isArray(r.variants)) {
-    for (const v of r.variants as Record<string, unknown>[]) {
-      const vi = v?.valueImages;
-      if (vi && typeof vi === "object") {
-        for (const [key, val] of Object.entries(vi as Record<string, unknown>)) {
-          if (typeof val === "string" && val) variantImages[key] = val;
-        }
+  for (const v of variants ?? []) {
+    if (v.valueImages) {
+      for (const [key, val] of Object.entries(v.valueImages)) {
+        if (typeof val === "string" && val) variantImages[key] = val;
       }
     }
   }
@@ -50,9 +54,7 @@ function mapRow(r: Row): Product {
     reviewCount: Number(r.review_count ?? 0),
     stock: Number(r.stock ?? 0),
     badge: (r.badge as Product["badge"]) || undefined,
-    variants: Array.isArray(r.variants)
-      ? (r.variants as Product["variants"])
-      : undefined,
+    variants: variants as Product["variants"],
     tags: asArray(r.tags),
     featured: Boolean(r.featured),
     trending: Boolean(r.trending),

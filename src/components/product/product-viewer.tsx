@@ -16,7 +16,7 @@ export function ProductViewer({ product }: { product: Product }) {
   }
 
   return (
-    <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
+    <div className="grid items-start gap-8 md:grid-cols-2 md:gap-8 lg:gap-16">
       <ProductGallery
         images={product.images}
         name={product.name}

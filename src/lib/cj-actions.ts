@@ -13,6 +13,7 @@ import {
   type CjListItem,
   type CjProductDetail,
 } from "@/lib/cj";
+import { splitCombinedValues } from "@/lib/variant-utils";
 
 // =============================================================
 //  Admin actions to bring CJ products into your own catalogue.
@@ -134,31 +135,24 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
     .toString(36)
     .slice(-4)}`;
 
-  // Map CJ variants (if any) into the store's simple variant options, and
-  // remember each option's own photo so picking it swaps the main image.
-  const variantValues = detail.variants
-    .map((v) => v.name.trim())
-    .filter((v) => v.length > 0 && v.length <= 60);
-  const valueImages: Record<string, string> = {};
+  // Map CJ variants into clean, SEPARATE option groups (Color / Size), like the
+  // sample products — instead of one long list of "Black-14 inches" combos.
+  const flatValues = detail.variants.map((v) => v.name.trim()).filter(Boolean);
+  const flatImages: Record<string, string> = {};
   for (const v of detail.variants) {
     const label = v.name.trim();
-    if (label && v.image && !valueImages[label]) valueImages[label] = v.image;
+    if (label && v.image && !flatImages[label]) flatImages[label] = v.image;
   }
-  const variants = variantValues.length
-    ? [
-        {
-          name: "Option",
-          values: Array.from(new Set(variantValues)),
-          valueImages,
-        },
-      ]
-    : [];
+  const variants = splitCombinedValues(flatValues, flatImages);
 
   // Gallery = the clean product photos first, then any variant photo that
   // isn't already shown (so switching a colour can jump straight to it),
   // deduped and capped. detail.images is already just the tidy product shots.
+  const groupImages = variants.flatMap((g) =>
+    g.valueImages ? Object.values(g.valueImages) : [],
+  );
   const galleryImages = Array.from(
-    new Set([...detail.images, ...Object.values(valueImages)]),
+    new Set([...detail.images, ...groupImages]),
   ).slice(0, 12);
 
   // Bullet "highlights" like the sample products carry, derived from the

@@ -67,7 +67,7 @@ export function ProductBuyBox({
   }
 
   return (
-    <div>
+    <div className="min-w-0">
       {/* Brand + badges */}
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium uppercase tracking-wider text-muted">
@@ -123,7 +123,7 @@ export function ProductBuyBox({
                   onVariantChange?.(val);
                 }}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-sm transition-colors",
+                  "max-w-full break-words rounded-full border px-4 py-2 text-sm transition-colors",
                   variant[v.name] === val
                     ? "border-gold bg-gold/10 text-gold-strong"
                     : "border-border hover:border-ink/40",
