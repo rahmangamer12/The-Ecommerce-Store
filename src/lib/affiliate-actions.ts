@@ -7,6 +7,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { adminEmails } from "@/config/env";
 import { slugify } from "@/lib/utils";
 import { featuresFromText } from "@/lib/cj";
+import { aiSuggestCategory } from "@/lib/ai";
+import { getCategories } from "@/lib/categories";
 
 // =============================================================
 //  Affiliate product import.
@@ -194,6 +196,18 @@ export async function importAffiliateProduct(
   }
   name = (name || host).slice(0, 140);
 
+  // Let the AI pick the best category when the admin chose "Auto".
+  let resolvedCategory = d.categorySlug;
+  if (d.categorySlug === "__auto__") {
+    const cats = await getCategories();
+    const picked = await aiSuggestCategory({
+      name,
+      description,
+      categories: cats,
+    });
+    resolvedCategory = picked ?? cats[0]?.slug ?? "technology";
+  }
+
   const features = description ? featuresFromText(description, 5) : [];
 
   const slug = `${slugify(name).slice(0, 60)}-${Date.now()
@@ -204,7 +218,7 @@ export async function importAffiliateProduct(
     name,
     slug,
     brand: host,
-    category_slug: d.categorySlug,
+    category_slug: resolvedCategory,
     price: d.price,
     compare_at_price: d.compareAtPrice ?? null,
     currency: "USD",

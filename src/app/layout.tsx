@@ -11,9 +11,10 @@ import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import { AssistantWidget } from "@/components/ai/assistant-widget";
 import { Analytics } from "@/components/analytics";
 import { buildMetadata } from "@/lib/seo";
-import { analytics } from "@/config/env";
+import { analytics, isAiConfigured } from "@/config/env";
 import { getCategories } from "@/lib/categories";
 
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -59,6 +60,7 @@ export default async function RootLayout({
             <main>{children}</main>
             <Footer categories={categories} />
             <CartDrawer />
+            <AssistantWidget enabled={isAiConfigured} />
             <Toaster
               position="bottom-right"
               toastOptions={{

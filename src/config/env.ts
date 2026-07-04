@@ -47,6 +47,15 @@ export const cjLogistic = process.env.CJ_LOGISTIC ?? "";
 // in the admin if the auto push fails). Set CJ_AUTO_FULFILL=off to disable.
 export const cjAutoFulfill = (process.env.CJ_AUTO_FULFILL ?? "on") !== "off";
 
+// ---- AI (LongCat — Anthropic-compatible: store assistant + auto-categories) ----
+// LongCat exposes an Anthropic-style /v1/messages endpoint but authenticates
+// with an `Authorization: Bearer <key>` header (not x-api-key).
+export const aiApiKey = process.env.LONGCAT_API_KEY ?? "";
+export const aiModel = process.env.LONGCAT_MODEL ?? "LongCat-2.0";
+export const aiBaseUrl = (
+  process.env.LONGCAT_BASE_URL ?? "https://api.longcat.chat/anthropic/"
+).replace(/\/+$/, "");
+
 // ---- Cloudinary (image hosting / upload) ----
 export const cloudinaryCloudName =
   process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
@@ -86,6 +95,7 @@ export const isCardPaymentConfigured = Boolean(myfatoorahApiKey);
 export const isPaypalConfigured = Boolean(paypalClientId && paypalClientSecret);
 export const isCloudinaryConfigured = Boolean(cloudinaryCloudName);
 export const isCjConfigured = Boolean(cjEmail && cjApiKey);
+export const isAiConfigured = Boolean(aiApiKey);
 export const isEmailConfigured = Boolean(
   resendApiKey || mailchimpApiKey || convertkitApiKey,
 );

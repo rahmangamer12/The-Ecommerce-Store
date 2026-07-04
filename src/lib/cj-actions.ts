@@ -14,6 +14,8 @@ import {
   type CjProductDetail,
 } from "@/lib/cj";
 import { splitCombinedValues } from "@/lib/variant-utils";
+import { aiSuggestCategory } from "@/lib/ai";
+import { getCategories } from "@/lib/categories";
 
 // =============================================================
 //  Admin actions to bring CJ products into your own catalogue.
@@ -106,6 +108,19 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
     return { ok: false, error: "Couldn't find that product on CJ." };
   }
 
+  // Category: either the admin's choice, or let the AI read the product and
+  // pick the best-fitting category itself ("__auto__").
+  let resolvedCategory = categorySlug;
+  if (categorySlug === "__auto__") {
+    const cats = await getCategories();
+    const picked = await aiSuggestCategory({
+      name: detail.name,
+      description: detail.description,
+      categories: cats,
+    });
+    resolvedCategory = picked ?? cats[0]?.slug ?? "technology";
+  }
+
   // Pick the variant we'll actually order from CJ. Default: cheapest one.
   const chosen =
     (vid && detail.variants.find((v) => v.vid === vid)) ||
@@ -174,7 +189,7 @@ export async function importCjProduct(input: unknown): Promise<ImportCjResult> {
     name: detail.name,
     slug,
     brand: "CJ",
-    category_slug: categorySlug,
+    category_slug: resolvedCategory,
     price,
     compare_at_price: Math.round(price * 1.4 * 100) / 100, // a natural "was" price
     currency: "USD",

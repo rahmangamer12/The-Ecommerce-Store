@@ -25,7 +25,7 @@ export function CjImport({
   connected: boolean;
 }) {
   const router = useRouter();
-  const [categorySlug, setCategorySlug] = useState(categories[0]?.slug ?? "");
+  const [categorySlug, setCategorySlug] = useState("__auto__");
   const [markup, setMarkup] = useState("2");
 
   // Paste-a-link flow
@@ -122,12 +122,16 @@ export function CjImport({
               onChange={(e) => setCategorySlug(e.target.value)}
               className="h-11 w-full rounded-xl border border-border bg-card px-3 text-sm focus:border-gold focus-visible:outline-none"
             >
+              <option value="__auto__">✨ Auto — let AI choose</option>
               {categories.map((c) => (
                 <option key={c.slug} value={c.slug}>
                   {c.name}
                 </option>
               ))}
             </select>
+            <p className="mt-1 text-xs text-muted">
+              AI reads each product and files it under the best category.
+            </p>
           </div>
           <div>
             <Label>Markup (×)</Label>

@@ -25,7 +25,7 @@ type Preview = {
 // product whose buy button links out to that URL (you earn the commission).
 export function AffiliateImport({ categories }: { categories: Category[] }) {
   const router = useRouter();
-  const [categorySlug, setCategorySlug] = useState(categories[0]?.slug ?? "");
+  const [categorySlug, setCategorySlug] = useState("__auto__");
   const [url, setUrl] = useState("");
   const [price, setPrice] = useState("");
   const [preview, setPreview] = useState<Preview | null>(null);
@@ -130,6 +130,7 @@ export function AffiliateImport({ categories }: { categories: Category[] }) {
             onChange={(e) => setCategorySlug(e.target.value)}
             className="h-11 w-full rounded-xl border border-border bg-card px-3 text-sm focus:border-gold focus-visible:outline-none"
           >
+            <option value="__auto__">✨ Auto — let AI choose</option>
             {categories.map((c) => (
               <option key={c.slug} value={c.slug}>
                 {c.name}
