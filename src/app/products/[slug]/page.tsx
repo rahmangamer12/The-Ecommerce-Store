@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { products } from "@/data/products";
 import { getCatalogProductBySlug, getCatalogRelated } from "@/lib/catalog";
 import { getCategoryBySlug } from "@/lib/categories";
 import { ProductViewer } from "@/components/product/product-viewer";
@@ -19,10 +18,6 @@ import {
 import { getLocale, getT } from "@/i18n/server";
 import { cn } from "@/lib/utils";
 import { parseDescription } from "@/lib/product-specs";
-
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
 
 export async function generateMetadata({
   params,
