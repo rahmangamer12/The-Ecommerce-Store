@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/sections/section-header";
 import { ProductCard } from "@/components/product/product-card";
-import { CategoryIcon } from "@/components/category-icon";
+import { CategoryGrid } from "@/components/home/category-grid";
 import { BrandStrip } from "@/components/home/brand-strip";
 import { PromoTiles } from "@/components/home/promo-tiles";
 import { FlashDeal } from "@/components/home/flash-deal";
@@ -57,7 +57,7 @@ export default async function HomePage() {
       {/* ===================== HERO ===================== */}
       <section className="relative overflow-hidden bg-aura">
         <div className="absolute inset-0 bg-grid opacity-40" aria-hidden />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-2 lg:gap-8 lg:px-8 lg:pb-24 lg:pt-20">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-8 pt-8 sm:px-6 lg:grid-cols-2 lg:gap-8 lg:px-8 lg:pb-24 lg:pt-20">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full border border-border glass px-4 py-1.5 text-sm">
               <Sparkles className="h-4 w-4 text-gold-strong" />
@@ -102,8 +102,9 @@ export default async function HomePage() {
             </div>
           </Reveal>
 
-          {/* Hero visual */}
-          <Reveal delay={0.15} className="relative">
+          {/* Hero visual — desktop only; on mobile we lead straight into the
+              category grid (Daraz/SHEIN style). */}
+          <Reveal delay={0.15} className="relative hidden lg:block">
             <div className="relative mx-auto aspect-[4/5] w-full max-w-md">
               <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-gold-soft/40 to-transparent blur-2xl" />
               <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-border shadow-luxe-lg">
@@ -145,8 +146,11 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ============ CATEGORY QUICK-GRID (Daraz/SHEIN style) ============ */}
+      <CategoryGrid categories={categories} title={t("home.catTitle")} />
+
       {/* ===================== BENEFITS ===================== */}
-      <section className="border-y border-border bg-card">
+      <section className="mt-10 border-y border-border bg-card">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
           {[
             { icon: Truck, title: t("home.benefitShipT"), text: t("home.benefitShipD") },
@@ -166,47 +170,6 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
-
-      {/* ===================== BRAND STRIP ===================== */}
-      <BrandStrip />
-
-      {/* ===================== CATEGORIES ===================== */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <Reveal>
-          <SectionHeader
-            eyebrow={t("home.catEyebrow")}
-            title={t("home.catTitle")}
-            description={t("home.catDesc")}
-            href="/categories"
-          />
-        </Reveal>
-        <Stagger className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
-          {categories.map((cat) => (
-            <StaggerItem key={cat.slug}>
-              <Link
-                href={`/categories/${cat.slug}`}
-                className="card-lift group relative block aspect-square overflow-hidden rounded-2xl"
-              >
-                <Image
-                  src={cat.image}
-                  alt={cat.name}
-                  fill
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-4 text-paper">
-                  <CategoryIcon name={cat.icon} className="h-5 w-5 text-gold-soft" />
-                  <p className="mt-2 font-display text-lg font-semibold">{cat.name}</p>
-                </div>
-              </Link>
-            </StaggerItem>
-          ))}
-        </Stagger>
-      </section>
-
-      {/* ===================== PROMO TILES ===================== */}
-      <PromoTiles />
 
       {/* ===================== FEATURED PRODUCTS ===================== */}
       <section className="bg-paper-2">
@@ -231,6 +194,12 @@ export default async function HomePage() {
 
       {/* ===================== FLASH DEAL ===================== */}
       <FlashDeal products={onSale} />
+
+      {/* ===================== PROMO TILES ===================== */}
+      <PromoTiles />
+
+      {/* ===================== BRAND STRIP ===================== */}
+      <BrandStrip />
 
       {/* ===================== NEW ARRIVALS ===================== */}
       {newArrivals.length > 0 && (
