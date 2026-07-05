@@ -9,8 +9,16 @@ import { Banknote, Landmark, CreditCard, Wallet, MessageCircle, ShieldCheck, Arr
 import { useStore } from "@/components/providers/store-provider";
 import { usePrefs } from "@/components/providers/prefs-provider";
 import { Input, Label } from "@/components/ui/input";
+import { SearchSelect } from "@/components/ui/search-select";
 import { siteConfig } from "@/config/site";
 import { placeOrder } from "@/app/checkout/actions";
+import { COUNTRIES, STATES } from "@/data/geo";
+
+// Country dropdown options (with flags) — built once from the static geo data.
+const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({
+  value: c.name,
+  label: `${c.flag} ${c.name}`,
+}));
 
 const initialForm = {
   email: "",
@@ -35,6 +43,13 @@ export function CheckoutView({
   const { items, totals, coupon, clearCart, mounted } = useStore();
   const { formatPrice, t } = usePrefs();
   const [form, setForm] = useState(initialForm);
+
+  // Regions for the chosen country (empty list → free-text fallback).
+  const countryCode = COUNTRIES.find((c) => c.name === form.country)?.code ?? "";
+  const stateOptions = (STATES[countryCode] ?? []).map((s) => ({
+    value: s,
+    label: s,
+  }));
 
   // Build the list of payment methods enabled in config (card also needs a
   // configured gateway). COD is off by default for dropshipping.
@@ -107,6 +122,14 @@ export function CheckoutView({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.country.trim()) {
+      toast.error("Please select your country.");
+      return;
+    }
+    if (stateOptions.length > 0 && !form.state.trim()) {
+      toast.error("Please select your region / state.");
+      return;
+    }
     setLoading(true);
     try {
       const result = await placeOrder({
@@ -203,20 +226,45 @@ export function CheckoutView({
               <Input id="line2" value={form.line2} onChange={(e) => set("line2", e.target.value)} />
             </div>
             <div>
+              <Label htmlFor="country">{t("checkout.country")}</Label>
+              <SearchSelect
+                id="country"
+                value={form.country}
+                onChange={(v) =>
+                  // Changing country clears the previously picked region.
+                  setForm((f) => ({ ...f, country: v, state: "" }))
+                }
+                options={COUNTRY_OPTIONS}
+                placeholder="Select your country"
+              />
+            </div>
+            <div>
+              <Label htmlFor="state">{t("checkout.stateRegion")}</Label>
+              {stateOptions.length > 0 ? (
+                <SearchSelect
+                  id="state"
+                  value={form.state}
+                  onChange={(v) => set("state", v)}
+                  options={stateOptions}
+                  placeholder="Select region / state"
+                  disabled={!form.country}
+                />
+              ) : (
+                <Input
+                  id="state"
+                  value={form.state}
+                  onChange={(e) => set("state", e.target.value)}
+                  placeholder={form.country ? "Region / state" : "Select a country first"}
+                />
+              )}
+            </div>
+            <div>
               <Label htmlFor="city">{t("checkout.city")}</Label>
               <Input id="city" required value={form.city} onChange={(e) => set("city", e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="state">{t("checkout.stateRegion")}</Label>
-              <Input id="state" value={form.state} onChange={(e) => set("state", e.target.value)} />
-            </div>
-            <div>
               <Label htmlFor="zip">{t("checkout.zip")}</Label>
               <Input id="zip" required value={form.zip} onChange={(e) => set("zip", e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="country">{t("checkout.country")}</Label>
-              <Input id="country" required value={form.country} onChange={(e) => set("country", e.target.value)} />
             </div>
             <div className="sm:col-span-2">
               <Label htmlFor="phone">{t("checkout.phone")}</Label>
