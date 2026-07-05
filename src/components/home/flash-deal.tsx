@@ -65,8 +65,8 @@ export function FlashDeal({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
-        {products.slice(0, 4).map((p) => (
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
+        {products.slice(0, 5).map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
       </div>

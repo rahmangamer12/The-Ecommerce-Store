@@ -37,15 +37,17 @@ import { getLocale, getT } from "@/i18n/server";
 export default async function HomePage() {
   const t = getT(await getLocale());
   const categories = await getCategories();
-  const featured = await getCatalogFeatured(8);
-  const trending = await getCatalogTrending(4);
-  const onSale = await getCatalogOnSale(4);
-  const newArrivals = await getCatalogNewArrivals(4);
+  const allProducts = await getCatalog();
+  const featured = await getCatalogFeatured(10);
+  const trending = await getCatalogTrending(5);
+  const onSale = await getCatalogOnSale(5);
+  const newArrivals = await getCatalogNewArrivals(5);
   const posts = getAllPosts().slice(0, 3);
+  // "Just for you" feed — the whole catalogue, marketplace style.
+  const justForYou = allProducts;
   // Use a real product image for the hero (first watch, else any product).
   const heroProduct =
-    (await getCatalogByCategory("watches-jewelry"))[0] ??
-    (await getCatalog())[0];
+    (await getCatalogByCategory("watches-jewelry"))[0] ?? allProducts[0];
 
   return (
     <>
@@ -173,7 +175,7 @@ export default async function HomePage() {
 
       {/* ===================== FEATURED PRODUCTS ===================== */}
       <section className="bg-paper-2">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <Reveal>
             <SectionHeader
               eyebrow={t("home.featEyebrow")}
@@ -182,7 +184,7 @@ export default async function HomePage() {
               href="/shop"
             />
           </Reveal>
-          <Stagger className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+          <Stagger className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
             {featured.map((p, i) => (
               <StaggerItem key={p.id}>
                 <ProductCard product={p} priority={i < 4} />
@@ -191,6 +193,33 @@ export default async function HomePage() {
           </Stagger>
         </div>
       </section>
+
+      {/* ===================== JUST FOR YOU (dense feed) ===================== */}
+      {justForYou.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="eyebrow flex items-center gap-1.5">
+                <Sparkles className="h-4 w-4 text-gold-strong" /> Picked for you
+              </p>
+              <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+                Just for you
+              </h2>
+            </div>
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-1 text-sm font-medium text-gold-strong hover:underline"
+            >
+              See more <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
+            {justForYou.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ===================== FLASH DEAL ===================== */}
       <FlashDeal products={onSale} />
@@ -203,7 +232,7 @@ export default async function HomePage() {
 
       {/* ===================== NEW ARRIVALS ===================== */}
       {newArrivals.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <Reveal>
             <SectionHeader
               eyebrow={t("home.newEyebrow")}
@@ -212,7 +241,7 @@ export default async function HomePage() {
               href="/shop?sort=newest"
             />
           </Reveal>
-          <Stagger className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
+          <Stagger className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
             {newArrivals.map((p) => (
               <StaggerItem key={p.id}>
                 <ProductCard product={p} />
@@ -223,7 +252,7 @@ export default async function HomePage() {
       )}
 
       {/* ===================== EDITORIAL CTA ===================== */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <Reveal>
           <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-paper sm:px-16 sm:py-24">
             <div className="absolute inset-0 bg-aura opacity-60" aria-hidden />
@@ -244,7 +273,7 @@ export default async function HomePage() {
 
       {/* ===================== TRENDING ===================== */}
       <section className="bg-paper-2">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <Reveal>
             <SectionHeader
               eyebrow={t("home.trendEyebrow")}
@@ -252,7 +281,7 @@ export default async function HomePage() {
               href="/shop?sort=popular"
             />
           </Reveal>
-          <Stagger className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
+          <Stagger className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
             {trending.map((p) => (
               <StaggerItem key={p.id}>
                 <ProductCard product={p} />
@@ -266,7 +295,7 @@ export default async function HomePage() {
       <ShopByPrice />
 
       {/* ===================== TESTIMONIALS ===================== */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <Reveal>
           <SectionHeader
             eyebrow={t("home.testiEyebrow")}
@@ -303,7 +332,7 @@ export default async function HomePage() {
 
       {/* ===================== JOURNAL ===================== */}
       <section className="bg-paper-2">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <Reveal>
             <SectionHeader
               eyebrow={t("home.journalEyebrow")}
