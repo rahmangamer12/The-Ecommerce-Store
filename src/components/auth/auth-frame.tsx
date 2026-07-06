@@ -44,19 +44,44 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Brand-matched look for the Clerk components.
+// Brand-matched look for the Clerk components. Colours reference our CSS theme
+// variables so the widget is READABLE in both light AND dark mode (previously
+// the text colour was hard-coded near-black, invisible on the dark theme).
 export const clerkAppearance = {
   variables: {
-    colorPrimary: "#b08a4f",
-    colorText: "#14120e",
+    colorPrimary: "var(--gold-strong)",
+    colorText: "var(--ink)",
+    colorTextSecondary: "var(--muted)",
+    colorBackground: "var(--card)",
+    colorInputText: "var(--ink)",
+    colorInputBackground: "var(--paper-2)",
+    colorTextOnPrimaryBackground: "#ffffff",
     borderRadius: "0.75rem",
     fontFamily: "var(--font-sans)",
   },
   elements: {
-    card: "shadow-none border-0 bg-transparent",
-    headerTitle: "font-display",
+    rootBox: "w-full flex justify-center",
+    card: "shadow-none border-0 bg-transparent w-full max-w-sm px-0",
+    headerTitle: "font-display text-2xl",
+    headerSubtitle: "text-muted",
+    // Google / Facebook / social buttons — clear border, readable in both themes.
+    socialButtonsBlockButton:
+      "border border-border bg-card text-ink hover:bg-paper-2 h-11",
+    socialButtonsBlockButtonText: "font-medium text-ink",
+    socialButtonsProviderIcon: "h-5 w-5",
+    dividerLine: "bg-border",
+    dividerText: "text-muted",
+    formFieldLabel: "text-ink-soft",
+    formFieldInput:
+      "bg-paper-2 border border-border text-ink focus:border-gold h-11",
     formButtonPrimary:
-      "bg-ink hover:bg-gold text-paper hover:text-white normal-case",
-    footerActionLink: "text-gold-strong hover:text-gold",
+      "bg-ink hover:bg-gold text-paper hover:text-white normal-case h-11 text-sm font-medium",
+    footerActionText: "text-muted",
+    footerActionLink: "text-gold-strong hover:text-gold font-medium",
+    identityPreviewText: "text-ink",
+    identityPreviewEditButton: "text-gold-strong",
+    formFieldInputShowPasswordButton: "text-muted hover:text-ink",
+    otpCodeFieldInput: "text-ink border-border",
+    formResendCodeLink: "text-gold-strong hover:text-gold",
   },
 } as const;

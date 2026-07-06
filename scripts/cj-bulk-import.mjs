@@ -120,10 +120,10 @@ async function cjGet(path) {
       });
       const json = await res.json();
       if (json && json.data !== undefined && json.data !== null) return json.data;
-      // rate-limited / transient → back off and retry
+      // rate-limited / transient → back off and retry. CJ enforces ~1 req/sec,
+      // so a short wait clears QPS errors; other errors get a longer pause.
       const msg = (json && json.message) || "";
-      const wait = /frequent|limit|too much|1600/i.test(msg) ? 12000 : 3000;
-      process.stdout.write(`  (retry: ${msg || "no data"} — wait ${wait / 1000}s) `);
+      const wait = /qps|too many|frequent|1600/i.test(msg) ? 1500 : 3000;
       await sleep(wait);
     } catch (e) {
       await sleep(3000);
@@ -160,7 +160,7 @@ async function main() {
         if (catCount >= perCat || imported >= TOTAL) break;
         const q = new URLSearchParams({ pageNum: String(page), pageSize: "20", productNameEn: keyword });
         const data = await cjGet(`/product/list?${q.toString()}`);
-        await sleep(700);
+        await sleep(1200);
         const list = (data && data.list) || [];
         if (!list.length) break; // no more results for this keyword
 
@@ -171,7 +171,7 @@ async function main() {
           existing.add(pid);
 
           const detail = await cjGet(`/product/query?pid=${encodeURIComponent(pid)}`);
-          await sleep(700);
+          await sleep(1200);
           if (!detail) { failed++; continue; }
 
           const built = buildProduct(detail, pid, cat);
