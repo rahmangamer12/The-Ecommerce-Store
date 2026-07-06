@@ -32,7 +32,7 @@ export function AccountNav() {
   }
 
   return (
-    <nav className="flex gap-1 overflow-x-auto lg:flex-col lg:gap-1.5">
+    <nav className="flex flex-wrap gap-1.5 lg:flex-col">
       {links.map((link) => {
         const active = pathname === link.href;
         return (
@@ -40,18 +40,20 @@ export function AccountNav() {
             key={link.href}
             href={link.href}
             className={cn(
-              "flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
-              active ? "bg-ink text-paper" : "text-ink-soft hover:bg-ink/5",
+              "flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors sm:gap-3 sm:px-4 sm:py-2.5 lg:border-transparent",
+              active
+                ? "border-ink bg-ink text-paper"
+                : "border-border text-ink-soft hover:bg-ink/5 lg:border-transparent",
             )}
           >
-            <link.icon className="h-4 w-4" />
+            <link.icon className="h-4 w-4 shrink-0" />
             {t(link.tk)}
           </Link>
         );
       })}
       <button
         onClick={handleSignOut}
-        className="flex shrink-0 items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-danger transition-colors hover:bg-danger/10"
+        className="flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-medium text-danger transition-colors hover:bg-danger/10 sm:gap-3 sm:px-4 sm:py-2.5 lg:border-transparent"
       >
         <LogOut className="h-4 w-4" />
         {t("acct.signOut")}

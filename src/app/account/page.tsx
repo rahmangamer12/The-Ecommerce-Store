@@ -39,17 +39,17 @@ export default async function AccountOverview() {
         </Link>
       )}
 
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      {/* Stats — compact 3-up row on mobile, not giant stacked cards */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {[
           { icon: Package, label: "Total orders", value: orders.length },
           { icon: Heart, label: "Wishlist", value: "View", href: "/account/wishlist" },
           { icon: MapPin, label: "Saved addresses", value: 0 },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl border border-border bg-card p-5">
+          <div key={s.label} className="rounded-2xl border border-border bg-card p-3 sm:p-5">
             <s.icon className="h-5 w-5 text-gold-strong" />
-            <p className="mt-3 font-display text-2xl font-semibold">{s.value}</p>
-            <p className="text-sm text-muted">{s.label}</p>
+            <p className="mt-2 font-display text-xl font-semibold sm:mt-3 sm:text-2xl">{s.value}</p>
+            <p className="text-xs text-muted sm:text-sm">{s.label}</p>
           </div>
         ))}
       </div>
