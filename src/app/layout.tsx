@@ -12,6 +12,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { AssistantWidget } from "@/components/ai/assistant-widget";
+import { PermissionPrompt } from "@/components/site/permission-prompt";
 import { Analytics } from "@/components/analytics";
 import { buildMetadata } from "@/lib/seo";
 import { analytics, isAiConfigured } from "@/config/env";
@@ -61,6 +62,7 @@ export default async function RootLayout({
             <Footer categories={categories} />
             <CartDrawer />
             <AssistantWidget enabled={isAiConfigured} />
+            <PermissionPrompt />
             <Toaster
               position="bottom-right"
               toastOptions={{

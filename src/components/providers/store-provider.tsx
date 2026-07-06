@@ -65,6 +65,7 @@ const LS = {
   wishlist: "luxora.wishlist",
   recent: "luxora.recent",
   coupon: "luxora.coupon",
+  country: "luxora.country",
 };
 
 function variantKeyOf(variant?: Record<string, string>) {
@@ -92,6 +93,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  // Destination country for location-based tax & shipping. Defaults to the
+  // store's default country until the shopper picks/detects one.
+  const [shipCountry, setShipCountry] = useState<string>(
+    siteConfig.defaultCountry,
+  );
 
   // Hydrate from localStorage once on mount. This MUST run in an effect
   // (not a useState initializer) to avoid a server/client hydration mismatch,
@@ -102,6 +108,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setWishlist(readLS<string[]>(LS.wishlist, []));
     setRecentlyViewed(readLS<string[]>(LS.recent, []));
     setCoupon(readLS<Coupon | null>(LS.coupon, null));
+    setShipCountry(readLS<string>(LS.country, siteConfig.defaultCountry));
     setMounted(true);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
@@ -119,6 +126,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (mounted) window.localStorage.setItem(LS.coupon, JSON.stringify(coupon));
   }, [coupon, mounted]);
+  useEffect(() => {
+    if (mounted) window.localStorage.setItem(LS.country, JSON.stringify(shipCountry));
+  }, [shipCountry, mounted]);
 
   const addItem = useCallback(
     (item: Omit<CartItem, "quantity">, qty = 1) => {
@@ -202,12 +212,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const removeCoupon = useCallback(() => setCoupon(null), []);
-
-  // Destination country for location-based tax & shipping. Defaults to the
-  // store's default country until the shopper picks one at checkout.
-  const [shipCountry, setShipCountry] = useState<string>(
-    siteConfig.defaultCountry,
-  );
 
   const subtotal = useMemo(
     () => items.reduce((sum, i) => sum + i.price * i.quantity, 0),
