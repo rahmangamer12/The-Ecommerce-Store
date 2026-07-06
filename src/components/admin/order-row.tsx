@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { ChevronDown, Truck, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import { ChevronDown, Truck, Loader2, CheckCircle2, AlertTriangle, Phone, MessageCircle } from "lucide-react";
 import type { OrderView } from "@/lib/order-queries";
 import { updateOrderStatus } from "@/lib/order-actions";
 import { sendOrderToCj } from "@/lib/cj-fulfillment";
@@ -21,6 +21,20 @@ const statuses = [
   "cancelled",
   "refunded",
 ];
+
+// Human labels for how the customer chose to pay.
+const PAYMENT_LABELS: Record<string, string> = {
+  bank: "Bank transfer",
+  whatsapp: "WhatsApp",
+  cod: "Cash on Delivery",
+  paypal: "PayPal",
+  card: "Card (online)",
+};
+
+/** Digits-only phone for tel:/wa.me links. */
+function cleanPhone(p?: string) {
+  return (p ?? "").replace(/[^\d]/g, "");
+}
 
 // One order row with an expandable panel + a real status updater (Supabase).
 export function AdminOrderRow({ order }: { order: OrderView }) {
@@ -108,6 +122,40 @@ export function AdminOrderRow({ order }: { order: OrderView }) {
                   {order.address?.country && <p>{order.address.country}</p>}
                   <p className="mt-1">{order.customerEmail}</p>
                 </div>
+
+                {/* Payment method — so you can spot bank/WhatsApp orders that
+                    need you to confirm payment before shipping. */}
+                {order.paymentMethod && (
+                  <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium">
+                    Paid via {PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod}
+                  </p>
+                )}
+
+                {/* Phone — call or WhatsApp the customer directly. Essential for
+                    bank transfer & WhatsApp orders. */}
+                {order.address?.phone && (
+                  <div className="mt-3">
+                    <p className="text-sm font-medium text-ink">{order.address.phone}</p>
+                    <div className="mt-1.5 flex gap-2">
+                      <a
+                        href={`tel:${cleanPhone(order.address.phone)}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:border-gold"
+                      >
+                        <Phone className="h-3.5 w-3.5" /> Call
+                      </a>
+                      <a
+                        href={`https://wa.me/${cleanPhone(order.address.phone)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
+                      </a>
+                    </div>
+                  </div>
+                )}
 
                 <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-muted">
                   Update status {saving && "…"}

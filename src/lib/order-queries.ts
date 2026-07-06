@@ -16,7 +16,10 @@ export type OrderView = {
     city?: string;
     zip?: string;
     country?: string;
+    phone?: string;
   };
+  // How the customer chose to pay: "bank" | "whatsapp" | "cod" | "paypal" | "card"
+  paymentMethod?: string;
   // CJ Dropshipping fulfilment
   fulfillmentStatus?: string;
   cjOrderId?: string;
@@ -45,6 +48,7 @@ function mapOrder(r: Row): OrderView {
     total: Number(r.total ?? 0),
     items,
     address: (r.shipping_address as OrderView["address"]) ?? undefined,
+    paymentMethod: r.payment_method ? String(r.payment_method) : undefined,
     fulfillmentStatus: r.fulfillment_status ? String(r.fulfillment_status) : undefined,
     cjOrderId: r.cj_order_id ? String(r.cj_order_id) : undefined,
     trackingNumber: r.tracking_number ? String(r.tracking_number) : undefined,
