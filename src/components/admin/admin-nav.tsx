@@ -10,6 +10,7 @@ import {
   Users,
   BarChart3,
   Ticket,
+  Bell,
   Settings,
   Store,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const links = [
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
+  { href: "/admin/notifications", label: "Notifications", icon: Bell },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

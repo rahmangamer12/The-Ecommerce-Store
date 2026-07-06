@@ -56,6 +56,15 @@ export const aiBaseUrl = (
   process.env.LONGCAT_BASE_URL ?? "https://api.longcat.chat/anthropic/"
 ).replace(/\/+$/, "");
 
+// ---- Web push notifications (VAPID) ----
+// Generate with:  npx web-push generate-vapid-keys
+// The PUBLIC key is safe to expose (NEXT_PUBLIC_); keep the PRIVATE key secret.
+export const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
+export const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY ?? "";
+// Contact used by push services if a subscription misbehaves (mailto: or URL).
+export const vapidSubject =
+  process.env.VAPID_SUBJECT ?? "mailto:admin@souqempire.com";
+
 // ---- Cloudinary (image hosting / upload) ----
 export const cloudinaryCloudName =
   process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
@@ -96,6 +105,7 @@ export const isPaypalConfigured = Boolean(paypalClientId && paypalClientSecret);
 export const isCloudinaryConfigured = Boolean(cloudinaryCloudName);
 export const isCjConfigured = Boolean(cjEmail && cjApiKey);
 export const isAiConfigured = Boolean(aiApiKey);
+export const isPushConfigured = Boolean(vapidPublicKey && vapidPrivateKey);
 export const isEmailConfigured = Boolean(
   resendApiKey || mailchimpApiKey || convertkitApiKey,
 );

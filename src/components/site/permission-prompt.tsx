@@ -5,6 +5,52 @@ import { toast } from "sonner";
 import { Bell, MapPin, X } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { siteConfig } from "@/config/site";
+import { savePushSubscription } from "@/lib/push-actions";
+
+const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
+
+/** Convert a base64url VAPID key to the Uint8Array the browser expects. */
+function urlBase64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
+  const padding = "=".repeat((4 - (base64.length % 4)) % 4);
+  const b64 = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(b64);
+  const arr = new Uint8Array(new ArrayBuffer(raw.length));
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+/** Register the service worker and subscribe this browser to web push. */
+async function subscribeToPush(country?: string): Promise<void> {
+  if (
+    !VAPID_PUBLIC ||
+    !("serviceWorker" in navigator) ||
+    !("PushManager" in window)
+  ) {
+    return;
+  }
+  try {
+    const reg = await navigator.serviceWorker.register("/sw.js");
+    const existing = await reg.pushManager.getSubscription();
+    const sub =
+      existing ??
+      (await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
+      }));
+    const json = sub.toJSON() as {
+      endpoint?: string;
+      keys?: { p256dh?: string; auth?: string };
+    };
+    if (json.endpoint && json.keys?.p256dh && json.keys?.auth) {
+      await savePushSubscription(
+        { endpoint: json.endpoint, keys: { p256dh: json.keys.p256dh, auth: json.keys.auth } },
+        country,
+      );
+    }
+  } catch {
+    /* subscription failed (unsupported / blocked) — non-fatal */
+  }
+}
 
 // A friendly "enable notifications & location" card — like most shops show.
 // Location auto-detects the shopper's country so shipping & tax are accurate;
@@ -50,26 +96,8 @@ export function PermissionPrompt() {
   async function enable() {
     setBusy(true);
 
-    // 1) Notifications — request permission, then a friendly welcome ping.
-    try {
-      if ("Notification" in window && Notification.permission === "default") {
-        const perm = await Notification.requestPermission();
-        if (perm === "granted") {
-          try {
-            new Notification(`Welcome to ${siteConfig.name}! 🎉`, {
-              body: "You'll get our best deals & order updates here.",
-              icon: "/icon.png",
-            });
-          } catch {
-            /* some mobile browsers need a service worker — ignore */
-          }
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-
-    // 2) Location — detect country for accurate shipping & tax.
+    // 1) Location — detect country for accurate shipping & tax.
+    let detected: string | undefined;
     if ("geolocation" in navigator) {
       await new Promise<void>((resolve) => {
         navigator.geolocation.getCurrentPosition(
@@ -79,6 +107,7 @@ export function PermissionPrompt() {
               pos.coords.longitude,
             );
             if (code) {
+              detected = code;
               setShipCountry(code);
               toast.success("Location set", {
                 description: `Showing shipping & tax for ${code}.`,
@@ -90,6 +119,29 @@ export function PermissionPrompt() {
           { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 },
         );
       });
+    }
+
+    // 2) Notifications — request permission, subscribe to push, welcome ping.
+    try {
+      if ("Notification" in window && Notification.permission !== "denied") {
+        const perm =
+          Notification.permission === "granted"
+            ? "granted"
+            : await Notification.requestPermission();
+        if (perm === "granted") {
+          await subscribeToPush(detected);
+          try {
+            new Notification(`Welcome to ${siteConfig.name}! 🎉`, {
+              body: "You'll get our best deals & order updates here.",
+              icon: "/icon.png",
+            });
+          } catch {
+            /* some browsers only show via the service worker — ignore */
+          }
+        }
+      }
+    } catch {
+      /* ignore */
     }
 
     setBusy(false);
