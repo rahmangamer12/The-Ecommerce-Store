@@ -98,7 +98,7 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
       .from("orders")
       .insert({
         number: orderNumber,
-        user_id: userId,
+        clerk_user_id: userId,
         customer_name: data.fullName,
         customer_email: data.email.toLowerCase(),
         status: "pending",

@@ -101,7 +101,7 @@ export async function getOrdersForUser(
   const admin = createAdminClient();
   if (!admin) return [];
   const conds: string[] = [];
-  if (userId) conds.push(`user_id.eq.${userId}`);
+  if (userId) conds.push(`clerk_user_id.eq.${userId}`);
   if (email) conds.push(`customer_email.eq.${email.toLowerCase()}`);
   if (!conds.length) return [];
   try {
