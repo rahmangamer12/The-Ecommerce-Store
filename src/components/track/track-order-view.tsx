@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Package,
@@ -36,6 +36,13 @@ export function TrackOrderView() {
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<TrackedOrder | null>(null);
   const [searched, setSearched] = useState(false);
+
+  // Pre-fill the order number when arriving from the order-success page
+  // (…/track-order?order=LX-123), so guests just add their email.
+  useEffect(() => {
+    const n = new URLSearchParams(window.location.search).get("order");
+    if (n) setNumber(n.toUpperCase());
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
