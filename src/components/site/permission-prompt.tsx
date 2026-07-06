@@ -78,12 +78,17 @@ export function PermissionPrompt() {
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  // Show once, a moment after load, unless already handled/dismissed.
+  // Show once — but only after the cookie notice has been dealt with, so the
+  // two cards don't stack on top of each other.
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.localStorage.getItem(HANDLED_KEY)) return;
-    const id = window.setTimeout(() => setShow(true), 2500);
-    return () => window.clearTimeout(id);
+    const id = window.setInterval(() => {
+      if (!window.localStorage.getItem("luxora.cookies")) return; // wait
+      setShow(true);
+      window.clearInterval(id);
+    }, 1500);
+    return () => window.clearInterval(id);
   }, []);
 
   function close(remember: boolean) {
