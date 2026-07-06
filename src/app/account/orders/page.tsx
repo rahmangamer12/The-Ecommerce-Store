@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Package } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
-import { getOrdersForEmail } from "@/lib/order-queries";
+import { getOrdersForUser } from "@/lib/order-queries";
 import { OrderStatusBadge } from "@/components/order-status-badge";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function OrderHistoryPage() {
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
-  const orders = await getOrdersForEmail(email);
+  const orders = await getOrdersForUser(user?.id, email);
 
   if (orders.length === 0) {
     return (

@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { currentUser } from "@clerk/nextjs/server";
 import { getCatalogProductById } from "@/lib/catalog";
 import { findCoupon } from "@/data/coupons";
 import { siteUrl } from "@/config/site";
@@ -84,6 +85,11 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
   const orderNumber = generateOrderNumber(Math.floor(total * 100));
   const paymentMethod = data.paymentMethod || "cod";
 
+  // Link the order to the signed-in shopper (if any), so it shows in their
+  // account even if the checkout email differs from their account email.
+  const user = await currentUser();
+  const userId = user?.id ?? null;
+
   // Persist the order. Cash-on-Delivery orders start as "pending" (awaiting
   // delivery + payment); other methods can mark "paid" once confirmed.
   const admin = createAdminClient();
@@ -92,6 +98,7 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
       .from("orders")
       .insert({
         number: orderNumber,
+        user_id: userId,
         customer_name: data.fullName,
         customer_email: data.email.toLowerCase(),
         status: "pending",

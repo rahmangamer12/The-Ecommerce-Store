@@ -89,3 +89,30 @@ export async function getOrdersForEmail(email?: string | null): Promise<OrderVie
     return [];
   }
 }
+
+/**
+ * Orders for a signed-in shopper: matched by their Clerk user id OR the account
+ * email — so orders show up even if a different email was typed at checkout.
+ */
+export async function getOrdersForUser(
+  userId?: string | null,
+  email?: string | null,
+): Promise<OrderView[]> {
+  const admin = createAdminClient();
+  if (!admin) return [];
+  const conds: string[] = [];
+  if (userId) conds.push(`user_id.eq.${userId}`);
+  if (email) conds.push(`customer_email.eq.${email.toLowerCase()}`);
+  if (!conds.length) return [];
+  try {
+    const { data, error } = await admin
+      .from("orders")
+      .select("*, order_items(*)")
+      .or(conds.join(","))
+      .order("created_at", { ascending: false });
+    if (error || !data) return [];
+    return data.map(mapOrder);
+  } catch {
+    return [];
+  }
+}

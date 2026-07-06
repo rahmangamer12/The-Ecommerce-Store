@@ -371,6 +371,7 @@ export type CjOrderInput = {
   shipping: {
     name: string;
     countryCode: string;
+    country?: string; // full country name — CJ's createOrder wants this too
     province?: string;
     city: string;
     address: string;
@@ -445,6 +446,8 @@ export async function createCjOrder(
       body: {
         orderNumber: input.orderNumber,
         shippingCountryCode: input.shipping.countryCode,
+        // CJ's createOrder requires the country NAME too (not just the code).
+        shippingCountry: input.shipping.country || input.shipping.countryCode,
         shippingProvince: input.shipping.province ?? "",
         shippingCity: input.shipping.city,
         shippingAddress: input.shipping.address,

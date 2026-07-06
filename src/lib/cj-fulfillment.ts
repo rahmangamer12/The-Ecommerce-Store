@@ -115,6 +115,7 @@ async function pushOrderToCj(order: OrderRow): Promise<FulfillResult> {
       name: addr.fullName ?? "",
       // CJ needs the 2-letter ISO code (checkout stores the full name).
       countryCode: toCountryCode(addr.country),
+      country: addr.country ?? "",
       // CJ requires a non-empty province — fall back to the city when the
       // checkout didn't capture a state/province.
       province: (addr.state && addr.state.trim()) || city,
