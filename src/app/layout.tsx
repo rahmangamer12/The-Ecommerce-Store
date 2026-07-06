@@ -14,6 +14,7 @@ import { CartDrawer } from "@/components/cart/cart-drawer";
 import { AssistantWidget } from "@/components/ai/assistant-widget";
 import { PermissionPrompt } from "@/components/site/permission-prompt";
 import { CookieConsent } from "@/components/site/cookie-consent";
+import { VisitTracker } from "@/components/visit-tracker";
 import { Analytics } from "@/components/analytics";
 import { buildMetadata } from "@/lib/seo";
 import { analytics, isAiConfigured } from "@/config/env";
@@ -65,6 +66,7 @@ export default async function RootLayout({
             <AssistantWidget enabled={isAiConfigured} />
             <CookieConsent />
             <PermissionPrompt />
+            <VisitTracker />
             <Toaster
               position="bottom-right"
               toastOptions={{
