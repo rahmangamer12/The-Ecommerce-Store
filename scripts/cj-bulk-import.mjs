@@ -52,13 +52,23 @@ if (!DB_URL) {
 
 // --- keyword → category map (what to search on CJ, and where it lands) ---
 const CATEGORY_KEYWORDS = {
-  audio: ["earbuds", "headphones", "bluetooth speaker", "earphone", "microphone", "soundbar"],
-  fashion: ["men shirt", "women dress", "handbag", "sunglasses", "wallet", "backpack", "sneakers", "belt"],
-  "home-living": ["kitchen gadget", "home decor", "led lamp", "storage organizer", "cushion", "wall clock", "vacuum"],
-  outdoors: ["camping gear", "hiking backpack", "water bottle", "fishing", "tent", "flashlight", "bike accessory"],
-  technology: ["phone case", "usb charger", "smart watch", "keyboard", "mouse", "power bank", "car accessory", "webcam"],
-  "watches-jewelry": ["watch", "bracelet", "necklace", "ring", "earrings", "jewelry set"],
-  wellness: ["massage", "fitness equipment", "yoga", "skincare tool", "posture corrector", "resistance band"],
+  audio: ["earbuds", "headphones", "bluetooth speaker", "earphone", "microphone", "soundbar", "in ear monitor"],
+  fashion: ["men shirt", "women dress", "sunglasses", "wallet", "sneakers", "belt", "hat cap", "scarf", "women blouse"],
+  "home-living": ["home decor", "led lamp", "storage organizer", "cushion", "wall clock", "curtain", "vase", "photo frame"],
+  outdoors: ["camping gear", "hiking backpack", "water bottle", "fishing", "tent", "flashlight", "binoculars"],
+  technology: ["phone case", "usb charger", "smart watch", "keyboard", "mouse", "power bank", "webcam", "phone holder", "screen protector"],
+  "watches-jewelry": ["watch", "bracelet", "necklace", "ring", "earrings", "jewelry set", "pendant"],
+  wellness: ["massage", "yoga", "posture corrector", "resistance band", "foam roller", "essential oil"],
+  beauty: ["makeup brush", "skincare", "face mask", "hair straightener", "nail art", "lipstick", "facial roller", "eyelash"],
+  sports: ["gym gloves", "dumbbell", "jump rope", "sports water bottle", "running belt", "fitness tracker", "cycling glove"],
+  "kids-baby": ["baby toy", "kids toy", "baby bottle", "building blocks", "plush toy", "kids backpack", "educational toy"],
+  "pet-supplies": ["dog toy", "cat toy", "pet bowl", "dog leash", "pet grooming", "cat bed", "pet feeder"],
+  automotive: ["car phone holder", "car charger", "car organizer", "car seat cover", "dash cam", "car cleaning"],
+  gaming: ["gaming mouse", "gaming headset", "controller", "mousepad", "gaming keyboard", "led strip"],
+  kitchen: ["kitchen gadget", "knife set", "cutting board", "food container", "coffee mug", "kitchen scale", "peeler grater"],
+  office: ["notebook", "pen set", "desk organizer", "sticky notes", "stapler", "file folder", "desk lamp"],
+  tools: ["screwdriver set", "tape measure", "tool kit", "pliers", "drill accessory", "utility knife"],
+  bags: ["backpack", "travel bag", "laptop bag", "crossbody bag", "tote bag", "cosmetic bag", "duffel bag"],
 };
 
 // --- small helpers (ported from the app so imports look identical) ---
@@ -162,7 +172,7 @@ async function main() {
     let catCount = 0;
     for (const keyword of CATEGORY_KEYWORDS[cat]) {
       if (catCount >= perCat || imported >= TOTAL) break;
-      for (let page = 1; page <= 8; page++) {
+      for (let page = 1; page <= 12; page++) {
         if (catCount >= perCat || imported >= TOTAL) break;
         const q = new URLSearchParams({ pageNum: String(page), pageSize: "20", productNameEn: keyword });
         const data = await cjGet(`/product/list?${q.toString()}`);
