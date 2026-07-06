@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import type { CartItem, Coupon } from "@/types";
 import { siteConfig } from "@/config/site";
+import { ratesForCode } from "@/config/geo-rates";
 import { findCoupon } from "@/data/coupons";
 import { analyticsEvents } from "@/lib/analytics";
 
@@ -43,6 +44,9 @@ type StoreState = {
   coupon: Coupon | null;
   applyCoupon: (code: string) => boolean;
   removeCoupon: () => void;
+  // destination country (ISO alpha-2) — drives location-based tax & shipping
+  shipCountry: string;
+  setShipCountry: (code: string) => void;
   // totals
   totals: {
     subtotal: number;
@@ -199,6 +203,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const removeCoupon = useCallback(() => setCoupon(null), []);
 
+  // Destination country for location-based tax & shipping. Defaults to the
+  // store's default country until the shopper picks one at checkout.
+  const [shipCountry, setShipCountry] = useState<string>(
+    siteConfig.defaultCountry,
+  );
+
   const subtotal = useMemo(
     () => items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     [items],
@@ -210,8 +220,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   );
 
   const totals = useMemo(() => {
+    // Tax & shipping depend on the shopper's country.
+    const rate = ratesForCode(shipCountry);
     let discount = 0;
-    let freeShip = subtotal >= siteConfig.freeShippingThreshold;
+    let freeShip = subtotal >= rate.freeShippingThreshold;
 
     if (coupon && (!coupon.minSubtotal || subtotal >= coupon.minSubtotal)) {
       if (coupon.type === "percent") discount = (subtotal * coupon.value) / 100;
@@ -220,14 +232,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
     discount = Math.min(discount, subtotal);
 
-    const shipping =
-      subtotal === 0 ? 0 : freeShip ? 0 : siteConfig.shippingFlatRate;
+    const shipping = subtotal === 0 ? 0 : freeShip ? 0 : rate.shipping;
     const taxable = Math.max(0, subtotal - discount);
-    const tax = +(taxable * siteConfig.taxRate).toFixed(2);
+    const tax = +(taxable * rate.taxRate).toFixed(2);
     const total = +(taxable + shipping + tax).toFixed(2);
 
     return { subtotal, shipping, tax, discount, total };
-  }, [subtotal, coupon]);
+  }, [subtotal, coupon, shipCountry]);
 
   const value: StoreState = {
     items,
@@ -247,6 +258,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     coupon,
     applyCoupon,
     removeCoupon,
+    shipCountry,
+    setShipCountry,
     totals,
     mounted,
   };

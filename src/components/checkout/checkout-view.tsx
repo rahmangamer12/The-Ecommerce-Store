@@ -40,7 +40,8 @@ export function CheckoutView({
   paypalEnabled?: boolean;
 }) {
   const router = useRouter();
-  const { items, totals, coupon, clearCart, mounted } = useStore();
+  const { items, totals, coupon, clearCart, mounted, setShipCountry } =
+    useStore();
   const { formatPrice, t } = usePrefs();
   const [form, setForm] = useState(initialForm);
 
@@ -230,10 +231,13 @@ export function CheckoutView({
               <SearchSelect
                 id="country"
                 value={form.country}
-                onChange={(v) =>
-                  // Changing country clears the previously picked region.
-                  setForm((f) => ({ ...f, country: v, state: "" }))
-                }
+                onChange={(v) => {
+                  // Changing country clears the region and updates the
+                  // location-based tax & shipping in the order summary.
+                  setForm((f) => ({ ...f, country: v, state: "" }));
+                  const code = COUNTRIES.find((c) => c.name === v)?.code ?? "";
+                  setShipCountry(code);
+                }}
                 options={COUNTRY_OPTIONS}
                 placeholder="Select your country"
               />
@@ -372,13 +376,20 @@ export function CheckoutView({
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-ink-soft">Shipping</span>
+              <span className="text-ink-soft">
+                Shipping{form.country ? ` to ${form.country}` : ""}
+              </span>
               <span>{totals.shipping === 0 ? "Free" : formatPrice(totals.shipping)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-ink-soft">Tax</span>
               <span>{formatPrice(totals.tax)}</span>
             </div>
+            {!form.country && (
+              <p className="text-xs text-muted">
+                Select your country to see exact shipping &amp; tax.
+              </p>
+            )}
             <div className="flex justify-between border-t border-border pt-3 text-base font-semibold">
               <span>Total</span>
               <span>{formatPrice(totals.total)}</span>

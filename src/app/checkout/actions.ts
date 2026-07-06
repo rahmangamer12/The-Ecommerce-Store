@@ -3,7 +3,9 @@
 import { z } from "zod";
 import { getCatalogProductById } from "@/lib/catalog";
 import { findCoupon } from "@/data/coupons";
-import { siteConfig, siteUrl } from "@/config/site";
+import { siteUrl } from "@/config/site";
+import { ratesForCode } from "@/config/geo-rates";
+import { toCountryCode } from "@/lib/countries";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createCardPayment } from "@/lib/payments";
 import { createPaypalOrder } from "@/lib/paypal";
@@ -60,9 +62,12 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
     });
   }
 
+  // Location-based tax & shipping — resolved from the shipping country.
+  const rate = ratesForCode(toCountryCode(data.country));
+
   // Coupon
   let discount = 0;
-  let freeShip = subtotal >= siteConfig.freeShippingThreshold;
+  let freeShip = subtotal >= rate.freeShippingThreshold;
   const coupon = data.couponCode ? findCoupon(data.couponCode) : null;
   if (coupon && (!coupon.minSubtotal || subtotal >= coupon.minSubtotal)) {
     if (coupon.type === "percent") discount = (subtotal * coupon.value) / 100;
@@ -71,9 +76,9 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
   }
   discount = Math.min(discount, subtotal);
 
-  const shipping = subtotal === 0 ? 0 : freeShip ? 0 : siteConfig.shippingFlatRate;
+  const shipping = subtotal === 0 ? 0 : freeShip ? 0 : rate.shipping;
   const taxable = Math.max(0, subtotal - discount);
-  const tax = +(taxable * siteConfig.taxRate).toFixed(2);
+  const tax = +(taxable * rate.taxRate).toFixed(2);
   const total = +(taxable + shipping + tax).toFixed(2);
 
   const orderNumber = generateOrderNumber(Math.floor(total * 100));
