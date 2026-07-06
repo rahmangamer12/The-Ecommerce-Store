@@ -96,6 +96,35 @@ export async function getCatalog(): Promise<Product[]> {
   return localProducts;
 }
 
+// Only the columns product CARDS + listing filters need — NOT the heavy
+// description / variants / SEO JSON. Used by the homepage, shop and the client
+// catalogue so pages stay fast even with hundreds of products.
+const CARD_COLUMNS =
+  "id,name,slug,brand,category_slug,price,compare_at_price,currency,short_description,images,rating,review_count,stock,badge,tags,featured,trending,affiliate_url,source,created_at";
+
+/**
+ * Lightweight catalogue for lists/cards: same products as getCatalog() but only
+ * the card-level columns (skips descriptions/variants), so the DB transfer and
+ * payload are a fraction of the size. Falls back to the demo catalogue.
+ */
+export async function getCatalogLite(limit?: number): Promise<Product[]> {
+  const admin = createAdminClient();
+  const fallback = () => (limit ? localProducts.slice(0, limit) : localProducts);
+  if (!admin) return fallback();
+  try {
+    let q = admin
+      .from("products")
+      .select(CARD_COLUMNS)
+      .order("created_at", { ascending: false });
+    if (limit) q = q.limit(limit);
+    const { data, error } = await q;
+    if (error || !data || data.length === 0) return fallback();
+    return data.map(mapRow);
+  } catch {
+    return fallback();
+  }
+}
+
 /** True once the store has at least one real product in the DB. */
 export async function hasDbProducts(): Promise<boolean> {
   const db = await getDbProducts();

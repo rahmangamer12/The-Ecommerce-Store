@@ -19,14 +19,8 @@ import { PromoTiles } from "@/components/home/promo-tiles";
 import { FlashDeal } from "@/components/home/flash-deal";
 import { ShopByPrice } from "@/components/home/shop-by-price";
 import { getCategories } from "@/lib/categories";
-import {
-  getCatalogFeatured,
-  getCatalogTrending,
-  getCatalogOnSale,
-  getCatalogNewArrivals,
-  getCatalogByCategory,
-  getCatalog,
-} from "@/lib/catalog";
+import { getCatalogLite } from "@/lib/catalog";
+import type { Product } from "@/types";
 import { testimonials } from "@/data/testimonials";
 import { getAllPosts } from "@/data/blog";
 import { siteConfig } from "@/config/site";
@@ -34,20 +28,32 @@ import { formatDate } from "@/lib/utils";
 import { jsonLd, websiteSchema, organizationSchema } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
 
+// Cache the rendered homepage for 5 minutes (ISR) so repeat visits are instant
+// and we don't hit the DB on every request. New products appear within 5 min.
+export const revalidate = 300;
+
+const pickN = (flagged: Product[], all: Product[], n: number) =>
+  (flagged.length ? flagged : all).slice(0, n);
+
 export default async function HomePage() {
   const t = getT(await getLocale());
   const categories = await getCategories();
-  const allProducts = await getCatalog();
-  const featured = await getCatalogFeatured(10);
-  const trending = await getCatalogTrending(5);
-  const onSale = await getCatalogOnSale(5);
-  const newArrivals = await getCatalogNewArrivals(5);
-  const posts = getAllPosts().slice(0, 3);
-  // "Just for you" feed — the whole catalogue, marketplace style.
-  const justForYou = allProducts;
-  // Use a real product image for the hero (first watch, else any product).
+
+  // Fetch only the newest ~60 products (not all 800+) and derive every section
+  // from that one small query — so the homepage loads fast. "See more" links to
+  // /shop, which loads the full catalogue for filtering.
+  const allProducts = await getCatalogLite(60);
+  const featured = pickN(allProducts.filter((p) => p.featured), allProducts, 10);
+  const trending = pickN(allProducts.filter((p) => p.trending), allProducts, 5);
+  const onSale = allProducts
+    .filter((p) => p.compareAtPrice && p.compareAtPrice > p.price)
+    .slice(0, 5);
+  const newArrivals = allProducts.slice(0, 5); // getCatalog is newest-first
+  const justForYou = allProducts.slice(0, 12);
   const heroProduct =
-    (await getCatalogByCategory("watches-jewelry"))[0] ?? allProducts[0];
+    allProducts.find((p) => p.categorySlug === "watches-jewelry") ??
+    allProducts[0];
+  const posts = getAllPosts().slice(0, 3);
 
   return (
     <>

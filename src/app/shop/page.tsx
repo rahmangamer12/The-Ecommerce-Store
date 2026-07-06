@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ShopView } from "@/components/shop/shop-view";
-import { getCatalog } from "@/lib/catalog";
+import { getCatalogLite } from "@/lib/catalog";
 import { getCategories } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
@@ -24,7 +24,13 @@ export default async function ShopPage({
 }) {
   const sp = await searchParams;
   const t = getT(await getLocale());
-  const products = await getCatalog();
+  // Trim the heavy fields the grid never uses (descriptions/variants/features
+  // + extra photos) so the payload sent to the client stays small with 800+
+  // products. The product page loads full data on its own.
+  const products = (await getCatalogLite()).map((p) => ({
+    ...p,
+    images: p.images.slice(0, 2),
+  }));
   const categories = await getCategories();
   const validSorts: SortKey[] = ["featured", "newest", "price-asc", "price-desc", "popular"];
   const sort = (validSorts.includes(sp.sort as SortKey) ? sp.sort : "featured") as SortKey;
