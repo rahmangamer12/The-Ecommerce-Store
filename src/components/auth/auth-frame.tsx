@@ -4,12 +4,18 @@ import { ShieldCheck, Truck, Star } from "lucide-react";
 // Premium split-screen frame that wraps the Clerk sign-in / sign-up widget.
 export function AuthFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid min-h-[calc(100vh-7rem)] lg:grid-cols-2">
-      <div className="flex flex-col items-center justify-center px-4 py-12 sm:px-6">
-        <div className="mb-8">
+    // 100dvh (dynamic viewport height) avoids the iOS Safari 100vh bug where the
+    // address bar leaves a gap / pushes content off-screen.
+    <div className="grid min-h-[calc(100dvh-7rem)] lg:grid-cols-2">
+      <div className="flex flex-col items-center justify-center px-4 py-10 sm:px-6 sm:py-12">
+        <div className="mb-6">
           <Logo />
         </div>
-        {children}
+        {/* Wrap the Clerk widget in a real card so it looks polished & clearly
+            framed on every device (iPhone included), not floating on the page. */}
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-luxe sm:p-8">
+          {children}
+        </div>
       </div>
 
       <div className="relative hidden overflow-hidden bg-ink lg:block">
@@ -60,8 +66,8 @@ export const clerkAppearance = {
     fontFamily: "var(--font-sans)",
   },
   elements: {
-    rootBox: "w-full flex justify-center",
-    card: "shadow-none border-0 bg-transparent w-full max-w-sm px-0",
+    rootBox: "w-full",
+    card: "shadow-none border-0 bg-transparent w-full px-0",
     headerTitle: "font-display text-2xl",
     headerSubtitle: "text-muted",
     // Google / Facebook / social buttons — clear border, readable in both themes.
