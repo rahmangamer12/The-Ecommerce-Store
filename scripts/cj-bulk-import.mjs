@@ -145,12 +145,17 @@ async function cjGet(path) {
 }
 
 async function main() {
-  const db = new pg.Client({
+  // Use a POOL (not a single Client) so a dropped pooler connection is
+  // transparently replaced — essential for long overnight runs.
+  const db = new pg.Pool({
     connectionString: DB_URL,
     ssl: { rejectUnauthorized: false },
-    keepAlive: true, // avoid the pooler dropping a long-running connection
+    keepAlive: true,
+    max: 3,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 20_000,
   });
-  await db.connect();
+  db.on("error", (e) => console.log(`  (db pool error, recovering: ${e.message})`));
 
   // token from settings cache
   const tok = await db.query("select value from settings where key=$1", ["cj_auth"]);
