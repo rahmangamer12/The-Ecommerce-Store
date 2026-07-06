@@ -24,6 +24,8 @@ const ROOT = join(__dirname, "..");
 
 const TOTAL = Number(process.argv[2] || 1000);
 const MARKUP = Number(process.argv[3] || 2);
+// Optional: limit to ONE category (top-up), e.g. `… 140 2 wellness`.
+const ONLY_CAT = (process.argv[4] || process.env.ONLY_CAT || "").trim();
 const CJ_BASE = "https://developers.cjdropshipping.com/api2.0/v1";
 
 // --- env ---
@@ -133,7 +135,11 @@ async function cjGet(path) {
 }
 
 async function main() {
-  const db = new pg.Client({ connectionString: DB_URL, ssl: { rejectUnauthorized: false } });
+  const db = new pg.Client({
+    connectionString: DB_URL,
+    ssl: { rejectUnauthorized: false },
+    keepAlive: true, // avoid the pooler dropping a long-running connection
+  });
   await db.connect();
 
   // token from settings cache
@@ -147,7 +153,7 @@ async function main() {
   );
   console.log(`Starting bulk import — target ${TOTAL}, markup ${MARKUP}x. Already have ${existing.size} CJ products.\n`);
 
-  const cats = Object.keys(CATEGORY_KEYWORDS);
+  const cats = Object.keys(CATEGORY_KEYWORDS).filter((c) => !ONLY_CAT || c === ONLY_CAT);
   const perCat = Math.ceil(TOTAL / cats.length);
   let imported = 0, skipped = 0, failed = 0;
 
