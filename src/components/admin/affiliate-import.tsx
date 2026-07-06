@@ -14,7 +14,7 @@ import {
 
 type Preview = {
   title?: string;
-  image?: string;
+  images: string[];
   description?: string;
   price?: number;
   host: string;
@@ -31,6 +31,19 @@ export function AffiliateImport({ categories }: { categories: Category[] }) {
   const [preview, setPreview] = useState<Preview | null>(null);
   const [fetching, setFetching] = useState(false);
   const [importing, setImporting] = useState(false);
+  // Editable fields (prefilled from fetch, but the admin can fix / fill them —
+  // needed for sites like Alibaba that block auto-import).
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [imagesText, setImagesText] = useState("");
+
+  function parseImages(text: string): string[] {
+    return text
+      .split(/[\n,]/)
+      .map((s) => s.trim())
+      .filter((s) => /^https?:\/\//i.test(s))
+      .slice(0, 8);
+  }
 
   async function onFetch() {
     if (!url.trim()) {
@@ -46,8 +59,15 @@ export function AffiliateImport({ categories }: { categories: Category[] }) {
         return;
       }
       setPreview(res.data);
+      setName(res.data.title ?? "");
+      setDescription(res.data.description ?? "");
+      setImagesText((res.data.images ?? []).join("\n"));
       if (res.data.price) setPrice(String(res.data.price));
-      toast.success("Details loaded — set your price and import.");
+      if (res.note) {
+        toast.warning("Fill the details by hand", { description: res.note });
+      } else {
+        toast.success("Details loaded — check them and import.");
+      }
     } finally {
       setFetching(false);
     }
@@ -62,15 +82,20 @@ export function AffiliateImport({ categories }: { categories: Category[] }) {
       toast.error("Enter the price you want to show.");
       return;
     }
+    const images = parseImages(imagesText);
+    if (images.length === 0) {
+      toast.error("Add at least one image URL (copy it from the product page).");
+      return;
+    }
     setImporting(true);
     try {
       const res = await importAffiliateProduct({
         url: url.trim(),
         categorySlug,
         price: Number(price),
-        name: preview?.title,
-        image: preview?.image,
-        description: preview?.description,
+        name: name.trim() || undefined,
+        images,
+        description: description.trim() || undefined,
       });
       if (!res.ok) {
         toast.error(res.error);
@@ -79,6 +104,9 @@ export function AffiliateImport({ categories }: { categories: Category[] }) {
       toast.success("Affiliate product added", { description: res.name });
       setUrl("");
       setPrice("");
+      setName("");
+      setDescription("");
+      setImagesText("");
       setPreview(null);
       router.refresh();
     } finally {
@@ -151,32 +179,65 @@ export function AffiliateImport({ categories }: { categories: Category[] }) {
         </div>
       </div>
 
-      {/* Preview */}
+      {/* Editable details — prefilled from fetch, fix anything by hand */}
       {preview && (
-        <div className="mt-5 flex gap-4 rounded-xl border border-border bg-paper-2/40 p-4">
-          <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-white">
-            {preview.image ? (
-              <Image
-                src={preview.image}
-                alt={preview.title ?? ""}
-                fill
-                sizes="96px"
-                className="object-contain p-1"
-              />
-            ) : null}
+        <div className="mt-5 space-y-4 rounded-xl border border-border bg-paper-2/40 p-4">
+          <p className="inline-flex items-center gap-1 text-xs text-muted">
+            <ExternalLink className="h-3 w-3" /> {preview.host}
+          </p>
+
+          <div>
+            <Label>Product title</Label>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Magnetic Camera Frame Holder"
+            />
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="line-clamp-2 text-sm font-medium">
-              {preview.title ?? "(no title found)"}
+
+          <div>
+            <Label>Image URLs (one per line)</Label>
+            <textarea
+              value={imagesText}
+              onChange={(e) => setImagesText(e.target.value)}
+              rows={3}
+              placeholder={"https://…/photo-1.jpg\nhttps://…/photo-2.jpg"}
+              className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-gold focus-visible:outline-none"
+            />
+            <p className="mt-1 text-xs text-muted">
+              Product page pe image par right-click → “Copy image address”, phir
+              yahan paste karo (har line pe ek). Pehli image cover banegi.
             </p>
-            <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted">
-              <ExternalLink className="h-3 w-3" /> {preview.host}
-            </p>
-            {preview.description && (
-              <p className="mt-1 line-clamp-2 text-xs text-muted">
-                {preview.description}
-              </p>
+            {/* Live thumbnails */}
+            {parseImages(imagesText).length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {parseImages(imagesText).map((src, i) => (
+                  <div
+                    key={i}
+                    className="relative h-16 w-16 overflow-hidden rounded-lg border border-border bg-white"
+                  >
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      sizes="64px"
+                      className="object-contain p-1"
+                    />
+                  </div>
+                ))}
+              </div>
             )}
+          </div>
+
+          <div>
+            <Label>Description</Label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              placeholder="Short product description…"
+              className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-gold focus-visible:outline-none"
+            />
           </div>
         </div>
       )}

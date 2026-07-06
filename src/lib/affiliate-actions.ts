@@ -62,10 +62,58 @@ function meta(html: string, keys: string[]): string | undefined {
 
 type Scraped = {
   title?: string;
-  image?: string;
+  /** Primary image first, then any gallery shots we could find. */
+  images: string[];
   description?: string;
   price?: number;
+  /** True when the site served a bot/CAPTCHA wall instead of the product. */
+  blocked?: boolean;
 };
+
+/** Skip logos, sprites, icons and tiny banner images — keep real photos. */
+function isLikelyProductImage(u: string): boolean {
+  if (!/^https?:\/\//i.test(u)) return false;
+  if (/\b(logo|sprite|icon|placeholder|avatar|banner|flag)\b/i.test(u)) return false;
+  // Alibaba/AliExpress tiny banner assets look like ...tps-297-40.png
+  if (/tps-\d{1,3}-\d{1,3}\.(png|jpg|webp)/i.test(u)) return false;
+  return /\.(jpe?g|png|webp|avif)(\?|$)/i.test(u) || /alicdn|amazon|ebayimg|media-amazon/i.test(u);
+}
+
+/** Collect every product image we can find (OG tags + JSON-LD), de-duped. */
+function collectImages(html: string): string[] {
+  const out = new Set<string>();
+  const push = (raw?: string) => {
+    if (!raw) return;
+    let u = decodeEntities(raw).trim();
+    if (u.startsWith("//")) u = "https:" + u;
+    if (isLikelyProductImage(u)) out.add(u);
+  };
+
+  // Every og:image / twitter:image (both attribute orders).
+  const re1 =
+    /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]*content=["']([^"']+)["']/gi;
+  const re2 =
+    /<meta[^>]+content=["']([^"']+)["'][^>]*(?:property|name)=["'](?:og:image[^"']*|twitter:image[^"']*)["']/gi;
+  for (const re of [re1, re2]) {
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(html))) push(m[1]);
+  }
+
+  // JSON-LD "image": "url" | ["url", ...]
+  const ld = html.match(/"image"\s*:\s*(\[[^\]]*\]|"[^"]+")/i);
+  if (ld) {
+    try {
+      const val = JSON.parse(ld[1].replace(/'/g, '"'));
+      (Array.isArray(val) ? val : [val]).forEach((u) =>
+        typeof u === "string" ? push(u) : undefined,
+      );
+    } catch {
+      /* ignore malformed JSON-LD */
+    }
+  }
+
+  return [...out].slice(0, 8);
+}
 
 /** Fetch a URL and pull out Open Graph / basic product details. */
 async function scrape(url: string): Promise<Scraped> {
@@ -84,18 +132,20 @@ async function scrape(url: string): Promise<Scraped> {
     meta(html, ["og:title", "twitter:title"]) ??
     html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
 
-  const image = meta(html, [
-    "og:image:secure_url",
-    "og:image",
-    "twitter:image",
-    "twitter:image:src",
-  ]);
+  const images = collectImages(html);
 
   const description = meta(html, [
     "og:description",
     "twitter:description",
     "description",
   ]);
+
+  // Anti-bot wall: no real data + tell-tale CAPTCHA/punish markers.
+  // (Alibaba/AliExpress serve this to server-side fetches.)
+  const blocked =
+    !title &&
+    images.length === 0 &&
+    /punish|captcha|slide.?to.?verify|_+tmd_+|nc_container|X5Referer/i.test(html);
 
   // Price: OG/product meta, else a "price":<n> in embedded JSON-LD.
   let price: number | undefined;
@@ -118,16 +168,17 @@ async function scrape(url: string): Promise<Scraped> {
 
   return {
     title: title ? decodeEntities(title) : undefined,
-    image,
+    images,
     description: description ? decodeEntities(description) : undefined,
     price,
+    blocked,
   };
 }
 
 const urlSchema = z.string().url("Enter a valid product link.");
 
 export type AffiliatePreview =
-  | { ok: true; data: Scraped & { host: string } }
+  | { ok: true; data: Scraped & { host: string }; note?: string }
   | { ok: false; error: string };
 
 /** Preview what we can pull from an affiliate link before importing. */
@@ -138,11 +189,15 @@ export async function previewAffiliate(url: string): Promise<AffiliatePreview> {
   try {
     const data = await scrape(parsed.data);
     const host = new URL(parsed.data).hostname.replace(/^www\./, "");
-    if (!data.title && !data.image) {
+
+    // Sites like Alibaba/AliExpress block server fetches or render via JS, so
+    // we can't read them automatically. Don't fail — return an empty preview
+    // with a note so the admin can paste the title/images/price by hand.
+    if (data.blocked || (!data.title && data.images.length === 0)) {
       return {
-        ok: false,
-        error:
-          "Couldn't read that page (the site may block bots). You can still import it and fill the details by hand.",
+        ok: true,
+        data: { ...data, host },
+        note: `${host} auto-import ko block karta hai. Product page se title, image URLs aur price neeche khud paste kar do — baaqi sab ho jayega.`,
       };
     }
     return { ok: true, data: { ...data, host } };
@@ -156,7 +211,7 @@ const importSchema = z.object({
   categorySlug: z.string().min(1, "Choose a category"),
   price: z.number().positive("Enter the price to show"),
   name: z.string().optional(),
-  image: z.string().optional(),
+  images: z.array(z.string()).optional(),
   description: z.string().optional(),
   compareAtPrice: z.number().optional(),
 });
@@ -182,19 +237,20 @@ export async function importAffiliateProduct(
 
   // Fill any missing details straight from the page.
   let name = d.name?.trim();
-  let image = d.image?.trim();
+  let images = (d.images ?? []).map((s) => s.trim()).filter(Boolean);
   let description = d.description?.trim();
-  if (!name || !image) {
+  if (!name || images.length === 0) {
     try {
       const s = await scrape(d.url);
       name = name || s.title;
-      image = image || s.image;
+      if (images.length === 0) images = s.images;
       description = description || s.description;
     } catch {
       // best-effort — fall through to defaults below
     }
   }
   name = (name || host).slice(0, 140);
+  images = images.slice(0, 8);
 
   // Let the AI pick the best category when the admin chose "Auto".
   let resolvedCategory = d.categorySlug;
@@ -225,7 +281,7 @@ export async function importAffiliateProduct(
     short_description: (description || name).slice(0, 150),
     description: description || name,
     features,
-    images: image ? [image] : [],
+    images,
     tags: ["affiliate"],
     stock: 100,
     rating: 5,
