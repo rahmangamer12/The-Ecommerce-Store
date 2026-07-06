@@ -24,6 +24,7 @@ function getSessionId(): string {
 export function VisitTracker() {
   const pathname = usePathname();
 
+  // Log a page view on every route (skips admin).
   useEffect(() => {
     if (!pathname || pathname.startsWith("/admin")) return;
     try {
@@ -42,6 +43,29 @@ export function VisitTracker() {
       /* ignore */
     }
   }, [pathname]);
+
+  // Heartbeat for the live "online now" count — ping every 45s while the tab
+  // is visible. Mounted once (component lives in the root layout).
+  useEffect(() => {
+    const ping = () => {
+      if (typeof document === "undefined") return;
+      if (document.visibilityState !== "visible") return;
+      if (window.location.pathname.startsWith("/admin")) return;
+      fetch("/api/ping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: getSessionId() }),
+        keepalive: true,
+      }).catch(() => {});
+    };
+    ping();
+    const id = window.setInterval(ping, 45_000);
+    document.addEventListener("visibilitychange", ping);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", ping);
+    };
+  }, []);
 
   return null;
 }

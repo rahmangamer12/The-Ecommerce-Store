@@ -1,5 +1,6 @@
 import { Monitor, Smartphone, Tablet, Users, Eye, Globe } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { OnlineNow } from "@/components/admin/online-now";
 
 export const dynamic = "force-dynamic";
 
@@ -84,12 +85,15 @@ export default async function AdminVisitorsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Visitors</h1>
-        <p className="mt-1 text-sm text-muted">
-          Who&apos;s visiting your store — devices, pages and where they came from.
-          Breakdowns use the most recent {rows.length.toLocaleString()} views.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-semibold tracking-tight">Visitors</h1>
+          <p className="mt-1 text-sm text-muted">
+            Who&apos;s visiting your store — devices, pages and where they came from.
+            Breakdowns use the most recent {rows.length.toLocaleString()} views.
+          </p>
+        </div>
+        <OnlineNow />
       </div>
 
       {rows.length === 0 ? (
