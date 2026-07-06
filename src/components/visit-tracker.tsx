@@ -8,6 +8,11 @@ import { usePathname } from "next/navigation";
 // are skipped so the owner's own browsing doesn't pollute the stats.
 const SID_KEY = "souq.sid";
 
+// Don't track the owner's admin/auth/account pages — only real storefront browsing.
+function isPrivate(path: string) {
+  return /^\/(admin|login|register|account|api)(\/|$)/.test(path);
+}
+
 function getSessionId(): string {
   try {
     let v = window.localStorage.getItem(SID_KEY);
@@ -26,7 +31,7 @@ export function VisitTracker() {
 
   // Log a page view on every route (skips admin).
   useEffect(() => {
-    if (!pathname || pathname.startsWith("/admin")) return;
+    if (!pathname || isPrivate(pathname)) return;
     try {
       const body = JSON.stringify({
         path: pathname,
@@ -50,7 +55,7 @@ export function VisitTracker() {
     const ping = () => {
       if (typeof document === "undefined") return;
       if (document.visibilityState !== "visible") return;
-      if (window.location.pathname.startsWith("/admin")) return;
+      if (isPrivate(window.location.pathname)) return;
       fetch("/api/ping", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

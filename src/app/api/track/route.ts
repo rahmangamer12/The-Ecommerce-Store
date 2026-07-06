@@ -13,8 +13,8 @@ export async function POST(req: Request) {
     };
 
     const path = (body.path ?? "/").slice(0, 300);
-    // Never log admin/API traffic — we only care about real shoppers.
-    if (path.startsWith("/admin") || path.startsWith("/api")) {
+    // Never log admin/auth/account/API traffic — only real shopper browsing.
+    if (/^\/(admin|login|register|account|api)(\/|$)/.test(path)) {
       return NextResponse.json({ ok: true });
     }
 

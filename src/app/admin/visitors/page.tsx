@@ -100,26 +100,26 @@ export default async function AdminVisitorsPage() {
       {/* Live — always shown, independent of historical data */}
       <LiveVisitors />
 
+      {/* Stat cards — always shown (real totals) */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        {stats.map((s) => (
+          <div key={s.label} className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+            <s.icon className="h-5 w-5 text-gold-strong" />
+            <p className="mt-2 font-display text-2xl font-semibold sm:mt-3">
+              {s.value.toLocaleString()}
+            </p>
+            <p className="text-xs text-muted sm:text-sm">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
       {rows.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center text-sm text-muted">
-          No visits recorded yet. Once people browse your live site, their visits
-          will show up here.
+        <div className="rounded-2xl border border-dashed border-border p-6 text-sm text-muted">
+          Device, page and source breakdowns will appear here as people browse
+          your live store.
         </div>
       ) : (
         <>
-          {/* Stat cards */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label} className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-                <s.icon className="h-5 w-5 text-gold-strong" />
-                <p className="mt-2 font-display text-2xl font-semibold sm:mt-3">
-                  {s.value.toLocaleString()}
-                </p>
-                <p className="text-xs text-muted sm:text-sm">{s.label}</p>
-              </div>
-            ))}
-          </div>
-
           {/* Devices */}
           <div className="grid gap-4 lg:grid-cols-3">
             <Card title="Devices">
