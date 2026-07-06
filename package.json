@@ -7,7 +7,9 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "db:migrate": "node scripts/migrate.mjs"
+    "db:migrate": "node scripts/migrate.mjs",
+    "cj:import": "node scripts/cj-bulk-import.mjs",
+    "cj:sync": "node scripts/cj-sync.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.9",
