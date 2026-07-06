@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { SlidersHorizontal, X, Check, ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { SlidersHorizontal, X, Check, ChevronDown, Loader2 } from "lucide-react";
 import type { Product } from "@/types";
 import { categories as localCategories } from "@/data/categories";
 import type { Category } from "@/types";
@@ -19,7 +19,25 @@ const sortOptions: { key: SortKey; tk: string }[] = [
   { key: "price-desc", tk: "shop.sortPriceDesc" },
 ];
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 12;
+
+// Round-robin products across their categories so the grid shows a MIX (tech,
+// fashion, home, watches…) instead of a long clump of one type — much nicer
+// than 200 women's dresses in a row. Deterministic, so the order is stable.
+function interleaveByCategory(list: Product[]): Product[] {
+  const groups = new Map<string, Product[]>();
+  for (const p of list) {
+    const arr = groups.get(p.categorySlug);
+    if (arr) arr.push(p);
+    else groups.set(p.categorySlug, [p]);
+  }
+  const buckets = [...groups.values()];
+  const out: Product[] = [];
+  for (let i = 0; out.length < list.length; i++) {
+    for (const b of buckets) if (i < b.length) out.push(b[i]);
+  }
+  return out;
+}
 
 export function ShopView({
   products,
@@ -65,12 +83,32 @@ export function ShopView({
         list.sort((a, b) => (b.badge === "New" ? 1 : 0) - (a.badge === "New" ? 1 : 0));
         break;
       default:
+        // Featured first, then MIX the rest across categories for variety.
         list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        list = interleaveByCategory(list);
     }
     return list;
   }, [products, selectedCats, maxPrice, onSale, inStock, sort]);
 
   const visible = filtered.slice(0, page * PAGE_SIZE);
+  const hasMore = visible.length < filtered.length;
+
+  // Infinite scroll: load the next page automatically as the sentinel nears the
+  // viewport (600px early, so it feels seamless — no "Load more" button).
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!hasMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setPage((p) => p + 1);
+      },
+      { rootMargin: "600px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasMore, page, filtered.length]);
 
   function toggleCat(slug: string) {
     setPage(1);
@@ -163,7 +201,10 @@ export function ShopView({
             <div className="relative">
               <select
                 value={sort}
-                onChange={(e) => setSort(e.target.value as SortKey)}
+                onChange={(e) => {
+                  setPage(1);
+                  setSort(e.target.value as SortKey);
+                }}
                 className="h-10 appearance-none rounded-full border border-border bg-card pl-4 pr-9 text-sm focus:border-gold focus-visible:outline-none"
                 aria-label="Sort products"
               >
@@ -205,15 +246,13 @@ export function ShopView({
           </div>
         )}
 
-        {/* Load more */}
-        {visible.length < filtered.length && (
-          <div className="mt-12 flex justify-center">
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              className="rounded-full border border-ink/20 px-8 py-3 text-sm font-medium transition-colors hover:border-gold hover:text-gold-strong"
-            >
-              {t("shop.loadMore")}
-            </button>
+        {/* Infinite scroll: sentinel auto-loads the next page as it nears view */}
+        {hasMore && (
+          <div
+            ref={sentinelRef}
+            className="mt-12 flex justify-center py-4 text-muted"
+          >
+            <Loader2 className="h-6 w-6 animate-spin" />
           </div>
         )}
       </div>
