@@ -51,37 +51,75 @@ function gallery(seed: string): string[] {
   return ids.map((id) => `${U}${id}${Q}`);
 }
 
-// A small pool of reviews reused across products for realism.
+const REVIEW_NAMES = [
+  "Amelia R.", "Daniel K.", "Priya S.", "James M.", "Sofia L.", "Omar H.",
+  "Emma W.", "Liam T.", "Ava C.", "Noah B.", "Isla F.", "Hassan A.",
+  "Chloe D.", "Ethan P.", "Maya N.", "Yusuf K.", "Grace O.", "Leo S.",
+  "Zara Q.", "Mateo V.", "Fatima Z.", "Oliver G.", "Nadia R.", "Aisha M.",
+];
+
+const REVIEW_CONTENT = [
+  { title: "Exceeded my expectations", body: "The quality is genuinely better than I expected — feels more expensive than it cost." },
+  { title: "Worth every penny", body: "Fast shipping and the product is flawless. Will definitely order again." },
+  { title: "Really happy with this", body: "Exactly as described and arrived quicker than I expected. Great value." },
+  { title: "Great value for money", body: "Does exactly what it says. Solid build and looks great in person." },
+  { title: "Better than I hoped", body: "Was unsure at this price but it's brilliant — highly recommend it." },
+  { title: "Lovely quality", body: "Feels well made and the finish is lovely. Very pleased with my order overall." },
+  { title: "Would buy again", body: "Second time ordering from here. Consistent quality and quick delivery." },
+  { title: "Does the job well", body: "Good quality for the price. Packaging was neat and it works perfectly." },
+  { title: "Impressed", body: "Arrived well packaged and works exactly as expected. No complaints at all." },
+  { title: "Highly recommend", body: "Exactly what I needed — practical, good looking and easy to use." },
+  { title: "Good, just check the size", body: "Great finish and materials; just double-check the dimensions before buying." },
+  { title: "Excellent", body: "Really useful and well designed. Everyone who's seen it has loved it." },
+  { title: "Perfect gift", body: "Bought it as a present and they absolutely loved it — looked pricier than it was." },
+  { title: "Solid purchase", body: "Sturdy, practical and arrived on time. Very happy with it." },
+  { title: "Using it every day", body: "Has quickly become something I reach for daily. Wish I'd bought it sooner." },
+  { title: "Nice surprise", body: "Didn't expect much at this price but the quality really stood out." },
+];
+
+function reviewHash(s: string): number {
+  let h = 0;
+  for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) | 0;
+  return Math.abs(h);
+}
+
+// Varied, realistic-looking reviews — different names, text, ratings and dates
+// per product (derived from the slug), so they don't read as copy-pasted.
 function sampleReviews(seed: string): ProductReview[] {
-  return [
-    {
-      id: `${seed}-r1`,
-      author: "Amelia R.",
-      rating: 5,
-      title: "Exceeded my expectations",
-      body: "The quality is genuinely premium — feels far more expensive than it cost. Packaging was beautiful too.",
-      date: "2026-05-18",
-      verified: true,
-    },
-    {
-      id: `${seed}-r2`,
-      author: "Daniel K.",
-      rating: 5,
-      title: "Worth every penny",
-      body: "Fast worldwide shipping and the product is flawless. This is my third order from Souq Empire.",
-      date: "2026-04-30",
-      verified: true,
-    },
-    {
-      id: `${seed}-r3`,
-      author: "Priya S.",
-      rating: 4,
-      title: "Beautiful, slightly smaller than I imagined",
-      body: "Gorgeous finish and materials. Check the dimensions before ordering — otherwise perfect.",
-      date: "2026-04-12",
-      verified: true,
-    },
-  ];
+  const h = reviewHash(seed);
+  const count = 3 + (h % 3); // 3–5 reviews
+  const usedNames = new Set<string>();
+  const usedContent = new Set<number>();
+  const out: ProductReview[] = [];
+  for (let i = 0; i < count; i++) {
+    let ni = (h + i * 7) % REVIEW_NAMES.length;
+    let guard = 0;
+    while (usedNames.has(REVIEW_NAMES[ni]) && guard++ < REVIEW_NAMES.length) {
+      ni = (ni + 1) % REVIEW_NAMES.length;
+    }
+    usedNames.add(REVIEW_NAMES[ni]);
+
+    let ci = (h + i * 13) % REVIEW_CONTENT.length;
+    guard = 0;
+    while (usedContent.has(ci) && guard++ < REVIEW_CONTENT.length) {
+      ci = (ci + 1) % REVIEW_CONTENT.length;
+    }
+    usedContent.add(ci);
+
+    const rating = (h + i) % 5 === 0 ? 4 : 5; // mostly 5★, occasional 4★
+    const month = 1 + ((h + i * 5) % 6);
+    const day = 3 + ((h + i * 3) % 25);
+    out.push({
+      id: `${seed}-r${i + 1}`,
+      author: REVIEW_NAMES[ni],
+      rating,
+      title: REVIEW_CONTENT[ci].title,
+      body: REVIEW_CONTENT[ci].body,
+      date: `2026-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+      verified: (h + i) % 4 !== 0,
+    });
+  }
+  return out;
 }
 
 export const products: Product[] = [

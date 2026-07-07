@@ -285,14 +285,16 @@ export function Navbar({ categories = localCategories }: { categories?: Category
         {mobileOpen && (
           <>
             <motion.div
-              className="fixed inset-0 z-[60] bg-ink/40 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-[60] bg-black/60 lg:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
             />
+            {/* Literal hex backgrounds (not CSS-var utilities) so the drawer is
+                guaranteed OPAQUE on iOS Safari, which was rendering it see-through. */}
             <motion.div
-              className="fixed left-0 top-0 z-[61] flex h-full w-80 max-w-[85vw] flex-col bg-paper p-5 shadow-luxe-lg lg:hidden"
+              className="fixed left-0 top-0 z-[61] flex h-full w-80 max-w-[85vw] flex-col bg-[#fbfaf8] p-5 shadow-luxe-lg lg:hidden dark:bg-[#161513]"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
