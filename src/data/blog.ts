@@ -6,7 +6,7 @@ export const blogPosts: BlogPost[] = [
     title: "How to Build a Considered Wardrobe That Lasts",
     excerpt:
       "Quality over quantity isn't a cliché — it's a strategy. Here's how to invest in pieces that earn their place for years.",
-    cover: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1200&q=80",
+    cover: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1200&q=80",
     category: "Style",
     tags: ["fashion", "guides", "sustainability"],
     author: {
@@ -39,7 +39,7 @@ Quality pieces reward a little maintenance. Store knitwear folded, condition you
     title: "The Art of the Gift: A Guide to Giving Well",
     excerpt:
       "Great gifts aren't about price. They're about attention. A short guide to choosing presents people actually treasure.",
-    cover: "https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=1200&q=80",
+    cover: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
     category: "Living",
     tags: ["gifts", "guides"],
     author: {
@@ -67,7 +67,7 @@ Half the delight of a gift is the unwrapping. Premium packaging and a handwritte
     title: "Designing a Calm Home in a Busy World",
     excerpt:
       "Your space shapes your mood more than you think. Small, intentional choices can turn any room into a retreat.",
-    cover: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1200&q=80",
+    cover: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
     category: "Home",
     tags: ["home", "wellness", "guides"],
     author: {
@@ -95,7 +95,7 @@ A warm throw, the glow of a diffuser, the weight of a well-made mug — calm is 
     title: "Why Buying Quality Pays for Itself",
     excerpt:
       "The cheapest option is rarely the most affordable. A look at the real math behind buying things that last.",
-    cover: "https://images.unsplash.com/photo-1547949003-9792a18a2601?auto=format&fit=crop&w=1200&q=80",
+    cover: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1200&q=80",
     category: "Living",
     tags: ["guides", "sustainability"],
     author: {

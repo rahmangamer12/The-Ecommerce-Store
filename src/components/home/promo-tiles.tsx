@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { getShopProducts } from "@/lib/catalog";
+import { getCategoryBySlug } from "@/lib/categories";
 
-// Two large promotional tiles — now using REAL product photos from the store
-// (not stock images), so they always reflect the actual catalogue.
+// Two large promotional tiles using the clean category cover photos (curated
+// from products, no marketing-text overlays).
 export async function PromoTiles() {
   const [audio, watches] = await Promise.all([
-    getShopProducts({ category: "audio", pageSize: 1, sort: "popular" }),
-    getShopProducts({ category: "watches-jewelry", pageSize: 1, sort: "popular" }),
+    getCategoryBySlug("audio"),
+    getCategoryBySlug("watches-jewelry"),
   ]);
 
   const tiles = [
@@ -16,13 +16,13 @@ export async function PromoTiles() {
       title: "Sound, perfected",
       subtitle: "Shop Audio",
       href: "/categories/audio",
-      image: audio.products[0]?.images[0],
+      image: audio?.image,
     },
     {
       title: "Timeless on the wrist",
       subtitle: "Shop Watches & Jewelry",
       href: "/categories/watches-jewelry",
-      image: watches.products[0]?.images[0],
+      image: watches?.image,
     },
   ].filter((t) => t.image);
 
