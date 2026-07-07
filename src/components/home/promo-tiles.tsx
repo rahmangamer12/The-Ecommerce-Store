@@ -1,24 +1,33 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { getShopProducts } from "@/lib/catalog";
 
-const tiles = [
-  {
-    title: "Sound, perfected",
-    subtitle: "Up to 20% off Audio",
-    href: "/categories/audio",
-    image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    title: "Timeless on the wrist",
-    subtitle: "New-season Watches",
-    href: "/categories/watches-jewelry",
-    image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80",
-  },
-];
+// Two large promotional tiles — now using REAL product photos from the store
+// (not stock images), so they always reflect the actual catalogue.
+export async function PromoTiles() {
+  const [audio, watches] = await Promise.all([
+    getShopProducts({ category: "audio", pageSize: 1, sort: "popular" }),
+    getShopProducts({ category: "watches-jewelry", pageSize: 1, sort: "popular" }),
+  ]);
 
-// Two large promotional tiles — a staple of premium store homepages.
-export function PromoTiles() {
+  const tiles = [
+    {
+      title: "Sound, perfected",
+      subtitle: "Shop Audio",
+      href: "/categories/audio",
+      image: audio.products[0]?.images[0],
+    },
+    {
+      title: "Timeless on the wrist",
+      subtitle: "Shop Watches & Jewelry",
+      href: "/categories/watches-jewelry",
+      image: watches.products[0]?.images[0],
+    },
+  ].filter((t) => t.image);
+
+  if (tiles.length === 0) return null;
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid gap-5 md:grid-cols-2">
@@ -26,16 +35,16 @@ export function PromoTiles() {
           <Link
             key={tile.href}
             href={tile.href}
-            className="card-lift group relative block aspect-[16/8] overflow-hidden rounded-3xl"
+            className="card-lift group relative block aspect-[16/8] overflow-hidden rounded-3xl bg-paper-2"
           >
             <Image
-              src={tile.image}
+              src={tile.image as string}
               alt={tile.title}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/40 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-center p-8 text-paper sm:p-10">
               <p className="text-sm font-medium text-gold-soft">{tile.subtitle}</p>
               <h3 className="mt-2 max-w-xs font-display text-2xl font-semibold sm:text-3xl">

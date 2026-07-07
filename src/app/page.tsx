@@ -16,6 +16,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { CategoryShowcase } from "@/components/home/category-showcase";
 import { CollectionTiles } from "@/components/home/collection-tiles";
+import { PriceTag } from "@/components/ui/price-tag";
 import { PromoTiles } from "@/components/home/promo-tiles";
 import { FlashDeal } from "@/components/home/flash-deal";
 import { ShopByPrice } from "@/components/home/shop-by-price";
@@ -151,10 +152,10 @@ export default async function HomePage() {
                     {heroProduct.name}
                   </p>
                   <div className="mt-1 flex items-center justify-between">
-                    <span className="font-display text-lg font-semibold text-gold-strong">
-                      {siteConfig.currencySymbol}
-                      {heroProduct.price}
-                    </span>
+                    <PriceTag
+                      value={heroProduct.price}
+                      className="font-display text-lg font-semibold text-gold-strong"
+                    />
                     <Link
                       href={`/products/${heroProduct.slug}`}
                       className="grid h-8 w-8 place-items-center rounded-full bg-ink text-paper"
