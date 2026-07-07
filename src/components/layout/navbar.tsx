@@ -138,9 +138,9 @@ export function Navbar({ categories = localCategories }: { categories?: Category
           >
             <Search className="h-[1.1rem] w-[1.1rem]" />
           </button>
-          {/* Currency/language: hidden on very narrow phones (moved into the
-              mobile drawer) so the cart icon always fits. */}
-          <div className="hidden min-[360px]:block">
+          {/* Currency/language: desktop only — it lives in the mobile drawer so
+              the phone top bar stays uncluttered. */}
+          <div className="hidden lg:block">
             <PrefsSwitcher />
           </div>
           <ThemeToggle className="hidden sm:grid" />
@@ -176,20 +176,13 @@ export function Navbar({ categories = localCategories }: { categories?: Category
             </div>
           ) : (
             <>
-              {/* Desktop: full Sign In button */}
+              {/* Desktop: full Sign In button. On mobile, sign-in lives in the
+                  drawer (prominent) so the top bar stays clean. */}
               <Link
                 href="/login"
                 className="ml-1 hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-gold hover:text-white sm:inline-flex"
               >
                 {t("nav.signin")}
-              </Link>
-              {/* Mobile: compact Sign In icon so it's always reachable */}
-              <Link
-                href="/login"
-                className="grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5 sm:hidden"
-                aria-label="Sign in"
-              >
-                <User className="h-[1.1rem] w-[1.1rem]" />
               </Link>
             </>
           )}
