@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Allow optimized images from these hosts (sample images + Cloudinary).
+  // Serve images WITHOUT Vercel's image optimizer. With thousands of CJ
+  // products the Hobby plan's optimization quota (5,000/mo) is blown instantly,
+  // and once exceeded images stop loading. Loading the CDN URLs directly
+  // (they're already CDN-served) is reliable and quota-free.
   images: {
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "loremflickr.com" },
       { protocol: "https", hostname: "live.staticflickr.com" },
