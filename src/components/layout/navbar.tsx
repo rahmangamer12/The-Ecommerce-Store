@@ -42,6 +42,17 @@ export function Navbar({ categories = localCategories }: { categories?: Category
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Product[]>([]);
 
+  // Lock the page behind the mobile drawer so the body doesn't scroll under it
+  // (otherwise the hero shows "through" the open menu on phones).
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileOpen]);
+
   // Live search preview — fetched from the SERVER (reliable at any catalogue
   // size), debounced so we don't fire on every keystroke.
   useEffect(() => {
@@ -300,7 +311,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
             {/* Literal hex backgrounds (not CSS-var utilities) so the drawer is
                 guaranteed OPAQUE on iOS Safari, which was rendering it see-through. */}
             <motion.div
-              className="fixed right-0 top-0 z-[61] flex h-full w-80 max-w-[85vw] flex-col bg-[#fbfaf8] p-5 shadow-luxe-lg lg:hidden dark:bg-[#161513]"
+              className="fixed right-0 top-0 z-[61] flex h-full w-80 max-w-[85vw] flex-col overflow-y-auto overscroll-contain bg-[#fbfaf8] p-5 shadow-luxe-lg lg:hidden dark:bg-[#161513]"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
