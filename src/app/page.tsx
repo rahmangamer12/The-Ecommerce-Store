@@ -52,9 +52,10 @@ export default async function HomePage() {
     .slice(0, 5);
   const newArrivals = allProducts.slice(0, 5); // getCatalog is newest-first
   const justForYou = allProducts.slice(0, 12);
+  // A popular watch makes a cleaner hero than the newest random import.
   const heroProduct =
-    allProducts.find((p) => p.categorySlug === "watches-jewelry") ??
-    allProducts[0];
+    (await getShopProducts({ category: "watches-jewelry", pageSize: 1, sort: "popular" }))
+      .products[0] ?? allProducts[0];
   const posts = getAllPosts().slice(0, 3);
 
   // Daraz/Alibaba-style: a product row per category. Fetch 6 popular products
