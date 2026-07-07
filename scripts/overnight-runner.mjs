@@ -48,7 +48,7 @@ let prev = 0;
 let stall = 0;
 for (let pass = 1; pass <= MAX_PASSES; pass++) {
   console.log(`\n================= RUNNER PASS ${pass} =================`);
-  run("cj-bulk-import.mjs", ["5000", "2"]);
+  run("cj-bulk-import.mjs", ["6000", "2"]);
 
   const c = await cjCount();
   console.log(`\n>>> after pass ${pass}: ${c} CJ products (prev ${prev})`);

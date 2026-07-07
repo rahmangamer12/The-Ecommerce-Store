@@ -174,7 +174,20 @@ async function main() {
 
   outer:
   for (const cat of cats) {
-    let catCount = 0;
+    // Start from how many this category ALREADY has, and skip it if it's full.
+    // This way restarts fill DIFFERENT (under-stocked) categories instead of
+    // re-importing the first category every time.
+    const existing0 = (
+      await db.query(
+        "select count(*)::int n from products where source='cj' and category_slug=$1",
+        [cat],
+      )
+    ).rows[0].n;
+    if (existing0 >= perCat) {
+      console.log(`— ${cat}: already ${existing0}, skipping`);
+      continue;
+    }
+    let catCount = existing0;
     for (const keyword of CATEGORY_KEYWORDS[cat]) {
       if (catCount >= perCat || imported >= TOTAL) break;
       for (let page = 1; page <= 12; page++) {
@@ -211,7 +224,7 @@ async function main() {
         }
       }
     }
-    console.log(`— ${cat}: ${catCount} added (running total ${imported})`);
+    console.log(`— ${cat}: now ${catCount} (added ${catCount - existing0} this run, total ${imported})`);
     if (imported >= TOTAL) break outer;
   }
 
