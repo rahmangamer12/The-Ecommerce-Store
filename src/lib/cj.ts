@@ -389,43 +389,37 @@ export type CjOrderResult = {
   error?: string;
 };
 
-// CJ requires a non-empty logisticName on every order. This is a widely
-// available default used when the freight lookup returns nothing.
-const DEFAULT_LOGISTIC = "CJPacket Ordinary";
-
 /**
- * Ask CJ for available shipping methods and return the cheapest one's name.
- * ALWAYS returns a name (falls back to CJ_LOGISTIC env, then a safe default)
- * because CJ rejects the order if logisticName is empty.
+ * Ask CJ for the VALID shipping methods for this exact route + products and
+ * return the cheapest one's name. Returns null when none can be found (e.g.
+ * CJ's daily API points are exhausted) — a hard-coded default is NOT used
+ * because CJ rejects it with "Logistic invalid, please reference freight
+ * calculate". `CJ_LOGISTIC` env overrides when you know a valid method.
  */
-async function pickLogistic(input: CjOrderInput): Promise<string> {
+async function pickLogistic(input: CjOrderInput): Promise<string | null> {
   if (cjLogistic) return cjLogistic;
-  try {
-    const env = await cjRequest<
-      { logisticName?: string; name?: string; logisticPrice?: number }[]
-    >(`/logistic/freightCalculate`, {
-      method: "POST",
-      body: {
-        startCountryCode: "CN",
-        endCountryCode: input.shipping.countryCode,
-        products: input.products.map((p) => ({
-          quantity: p.quantity,
-          vid: p.vid,
-        })),
-      },
-    });
-    const options = Array.isArray(env?.data) ? env!.data! : [];
-    if (options.length) {
-      const cheapest = options
-        .slice()
-        .sort((a, b) => num(a.logisticPrice) - num(b.logisticPrice))[0];
-      const nm = cheapest?.logisticName ?? cheapest?.name;
-      if (nm) return String(nm);
-    }
-  } catch {
-    // fall through to the default
+  const env = await cjRequest<
+    { logisticName?: string; name?: string; logisticPrice?: number }[]
+  >(`/logistic/freightCalculate`, {
+    method: "POST",
+    body: {
+      startCountryCode: "CN",
+      endCountryCode: input.shipping.countryCode,
+      products: input.products.map((p) => ({
+        quantity: p.quantity,
+        vid: p.vid,
+      })),
+    },
+  });
+  const options = Array.isArray(env?.data) ? env!.data! : [];
+  if (options.length) {
+    const cheapest = options
+      .slice()
+      .sort((a, b) => num(a.logisticPrice) - num(b.logisticPrice))[0];
+    const nm = cheapest?.logisticName ?? cheapest?.name;
+    if (nm) return String(nm);
   }
-  return DEFAULT_LOGISTIC;
+  return null;
 }
 
 /** Forward an order to CJ for fulfilment. */
@@ -438,6 +432,13 @@ export async function createCjOrder(
   }
 
   const logisticName = await pickLogistic(input);
+  if (!logisticName) {
+    return {
+      ok: false,
+      error:
+        "Couldn't get a CJ shipping rate for this order. This usually means CJ's daily API points are used up (bulk importing consumes them) — try again after they reset (daily), or set CJ_LOGISTIC to a valid method.",
+    };
+  }
 
   const env = await cjRequest<{ orderId?: string; orderNumber?: string }>(
     `/shopping/order/createOrder`,
