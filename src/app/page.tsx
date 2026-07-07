@@ -14,12 +14,13 @@ import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionHeader } from "@/components/sections/section-header";
 import { ProductCard } from "@/components/product/product-card";
 import { CategoryGrid } from "@/components/home/category-grid";
-import { BrandStrip } from "@/components/home/brand-strip";
+import { CategoryShowcase } from "@/components/home/category-showcase";
+import { CollectionTiles } from "@/components/home/collection-tiles";
 import { PromoTiles } from "@/components/home/promo-tiles";
 import { FlashDeal } from "@/components/home/flash-deal";
 import { ShopByPrice } from "@/components/home/shop-by-price";
 import { getCategories } from "@/lib/categories";
-import { getCatalogLite } from "@/lib/catalog";
+import { getCatalogLite, getShopProducts } from "@/lib/catalog";
 import type { Product } from "@/types";
 import { testimonials } from "@/data/testimonials";
 import { getAllPosts } from "@/data/blog";
@@ -54,6 +55,21 @@ export default async function HomePage() {
     allProducts.find((p) => p.categorySlug === "watches-jewelry") ??
     allProducts[0];
   const posts = getAllPosts().slice(0, 3);
+
+  // Daraz/Alibaba-style: a product row per category. Fetch 6 popular products
+  // for each category and keep only the ones that actually have stock.
+  const showcases = (
+    await Promise.all(
+      categories.map(async (cat) => ({
+        category: cat,
+        products: (
+          await getShopProducts({ category: cat.slug, pageSize: 6, sort: "popular" })
+        ).products,
+      })),
+    )
+  )
+    .filter((s) => s.products.length >= 4)
+    .slice(0, 8);
 
   return (
     <>
@@ -157,6 +173,9 @@ export default async function HomePage() {
       {/* ============ CATEGORY QUICK-GRID (Daraz/SHEIN style) ============ */}
       <CategoryGrid categories={categories} title={t("home.catTitle")} />
 
+      {/* ============ POPULAR COLLECTIONS (brand-style tiles) ============ */}
+      <CollectionTiles />
+
       {/* ===================== BENEFITS ===================== */}
       <section className="mt-10 border-y border-border bg-card">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
@@ -233,8 +252,14 @@ export default async function HomePage() {
       {/* ===================== PROMO TILES ===================== */}
       <PromoTiles />
 
-      {/* ===================== BRAND STRIP ===================== */}
-      <BrandStrip />
+      {/* ============ CATEGORY SHOWCASES (Daraz/Alibaba style) ============ */}
+      {showcases.length > 0 && (
+        <div className="bg-paper-2/40 py-6">
+          {showcases.map((s) => (
+            <CategoryShowcase key={s.category.slug} category={s.category} products={s.products} />
+          ))}
+        </div>
+      )}
 
       {/* ===================== NEW ARRIVALS ===================== */}
       {newArrivals.length > 0 && (
