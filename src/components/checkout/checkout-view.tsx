@@ -13,13 +13,11 @@ import { SearchSelect } from "@/components/ui/search-select";
 import { siteConfig } from "@/config/site";
 import { placeOrder } from "@/app/checkout/actions";
 import { COUNTRIES, STATES } from "@/data/geo";
-import { SHIPPING_COUNTRY_SET } from "@/config/shipping-countries";
 
-// Country dropdown options (with flags). ONLY countries we ship to — so a
-// shopper can't place an order we can't fulfil.
-const COUNTRY_OPTIONS = COUNTRIES.filter((c) =>
-  SHIPPING_COUNTRY_SET.has(c.code),
-).map((c) => ({
+// Country dropdown options (with flags). CJ ships to virtually every country,
+// so we list them all — the rare unsupported route is caught by CJ's freight
+// lookup at fulfilment with a clear message.
+const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({
   value: c.name,
   label: `${c.flag} ${c.name}`,
 }));

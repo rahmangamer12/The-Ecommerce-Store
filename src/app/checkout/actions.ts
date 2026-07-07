@@ -6,7 +6,6 @@ import { getCatalogProductById } from "@/lib/catalog";
 import { findCoupon } from "@/data/coupons";
 import { siteUrl } from "@/config/site";
 import { ratesForCode } from "@/config/geo-rates";
-import { SHIPPING_COUNTRY_SET } from "@/config/shipping-countries";
 import { toCountryCode } from "@/lib/countries";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createCardPayment } from "@/lib/payments";
@@ -46,15 +45,6 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
     return { ok: false, error: "Please check your details and try again." };
   }
   const data = parsed.data;
-
-  // Only accept orders to countries we actually ship to (defence-in-depth; the
-  // checkout dropdown already only lists these).
-  if (!SHIPPING_COUNTRY_SET.has(toCountryCode(data.country))) {
-    return {
-      ok: false,
-      error: "Sorry, we don't ship to that country yet. Please choose a supported country.",
-    };
-  }
 
   // Recompute prices SERVER-SIDE from trusted product data (never trust the client).
   let subtotal = 0;

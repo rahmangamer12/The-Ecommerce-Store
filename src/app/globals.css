@@ -85,6 +85,9 @@ body {
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Never allow horizontal scroll / phantom side-gap on any page. `clip`
+     (not `hidden`) so it doesn't break the sticky navbar. */
+  overflow-x: clip;
 }
 
 ::selection {
