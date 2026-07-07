@@ -214,16 +214,48 @@ export async function hasDbProducts(): Promise<boolean> {
 export async function getCatalogProductBySlug(
   slug: string,
 ): Promise<Product | undefined> {
-  const all = await getCatalog();
-  return all.find((p) => p.slug === slug);
+  const admin = createAdminClient();
+  if (admin) {
+    // Query the SINGLE row (not the whole 3k+ catalogue) — fast and reliable,
+    // so product pages don't intermittently 404 under DB load.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const { data, error } = await admin
+          .from("products")
+          .select("*")
+          .eq("slug", slug)
+          .maybeSingle();
+        if (!error && data) return mapRow(data);
+        if (!error) break; // query ok, just no such slug
+      } catch {
+        /* transient — retry once */
+      }
+    }
+  }
+  return localProducts.find((p) => p.slug === slug);
 }
 
-/** Look a product up by id across the live catalogue (DB or demo fallback). */
+/** Look a product up by id (single-row query, with retry + demo fallback). */
 export async function getCatalogProductById(
   id: string,
 ): Promise<Product | undefined> {
-  const all = await getCatalog();
-  return all.find((p) => p.id === id);
+  const admin = createAdminClient();
+  if (admin) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const { data, error } = await admin
+          .from("products")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle();
+        if (!error && data) return mapRow(data);
+        if (!error) break;
+      } catch {
+        /* transient — retry once */
+      }
+    }
+  }
+  return localProducts.find((p) => p.id === id);
 }
 
 export async function getCatalogByCategory(
@@ -269,16 +301,12 @@ export async function getCatalogRelated(
   product: Product,
   limit = 4,
 ): Promise<Product[]> {
-  const all = await getCatalog();
-  return all
-    .filter((p) => p.id !== product.id && p.categorySlug === product.categorySlug)
-    .concat(
-      all.filter(
-        (p) =>
-          p.id !== product.id &&
-          p.categorySlug !== product.categorySlug &&
-          p.tags.some((t) => product.tags.includes(t)),
-      ),
-    )
-    .slice(0, limit);
+  // Efficient: query a small page from the same category (not the whole
+  // catalogue) so product pages stay fast and don't strain the DB.
+  const { products } = await getShopProducts({
+    category: product.categorySlug,
+    pageSize: limit + 1,
+    sort: "popular",
+  });
+  return products.filter((p) => p.id !== product.id).slice(0, limit);
 }
