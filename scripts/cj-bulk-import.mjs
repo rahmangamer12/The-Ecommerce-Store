@@ -18,6 +18,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import pg from "pg";
+import { generateAbout, makeFeatures, shortDesc } from "./lib-clean.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -260,11 +261,11 @@ function buildProduct(d, pid, categorySlug) {
   const price = Math.max(0.99, Math.round(cost * MARKUP * 100) / 100);
   const compareAt = Math.round(price * 1.4 * 100) / 100;
 
-  const description = htmlToText(String(d.description ?? d.productDescription ?? "")) || name;
-  const features = featuresFromText(description, 5);
-  const proseLine = description.split("\n").map((l) => l.trim())
-    .find((l) => l.length > 30 && !/^[A-Za-z][A-Za-z0-9 /&()'-]{1,32}:\s/.test(l));
-  const shortDescription = (proseLine ?? name).slice(0, 150).trim();
+  // Clean, professional copy from CJ's raw spec-dump text.
+  const rawText = htmlToText(String(d.description ?? d.productDescription ?? ""));
+  const description = generateAbout(name, categorySlug, rawText);
+  const features = makeFeatures(rawText);
+  const shortDescription = shortDesc(name, categorySlug, rawText);
 
   // Store variants as one "Option" group — the storefront regroups it into
   // clean Color / Size selectors at render time.
