@@ -206,7 +206,7 @@ async function main() {
     let catCount = existing0;
     for (const keyword of CATEGORY_KEYWORDS[cat]) {
       if (catCount >= perCat || imported >= TOTAL) break;
-      for (let page = 1; page <= 12; page++) {
+      for (let page = 1; page <= 34; page++) {
         if (catCount >= perCat || imported >= TOTAL) break;
         const q = new URLSearchParams({ pageNum: String(page), pageSize: "20", productNameEn: keyword });
         const data = await cjGet(`/product/list?${q.toString()}`);
