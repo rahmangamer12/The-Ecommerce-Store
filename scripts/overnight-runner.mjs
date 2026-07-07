@@ -48,7 +48,9 @@ let prev = 0;
 let stall = 0;
 for (let pass = 1; pass <= MAX_PASSES; pass++) {
   console.log(`\n================= RUNNER PASS ${pass} =================`);
-  run("cj-bulk-import.mjs", ["8000", "2"]);
+  // Pass 1: small target so EVERY (still-empty) category gets a ~150 baseline
+  // fast. Later passes top everyone up toward the full 8000.
+  run("cj-bulk-import.mjs", [pass <= 1 ? "2600" : "8000", "2"]);
 
   const c = await cjCount();
   console.log(`\n>>> after pass ${pass}: ${c} CJ products (prev ${prev})`);
