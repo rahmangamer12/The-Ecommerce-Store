@@ -13,6 +13,7 @@ import { siteConfig } from "@/config/site";
 
 const statuses = [
   "pending",
+  "awaiting_payment",
   "paid",
   "processing",
   "purchased",

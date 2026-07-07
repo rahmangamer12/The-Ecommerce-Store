@@ -90,8 +90,14 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
   const user = await currentUser();
   const userId = user?.id ?? null;
 
-  // Persist the order. Cash-on-Delivery orders start as "pending" (awaiting
-  // delivery + payment); other methods can mark "paid" once confirmed.
+  // Bank transfer & WhatsApp are pay-LATER — the order is NOT complete until the
+  // customer pays and you confirm it, so it starts as "awaiting_payment" (not a
+  // successful/paid order). COD starts "pending" (pay on delivery).
+  const initialStatus =
+    paymentMethod === "bank" || paymentMethod === "whatsapp"
+      ? "awaiting_payment"
+      : "pending";
+
   const admin = createAdminClient();
   if (admin) {
     const { data: order, error } = await admin
@@ -101,7 +107,7 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
         clerk_user_id: userId,
         customer_name: data.fullName,
         customer_email: data.email.toLowerCase(),
-        status: "pending",
+        status: initialStatus,
         payment_method: paymentMethod,
         subtotal,
         shipping,

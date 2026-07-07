@@ -25,7 +25,7 @@ const STEPS = [
 ];
 
 function stepIndex(status: string): number {
-  if (status === "pending") return 0;
+  if (status === "pending" || status === "awaiting_payment") return 0;
   const i = STEPS.findIndex((s) => s.key === status);
   return i === -1 ? 0 : i;
 }

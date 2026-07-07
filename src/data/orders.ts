@@ -187,6 +187,7 @@ export const orderStatusMeta: Record<
   { label: string; className: string }
 > = {
   pending: { label: "Pending", className: "bg-paper-2 text-ink-soft" },
+  awaiting_payment: { label: "Awaiting Payment", className: "bg-amber-500/15 text-amber-600" },
   paid: { label: "Paid", className: "bg-blue-500/15 text-blue-600" },
   processing: { label: "Processing", className: "bg-amber-500/15 text-amber-600" },
   purchased: { label: "Purchased", className: "bg-purple-500/15 text-purple-600" },
