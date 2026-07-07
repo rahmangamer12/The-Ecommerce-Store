@@ -4,7 +4,8 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { adminEmails } from "@/config/env";
+import { adminEmails, cjAutoFulfill } from "@/config/env";
+import { sendOrderToCj } from "@/lib/cj-fulfillment";
 
 export type TrackedOrder = {
   number: string;
@@ -66,6 +67,7 @@ export async function trackOrder(input: unknown): Promise<TrackResult> {
 
 const STATUSES = [
   "pending",
+  "awaiting_payment",
   "paid",
   "processing",
   "purchased",
@@ -92,6 +94,18 @@ export async function updateOrderStatus(
     .update({ status, updated_at: new Date().toISOString() })
     .eq("id", orderId);
   if (error) return { ok: false, error: error.message };
+
+  // Auto-forward to CJ the moment an order is marked PAID — so you don't have
+  // to click "Send to CJ" on every order (handles bulk volume). A CJ failure
+  // here (e.g. daily points/wallet) does NOT undo the paid status; the order's
+  // "Send to CJ" button remains for a retry.
+  if (status === "paid" && cjAutoFulfill) {
+    try {
+      await sendOrderToCj(orderId);
+    } catch {
+      /* never block the status update on a CJ hiccup */
+    }
+  }
 
   revalidatePath("/admin/orders");
   return { ok: true };
