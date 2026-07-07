@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { categories } from "@/data/categories";
 import { getCategoryBySlug } from "@/lib/categories";
-import { getCatalogByCategory } from "@/lib/catalog";
+import { getShopProducts } from "@/lib/catalog";
 import { ShopView } from "@/components/shop/shop-view";
 import { buildMetadata, breadcrumbSchema, jsonLd } from "@/lib/seo";
 
@@ -40,7 +40,12 @@ export default async function CategoryPage({
   const { slug } = await params;
   const cat = await getCategoryBySlug(slug);
   if (!cat) notFound();
-  const products = await getCatalogByCategory(slug);
+  const { products, total } = await getShopProducts({
+    page: 1,
+    pageSize: 24,
+    category: slug,
+    maxPrice: 500,
+  });
 
   return (
     <div>
@@ -76,7 +81,11 @@ export default async function CategoryPage({
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <ShopView products={products} lockedCategory={cat.slug} />
+        <ShopView
+          initialProducts={products}
+          initialTotal={total}
+          lockedCategory={cat.slug}
+        />
       </div>
     </div>
   );

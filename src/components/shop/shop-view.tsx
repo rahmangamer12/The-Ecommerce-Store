@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SlidersHorizontal, X, Check, ChevronDown, Loader2 } from "lucide-react";
-import type { Product } from "@/types";
+import type { Product, Category } from "@/types";
+import type { ShopSort, ShopQuery } from "@/lib/catalog";
 import { categories as localCategories } from "@/data/categories";
-import type { Category } from "@/types";
 import { ProductCard } from "@/components/product/product-card";
 import { usePrefs } from "@/components/providers/prefs-provider";
+import { fetchShopProducts } from "@/app/shop/shop-actions";
 import { cn } from "@/lib/utils";
 
-type SortKey = "featured" | "newest" | "price-asc" | "price-desc" | "popular";
-
-const sortOptions: { key: SortKey; tk: string }[] = [
+const sortOptions: { key: ShopSort; tk: string }[] = [
   { key: "featured", tk: "shop.sortFeatured" },
   { key: "newest", tk: "shop.sortNewest" },
   { key: "popular", tk: "shop.sortPopular" },
@@ -19,36 +18,20 @@ const sortOptions: { key: SortKey; tk: string }[] = [
   { key: "price-desc", tk: "shop.sortPriceDesc" },
 ];
 
-const PAGE_SIZE = 12;
-
-// Round-robin products across their categories so the grid shows a MIX (tech,
-// fashion, home, watches…) instead of a long clump of one type — much nicer
-// than 200 women's dresses in a row. Deterministic, so the order is stable.
-function interleaveByCategory(list: Product[]): Product[] {
-  const groups = new Map<string, Product[]>();
-  for (const p of list) {
-    const arr = groups.get(p.categorySlug);
-    if (arr) arr.push(p);
-    else groups.set(p.categorySlug, [p]);
-  }
-  const buckets = [...groups.values()];
-  const out: Product[] = [];
-  for (let i = 0; out.length < list.length; i++) {
-    for (const b of buckets) if (i < b.length) out.push(b[i]);
-  }
-  return out;
-}
+const PAGE_SIZE = 24;
 
 export function ShopView({
-  products,
+  initialProducts,
+  initialTotal,
   lockedCategory,
   initialSort = "featured",
   initialSale = false,
   categories = localCategories,
 }: {
-  products: Product[];
-  lockedCategory?: string; // when used on a category page
-  initialSort?: SortKey;
+  initialProducts: Product[];
+  initialTotal: number;
+  lockedCategory?: string;
+  initialSort?: ShopSort;
   initialSale?: boolean;
   categories?: Category[];
 }) {
@@ -57,61 +40,80 @@ export function ShopView({
   const [maxPrice, setMaxPrice] = useState(500);
   const [onSale, setOnSale] = useState(initialSale);
   const [inStock, setInStock] = useState(false);
-  const [sort, setSort] = useState<SortKey>(initialSort);
-  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState<ShopSort>(initialSort);
   const [mobileFilters, setMobileFilters] = useState(false);
 
-  const filtered = useMemo(() => {
-    let list = [...products];
-    if (selectedCats.length)
-      list = list.filter((p) => selectedCats.includes(p.categorySlug));
-    list = list.filter((p) => p.price <= maxPrice);
-    if (onSale) list = list.filter((p) => p.compareAtPrice && p.compareAtPrice > p.price);
-    if (inStock) list = list.filter((p) => p.stock > 0);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [total, setTotal] = useState(initialTotal);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const firstRender = useRef(true);
 
-    switch (sort) {
-      case "price-asc":
-        list.sort((a, b) => a.price - b.price);
-        break;
-      case "price-desc":
-        list.sort((a, b) => b.price - a.price);
-        break;
-      case "popular":
-        list.sort((a, b) => b.rating - a.rating);
-        break;
-      case "newest":
-        list.sort((a, b) => (b.badge === "New" ? 1 : 0) - (a.badge === "New" ? 1 : 0));
-        break;
-      default:
-        // Featured first, then MIX the rest across categories for variety.
-        list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-        list = interleaveByCategory(list);
+  function buildQuery(pageNum: number): ShopQuery {
+    return {
+      page: pageNum,
+      pageSize: PAGE_SIZE,
+      category: lockedCategory,
+      categories: lockedCategory || !selectedCats.length ? undefined : selectedCats,
+      sort,
+      maxPrice,
+      onSale: onSale || undefined,
+      inStock: inStock || undefined,
+    };
+  }
+
+  // Filters/sort changed → fetch a fresh page 1 from the server (replace list).
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return; // initial data came from the server render already
     }
-    return list;
-  }, [products, selectedCats, maxPrice, onSale, inStock, sort]);
+    let active = true;
+    setLoading(true);
+    fetchShopProducts(buildQuery(1))
+      .then((res) => {
+        if (!active) return;
+        setProducts(res.products);
+        setTotal(res.total);
+        setPage(1);
+      })
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCats, maxPrice, onSale, inStock, sort]);
 
-  const visible = filtered.slice(0, page * PAGE_SIZE);
-  const hasMore = visible.length < filtered.length;
+  const hasMore = products.length < total;
 
-  // Infinite scroll: load the next page automatically as the sentinel nears the
-  // viewport (600px early, so it feels seamless — no "Load more" button).
+  // Infinite scroll: fetch the next page from the server and append.
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (!hasMore) return;
+    if (!hasMore || loading) return;
     const el = sentinelRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) setPage((p) => p + 1);
+      async (entries) => {
+        if (!entries[0].isIntersecting) return;
+        const next = page + 1;
+        setLoading(true);
+        try {
+          const res = await fetchShopProducts(buildQuery(next));
+          setProducts((prev) => [...prev, ...res.products]);
+          setTotal(res.total);
+          setPage(next);
+        } finally {
+          setLoading(false);
+        }
       },
       { rootMargin: "600px" },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [hasMore, page, filtered.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loading, page]);
 
   function toggleCat(slug: string) {
-    setPage(1);
     setSelectedCats((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
     );
@@ -157,10 +159,7 @@ export function ShopView({
           max={500}
           step={10}
           value={maxPrice}
-          onChange={(e) => {
-            setPage(1);
-            setMaxPrice(Number(e.target.value));
-          }}
+          onChange={(e) => setMaxPrice(Number(e.target.value))}
           className="w-full accent-[var(--gold)]"
         />
         <div className="mt-1 flex justify-between text-xs text-muted">
@@ -171,8 +170,8 @@ export function ShopView({
 
       <FilterGroup title={t("shop.filterAvailability")}>
         <div className="space-y-2.5">
-          <Toggle label={t("shop.onSale")} checked={onSale} onChange={() => { setPage(1); setOnSale((v) => !v); }} />
-          <Toggle label={t("shop.inStockOnly")} checked={inStock} onChange={() => { setPage(1); setInStock((v) => !v); }} />
+          <Toggle label={t("shop.onSale")} checked={onSale} onChange={() => setOnSale((v) => !v)} />
+          <Toggle label={t("shop.inStockOnly")} checked={inStock} onChange={() => setInStock((v) => !v)} />
         </div>
       </FilterGroup>
     </div>
@@ -180,7 +179,6 @@ export function ShopView({
 
   return (
     <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-10">
-      {/* Desktop sidebar */}
       <aside className="hidden lg:block">
         <div className="sticky top-24">{filterPanel}</div>
       </aside>
@@ -189,7 +187,8 @@ export function ShopView({
         {/* Toolbar */}
         <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
           <p className="text-sm text-muted">
-            <span className="font-semibold text-ink">{filtered.length}</span> {t("shop.products")}
+            <span className="font-semibold text-ink">{total.toLocaleString()}</span>{" "}
+            {t("shop.products")}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -201,10 +200,7 @@ export function ShopView({
             <div className="relative">
               <select
                 value={sort}
-                onChange={(e) => {
-                  setPage(1);
-                  setSort(e.target.value as SortKey);
-                }}
+                onChange={(e) => setSort(e.target.value as ShopSort)}
                 className="h-10 appearance-none rounded-full border border-border bg-card pl-4 pr-9 text-sm focus:border-gold focus-visible:outline-none"
                 aria-label="Sort products"
               >
@@ -220,12 +216,10 @@ export function ShopView({
         </div>
 
         {/* Grid */}
-        {visible.length === 0 ? (
+        {products.length === 0 && !loading ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <p className="font-display text-xl font-semibold">{t("shop.noMatch")}</p>
-            <p className="mt-2 text-sm text-muted">
-              {t("shop.noMatchDesc")}
-            </p>
+            <p className="mt-2 text-sm text-muted">{t("shop.noMatchDesc")}</p>
             <button
               onClick={() => {
                 setSelectedCats([]);
@@ -240,18 +234,15 @@ export function ShopView({
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {visible.map((p, i) => (
-              <ProductCard key={p.id} product={p} priority={i < 3} />
+            {products.map((p, i) => (
+              <ProductCard key={`${p.id}-${i}`} product={p} priority={i < 3} />
             ))}
           </div>
         )}
 
-        {/* Infinite scroll: sentinel auto-loads the next page as it nears view */}
-        {hasMore && (
-          <div
-            ref={sentinelRef}
-            className="mt-12 flex justify-center py-4 text-muted"
-          >
+        {/* Infinite scroll sentinel + loading spinner */}
+        {(hasMore || loading) && (
+          <div ref={sentinelRef} className="mt-12 flex justify-center py-4 text-muted">
             <Loader2 className="h-6 w-6 animate-spin" />
           </div>
         )}
@@ -279,7 +270,7 @@ export function ShopView({
               onClick={() => setMobileFilters(false)}
               className="mt-6 w-full rounded-full bg-ink py-3 text-sm font-medium text-paper"
             >
-              {t("shop.showResults")} ({filtered.length})
+              {t("shop.showResults")} ({total.toLocaleString()})
             </button>
           </div>
         </div>

@@ -125,6 +125,86 @@ export async function getCatalogLite(limit?: number): Promise<Product[]> {
   }
 }
 
+// -------------------------------------------------------------
+//  Server-side paginated + filtered shop query (Daraz-style).
+//  The browser only ever loads ONE page, so the storefront stays
+//  fast no matter how many thousands of products exist.
+// -------------------------------------------------------------
+
+export type ShopSort = "featured" | "newest" | "price-asc" | "price-desc" | "popular";
+
+export type ShopQuery = {
+  page?: number;
+  pageSize?: number;
+  category?: string; // a single locked category (category page)
+  categories?: string[]; // multi-select filter (shop page)
+  sort?: ShopSort;
+  maxPrice?: number;
+  onSale?: boolean;
+  inStock?: boolean;
+  q?: string;
+};
+
+function sortLocal(list: Product[], sort?: ShopSort) {
+  switch (sort) {
+    case "price-asc": list.sort((a, b) => a.price - b.price); break;
+    case "price-desc": list.sort((a, b) => b.price - a.price); break;
+    case "popular": list.sort((a, b) => b.rating - a.rating); break;
+    case "newest": break; // localProducts order
+    default: list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  }
+}
+
+export async function getShopProducts(
+  query: ShopQuery = {},
+): Promise<{ products: Product[]; total: number }> {
+  const pageSize = Math.min(60, Math.max(1, query.pageSize ?? 24));
+  const page = Math.max(1, query.page ?? 1);
+  const from = (page - 1) * pageSize;
+  const admin = createAdminClient();
+
+  // Fallback: filter/sort/paginate the demo catalogue in memory.
+  if (!admin) {
+    let list = [...localProducts];
+    if (query.category) list = list.filter((p) => p.categorySlug === query.category);
+    if (query.categories?.length) list = list.filter((p) => query.categories!.includes(p.categorySlug));
+    if (query.maxPrice != null) list = list.filter((p) => p.price <= query.maxPrice!);
+    if (query.onSale) list = list.filter((p) => p.compareAtPrice && p.compareAtPrice > p.price);
+    if (query.inStock) list = list.filter((p) => p.stock > 0);
+    if (query.q) {
+      const s = query.q.toLowerCase();
+      list = list.filter((p) => `${p.name} ${p.brand} ${p.tags.join(" ")}`.toLowerCase().includes(s));
+    }
+    sortLocal(list, query.sort);
+    return { products: list.slice(from, from + pageSize), total: list.length };
+  }
+
+  let qb = admin.from("products").select(CARD_COLUMNS, { count: "exact" });
+  if (query.category) qb = qb.eq("category_slug", query.category);
+  if (query.categories?.length) qb = qb.in("category_slug", query.categories);
+  if (query.maxPrice != null) qb = qb.lte("price", query.maxPrice);
+  if (query.onSale) qb = qb.not("compare_at_price", "is", null);
+  if (query.inStock) qb = qb.gt("stock", 0);
+  if (query.q) {
+    const s = query.q.replace(/[%,()]/g, " ").trim();
+    if (s) qb = qb.or(`name.ilike.%${s}%,brand.ilike.%${s}%`);
+  }
+  switch (query.sort) {
+    case "price-asc": qb = qb.order("price", { ascending: true }); break;
+    case "price-desc": qb = qb.order("price", { ascending: false }); break;
+    case "popular": qb = qb.order("rating", { ascending: false }).order("review_count", { ascending: false }); break;
+    case "newest": qb = qb.order("created_at", { ascending: false }); break;
+    // Default "featured": featured first, then a stable mixed order (by id, a
+    // uuid) so categories are interleaved instead of clumped.
+    default: qb = qb.order("featured", { ascending: false }).order("id", { ascending: true });
+  }
+  qb = qb.range(from, from + pageSize - 1);
+
+  const { data, count, error } = await qb;
+  if (error || !data) return { products: [], total: 0 };
+  return { products: data.map(mapRow), total: count ?? 0 };
+}
+
 /** True once the store has at least one real product in the DB. */
 export async function hasDbProducts(): Promise<boolean> {
   const db = await getDbProducts();

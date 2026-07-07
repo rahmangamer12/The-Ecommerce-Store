@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ShopView } from "@/components/shop/shop-view";
-import { getCatalogLite } from "@/lib/catalog";
+import { getShopProducts, type ShopSort } from "@/lib/catalog";
 import { getCategories } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
@@ -15,8 +15,6 @@ export const metadata: Metadata = buildMetadata({
   path: "/shop",
 });
 
-type SortKey = "featured" | "newest" | "price-asc" | "price-desc" | "popular";
-
 export default async function ShopPage({
   searchParams,
 }: {
@@ -24,16 +22,19 @@ export default async function ShopPage({
 }) {
   const sp = await searchParams;
   const t = getT(await getLocale());
-  // Trim the heavy fields the grid never uses (descriptions/variants/features
-  // + extra photos) so the payload sent to the client stays small with 800+
-  // products. The product page loads full data on its own.
-  const products = (await getCatalogLite()).map((p) => ({
-    ...p,
-    images: p.images.slice(0, 2),
-  }));
+  const validSorts: ShopSort[] = ["featured", "newest", "price-asc", "price-desc", "popular"];
+  const sort = (validSorts.includes(sp.sort as ShopSort) ? sp.sort : "featured") as ShopSort;
+  const onSale = sp.sale === "true";
+
+  // Only the FIRST page is fetched on the server — the rest load on scroll.
+  const { products, total } = await getShopProducts({
+    page: 1,
+    pageSize: 24,
+    sort,
+    onSale: onSale || undefined,
+    maxPrice: 500,
+  });
   const categories = await getCategories();
-  const validSorts: SortKey[] = ["featured", "newest", "price-asc", "price-desc", "popular"];
-  const sort = (validSorts.includes(sp.sort as SortKey) ? sp.sort : "featured") as SortKey;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -44,7 +45,13 @@ export default async function ShopPage({
         </h1>
         <p className="mt-3 max-w-xl text-ink-soft">{t("shop.subtitle")}</p>
       </header>
-      <ShopView products={products} categories={categories} initialSort={sort} initialSale={sp.sale === "true"} />
+      <ShopView
+        initialProducts={products}
+        initialTotal={total}
+        categories={categories}
+        initialSort={sort}
+        initialSale={onSale}
+      />
     </div>
   );
 }
