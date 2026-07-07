@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -20,8 +20,8 @@ import { Logo } from "./logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useStore } from "@/components/providers/store-provider";
 import { categories as localCategories } from "@/data/categories";
-import type { Category } from "@/types";
-import { useCatalog } from "@/components/providers/catalog-provider";
+import type { Category, Product } from "@/types";
+import { fetchShopProducts } from "@/app/shop/shop-actions";
 import { usePrefs } from "@/components/providers/prefs-provider";
 import { PrefsSwitcher } from "@/components/layout/prefs-switcher";
 
@@ -37,12 +37,30 @@ export function Navbar({ categories = localCategories }: { categories?: Category
   const { isSignedIn } = useUser();
   const { t, formatPrice } = usePrefs();
   const { cartCount, wishlist, setCartOpen, mounted } = useStore();
-  const { search } = useCatalog();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Product[]>([]);
 
-  const results = search(query, 5);
+  // Live search preview — fetched from the SERVER (reliable at any catalogue
+  // size), debounced so we don't fire on every keystroke.
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 2) {
+      setResults([]);
+      return;
+    }
+    let active = true;
+    const id = setTimeout(() => {
+      fetchShopProducts({ q, pageSize: 5, sort: "popular" })
+        .then((r) => active && setResults(r.products))
+        .catch(() => {});
+    }, 250);
+    return () => {
+      active = false;
+      clearTimeout(id);
+    };
+  }, [query]);
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();

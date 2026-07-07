@@ -1,22 +1,30 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
-import { useCatalog } from "@/components/providers/catalog-provider";
+import type { Product } from "@/types";
 import { ProductCard } from "@/components/product/product-card";
 
-export function SearchView() {
-  const params = useSearchParams();
+// Results are fetched SERVER-SIDE (getShopProducts) and passed in — reliable
+// even with thousands of products (the old client-catalogue search returned
+// nothing once the catalogue grew large).
+export function SearchView({
+  initialQuery,
+  products,
+  total,
+}: {
+  initialQuery: string;
+  products: Product[];
+  total: number;
+}) {
   const router = useRouter();
-  const { search } = useCatalog();
-  const q = params.get("q") ?? "";
-  const [query, setQuery] = useState(q);
-  const results = search(q);
+  const [query, setQuery] = useState(initialQuery);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    const q = query.trim();
+    if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
   }
 
   return (
@@ -40,28 +48,28 @@ export function SearchView() {
         </button>
       </form>
 
-      {q && (
+      {initialQuery && (
         <p className="mt-8 text-center text-ink-soft">
-          {results.length > 0 ? (
+          {total > 0 ? (
             <>
-              <span className="font-semibold text-ink">{results.length}</span> results
-              for &ldquo;{q}&rdquo;
+              <span className="font-semibold text-ink">{total.toLocaleString()}</span>{" "}
+              results for &ldquo;{initialQuery}&rdquo;
             </>
           ) : (
-            <>No results for &ldquo;{q}&rdquo;. Try another search.</>
+            <>No results for &ldquo;{initialQuery}&rdquo;. Try another search.</>
           )}
         </p>
       )}
 
-      {results.length > 0 && (
+      {products.length > 0 && (
         <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-          {results.map((p) => (
+          {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
       )}
 
-      {!q && (
+      {!initialQuery && (
         <p className="mt-10 text-center text-muted">
           Start typing to discover something beautiful.
         </p>

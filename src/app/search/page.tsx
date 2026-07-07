@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { SearchView } from "@/components/search/search-view";
+import { getShopProducts } from "@/lib/catalog";
 import { buildMetadata } from "@/lib/seo";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
   title: "Search",
@@ -10,7 +12,17 @@ export const metadata: Metadata = buildMetadata({
   noindex: true,
 });
 
-export default function SearchPage() {
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const q = ((await searchParams).q ?? "").trim();
+  // Search the whole catalogue on the SERVER (reliable at any scale).
+  const { products, total } = q
+    ? await getShopProducts({ q, pageSize: 48, sort: "popular" })
+    : { products: [], total: 0 };
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
       <header className="mb-8 text-center">
@@ -19,9 +31,7 @@ export default function SearchPage() {
           Search
         </h1>
       </header>
-      <Suspense fallback={<div className="h-40" />}>
-        <SearchView />
-      </Suspense>
+      <SearchView initialQuery={q} products={products} total={total} />
     </div>
   );
 }
