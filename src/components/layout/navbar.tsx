@@ -373,11 +373,16 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                     <User className="h-4 w-4" /> Sign In / Register
                   </Link>
                 )}
-                <div className="mt-3 flex items-center justify-between min-[360px]:justify-end">
-                  <div className="min-[360px]:hidden">
+                {/* Currency / language + theme — always available in the drawer
+                    on mobile (the top bar hides them to stay uncluttered). */}
+                <div className="mt-4 border-t border-border pt-4">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
+                    Currency & language
+                  </p>
+                  <div className="flex items-center justify-between">
                     <PrefsSwitcher />
+                    <ThemeToggle />
                   </div>
-                  <ThemeToggle />
                 </div>
               </div>
             </motion.div>

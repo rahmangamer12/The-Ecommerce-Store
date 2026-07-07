@@ -77,6 +77,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 6rem;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 body {
