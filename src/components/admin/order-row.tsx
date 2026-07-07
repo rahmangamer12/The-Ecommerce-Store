@@ -75,23 +75,29 @@ export function AdminOrderRow({ order }: { order: OrderView }) {
   }
 
   return (
-    <>
-      <tr className="cursor-pointer hover:bg-ink/[0.02]" onClick={() => setOpen((v) => !v)}>
-        <td className="px-4 py-3 font-medium">{order.number}</td>
-        <td className="px-4 py-3 text-ink-soft">{order.customerName}</td>
-        <td className="px-4 py-3 text-ink-soft">{formatDate(order.date)}</td>
-        <td className="px-4 py-3"><OrderStatusBadge status={status} /></td>
-        <td className="px-4 py-3 text-right font-medium">
-          {formatPrice(order.total, siteConfig.currency)}
-        </td>
-        <td className="px-4 py-3 text-right">
-          <ChevronDown className={`inline h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
-        </td>
-      </tr>
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      {/* Header — responsive: wraps on mobile instead of a wide table row */}
+      <div
+        className="flex cursor-pointer flex-wrap items-center justify-between gap-3 p-4 hover:bg-ink/[0.02]"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <div className="min-w-0">
+          <p className="font-medium">{order.number}</p>
+          <p className="truncate text-sm text-ink-soft">
+            {order.customerName} · {formatDate(order.date)}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <OrderStatusBadge status={status} />
+          <span className="font-medium">
+            {formatPrice(order.total, siteConfig.currency)}
+          </span>
+          <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+        </div>
+      </div>
       {open && (
-        <tr className="bg-paper-2/50">
-          <td colSpan={6} className="px-4 py-5">
-            <div className="grid gap-6 lg:grid-cols-3">
+        <div className="border-t border-border bg-paper-2/50 p-4 sm:p-5">
+          <div className="grid gap-6 lg:grid-cols-3">
               <div className="lg:col-span-2">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">Items</p>
                 <ul className="space-y-3">
@@ -228,9 +234,9 @@ export function AdminOrderRow({ order }: { order: OrderView }) {
                 </div>
               </div>
             </div>
-          </td>
-        </tr>
+          </div>
       )}
-    </>
+    </div>
   );
 }
+
