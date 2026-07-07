@@ -81,6 +81,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
   }
 
   return (
+    <>
     <header className="sticky top-0 z-50 border-b border-border glass">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6 lg:px-8">
         {/* Left: logo */}
@@ -296,8 +297,13 @@ export function Navbar({ categories = localCategories }: { categories?: Category
           </motion.div>
         )}
       </AnimatePresence>
+      </header>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer — rendered OUTSIDE the .glass header on purpose. The
+          header's backdrop-filter would otherwise become the containing block
+          for this position:fixed panel on iOS/WebKit, collapsing it to the
+          header's height (the menu then spilled over the page / looked
+          see-through on iPhone). */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -385,21 +391,23 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                   </Link>
                 )}
                 {/* Currency / language + theme — always available in the drawer
-                    on mobile (the top bar hides them to stay uncluttered). */}
-                <div className="mt-4 border-t border-border pt-4">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
-                    Currency & language
+                    on mobile (the top bar hides them to stay uncluttered).
+                    Rendered inline (not a popover) so it can never open off a
+                    small phone screen; it scrolls with the drawer. */}
+                <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                    Theme
                   </p>
-                  <div className="flex items-center justify-between">
-                    <PrefsSwitcher dropUp />
-                    <ThemeToggle />
-                  </div>
+                  <ThemeToggle />
+                </div>
+                <div className="mt-4 border-t border-border pt-4">
+                  <PrefsSwitcher inline />
                 </div>
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
