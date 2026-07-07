@@ -58,7 +58,7 @@ const CATEGORY_KEYWORDS = {
   "home-living": ["home decor", "led lamp", "storage organizer", "cushion cover", "wall clock", "curtain", "vase", "photo frame", "table lamp", "blanket", "wall sticker", "candle holder", "mirror decor", "plant pot", "tissue box", "shelf organizer"],
   outdoors: ["camping gear", "hiking backpack", "water bottle", "fishing tackle", "tent", "flashlight", "binoculars", "camping light", "sleeping bag", "hammock", "carabiner", "compass", "cooler bag", "trekking pole"],
   technology: ["usb charger", "smart watch", "keyboard", "mouse", "power bank", "webcam", "phone holder", "screen protector", "wireless charger", "usb hub", "laptop stand", "ring light", "tripod", "hdmi cable", "bluetooth adapter"],
-  "phone-cases": ["iphone case", "samsung case", "phone case silicone", "clear phone case", "leather phone case", "shockproof phone case", "cute phone case", "luxury phone case", "wallet phone case", "marble phone case", "cartoon phone case", "magnetic phone case", "transparent phone case", "phone case cover", "phone case for xiaomi", "phone cover"],
+  "phone-cases": ["iphone case", "samsung galaxy case", "phone case silicone", "phone case clear", "phone case luxury", "phone case shockproof", "phone case wallet flip", "phone case magnetic magsafe", "case for xiaomi redmi", "case for iphone 15", "case for iphone 16", "case for samsung galaxy", "phone case cartoon cute", "phone case leather", "phone case transparent", "phone case marble"],
   "watches-jewelry": ["watch", "bracelet", "necklace", "ring", "earrings", "jewelry set", "pendant", "anklet", "brooch", "cufflinks", "watch band", "jewelry box", "hair clip"],
   wellness: ["massage", "yoga mat", "posture corrector", "resistance band", "foam roller", "essential oil", "massage gun", "acupressure mat", "neck massager", "eye massager", "aromatherapy diffuser", "heating pad"],
   beauty: ["makeup brush", "skincare tool", "face mask", "hair straightener", "nail art", "lipstick", "facial roller", "eyelash", "hair dryer", "makeup organizer", "beauty blender", "nail polish", "hair curler", "comb brush set"],
@@ -248,12 +248,25 @@ async function main() {
   await db.end();
 }
 
+// STRICT gate: is this actually a phone case/cover (not an earphone case,
+// card case, makeup case, or unrelated product the CJ search leaked in)?
+function isGenuinePhoneCase(name) {
+  const n = name.toLowerCase();
+  const include =
+    /(phone case|phone cover|case for (iphone|samsung|galaxy|xiaomi|redmi|huawei|oppo|vivo|oneplus|realme|pixel|honor|infinix|tecno)|(iphone|samsung|galaxy|xiaomi|redmi|huawei|oppo|vivo|oneplus|realme|pixel|honor)[a-z0-9 ]{0,25}(case|cover))/;
+  const exclude =
+    /(earphone|earbud|air ?pod|headphone|headset|card case|card holder|make ?up|cosmetic|vanity|pencil case|glasses case|sunglass|watch case|camera case|storage box|tissue|handbag|wallet purse)/;
+  return include.test(n) && !exclude.test(n);
+}
+
 // Build a clean product row from a CJ detail payload (or null if low quality).
 function buildProduct(d, pid, categorySlug) {
   const name = tidyName(String(d.productNameEn ?? d.productName ?? ""));
   if (!name || name.length < 8 || name.length > 140 || !/[A-Za-z]{3}/.test(name) || hasChinese(name)) {
     return null;
   }
+  // Phone Cases must genuinely be phone cases — no leaked earrings/shoes/etc.
+  if (categorySlug === "phone-cases" && !isGenuinePhoneCase(name)) return null;
 
   const rawImages = d.productImageSet ?? d.productImage ?? [];
   const images = Array.from(new Set((Array.isArray(rawImages) ? rawImages : [rawImages]).map(String)))
