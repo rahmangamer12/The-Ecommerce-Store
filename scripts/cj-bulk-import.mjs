@@ -171,6 +171,20 @@ async function main() {
 
   const cats = Object.keys(CATEGORY_KEYWORDS).filter((c) => !ONLY_CAT || c === ONLY_CAT);
   const perCat = Math.ceil(TOTAL / cats.length);
+
+  // Fill the EMPTIEST categories first, so every category (incl. new ones) gets
+  // stocked even if a run is cut short — instead of always starting at 'audio'.
+  const counts = {};
+  for (const cat of cats) {
+    counts[cat] = (
+      await db.query(
+        "select count(*)::int n from products where source='cj' and category_slug=$1",
+        [cat],
+      )
+    ).rows[0].n;
+  }
+  cats.sort((a, b) => counts[a] - counts[b]);
+  console.log("Order (emptiest first):", cats.map((c) => `${c}:${counts[c]}`).join(", "));
   let imported = 0, skipped = 0, failed = 0;
 
   outer:
