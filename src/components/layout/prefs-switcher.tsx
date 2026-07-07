@@ -6,7 +6,7 @@ import { usePrefs } from "@/components/providers/prefs-provider";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-export function PrefsSwitcher() {
+export function PrefsSwitcher({ dropUp = false }: { dropUp?: boolean }) {
   const { currency, setCurrency, locale, setLocale, mounted } = usePrefs();
   const [open, setOpen] = useState(false);
 
@@ -18,16 +18,26 @@ export function PrefsSwitcher() {
         aria-label="Currency and language"
       >
         <Globe className="h-4 w-4" />
-        <span className="hidden sm:inline">
+        {/* Show the current value inline. In the mobile drawer (dropUp) we always
+            show it so it's clear what the control does. */}
+        <span className={cn(dropUp ? "inline" : "hidden sm:inline")}>
           {mounted ? currency : siteConfig.currency} · {locale.toUpperCase()}
         </span>
-        <ChevronDown className="hidden h-3.5 w-3.5 sm:block" />
+        <ChevronDown className={cn("h-3.5 w-3.5", dropUp ? "block" : "hidden sm:block")} />
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-50 mt-2 w-56 rounded-2xl border border-border bg-card p-3 shadow-luxe-lg">
+          {/* dropUp: open ABOVE the button — used in the mobile drawer where the
+              switcher sits at the bottom of the screen, so a downward menu would
+              open off-screen. */}
+          <div
+            className={cn(
+              "absolute z-50 w-56 rounded-2xl border border-border bg-card p-3 shadow-luxe-lg",
+              dropUp ? "bottom-full left-0 mb-2" : "right-0 mt-2",
+            )}
+          >
             {/* Language */}
             <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted">
               Language

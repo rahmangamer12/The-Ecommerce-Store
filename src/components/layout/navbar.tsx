@@ -391,7 +391,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                     Currency & language
                   </p>
                   <div className="flex items-center justify-between">
-                    <PrefsSwitcher />
+                    <PrefsSwitcher dropUp />
                     <ThemeToggle />
                   </div>
                 </div>
