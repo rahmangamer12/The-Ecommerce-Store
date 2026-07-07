@@ -18,8 +18,8 @@ for (const f of [".env.local", ".env"]) {
   } catch {}
 }
 
-const TARGET = 6000; // ~1170 existing + ~4800 new
-const MAX_PASSES = 80;
+const TARGET = 8000; // big catalogue while keeping the storefront usable
+const MAX_PASSES = 200;
 
 async function cjCount() {
   const c = new pg.Client({
@@ -48,7 +48,7 @@ let prev = 0;
 let stall = 0;
 for (let pass = 1; pass <= MAX_PASSES; pass++) {
   console.log(`\n================= RUNNER PASS ${pass} =================`);
-  run("cj-bulk-import.mjs", ["6000", "2"]);
+  run("cj-bulk-import.mjs", ["8000", "2"]);
 
   const c = await cjCount();
   console.log(`\n>>> after pass ${pass}: ${c} CJ products (prev ${prev})`);
