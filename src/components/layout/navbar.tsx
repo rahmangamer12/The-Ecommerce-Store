@@ -72,15 +72,8 @@ export function Navbar({ categories = localCategories }: { categories?: Category
   return (
     <header className="sticky top-0 z-50 border-b border-border glass">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6 lg:px-8">
-        {/* Left: mobile menu + logo */}
+        {/* Left: logo */}
         <div className="flex items-center gap-2">
-          <button
-            className="grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5 sm:h-10 sm:w-10 lg:hidden"
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
           <Logo />
         </div>
 
@@ -164,7 +157,8 @@ export function Navbar({ categories = localCategories }: { categories?: Category
             )}
           </Link>
           {isSignedIn ? (
-            <div className="ml-1 hidden h-10 items-center sm:flex">
+            // Account avatar — shown on every size once signed in.
+            <div className="ml-1 flex h-10 items-center">
               <UserButton>
                 <UserButton.MenuItems>
                   <UserButton.Link
@@ -181,12 +175,23 @@ export function Navbar({ categories = localCategories }: { categories?: Category
               </UserButton>
             </div>
           ) : (
-            <Link
-              href="/login"
-              className="ml-1 hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-gold hover:text-white sm:inline-flex"
-            >
-              {t("nav.signin")}
-            </Link>
+            <>
+              {/* Desktop: full Sign In button */}
+              <Link
+                href="/login"
+                className="ml-1 hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-gold hover:text-white sm:inline-flex"
+              >
+                {t("nav.signin")}
+              </Link>
+              {/* Mobile: compact Sign In icon so it's always reachable */}
+              <Link
+                href="/login"
+                className="grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5 sm:hidden"
+                aria-label="Sign in"
+              >
+                <User className="h-[1.1rem] w-[1.1rem]" />
+              </Link>
+            </>
           )}
           <button
             onClick={() => setCartOpen(true)}
@@ -199,6 +204,14 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                 {cartCount}
               </span>
             )}
+          </button>
+          {/* Hamburger — RIGHT side, mobile only */}
+          <button
+            className="grid h-9 w-9 place-items-center rounded-full hover:bg-ink/5 sm:h-10 sm:w-10 lg:hidden"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -294,10 +307,10 @@ export function Navbar({ categories = localCategories }: { categories?: Category
             {/* Literal hex backgrounds (not CSS-var utilities) so the drawer is
                 guaranteed OPAQUE on iOS Safari, which was rendering it see-through. */}
             <motion.div
-              className="fixed left-0 top-0 z-[61] flex h-full w-80 max-w-[85vw] flex-col bg-[#fbfaf8] p-5 shadow-luxe-lg lg:hidden dark:bg-[#161513]"
-              initial={{ x: "-100%" }}
+              className="fixed right-0 top-0 z-[61] flex h-full w-80 max-w-[85vw] flex-col bg-[#fbfaf8] p-5 shadow-luxe-lg lg:hidden dark:bg-[#161513]"
+              initial={{ x: "100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
+              exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 32, stiffness: 320 }}
             >
               <div className="flex items-center justify-between">
