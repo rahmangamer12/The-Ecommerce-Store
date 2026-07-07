@@ -279,6 +279,7 @@ export function CartDrawer() {
                     variant="gold"
                     size="lg"
                     className="mt-4 w-full"
+                    onClick={() => setCartOpen(false)}
                   >
                     Secure Checkout
                     <ArrowRight className="h-4 w-4" />
