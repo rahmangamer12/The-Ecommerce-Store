@@ -129,17 +129,17 @@ export function ProductCard({
         <div className="mt-1.5">
           <Rating value={product.rating} count={product.reviewCount} />
         </div>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="font-semibold text-ink">
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="whitespace-nowrap font-semibold text-ink">
             {formatPrice(product.price)}
           </span>
           {product.compareAtPrice && (
-            <span className="text-sm text-muted line-through">
+            <span className="whitespace-nowrap text-sm text-muted line-through">
               {formatPrice(product.compareAtPrice)}
             </span>
           )}
           {lowStock && (
-            <span className="ml-auto text-xs font-medium text-danger">
+            <span className="mt-0.5 w-full whitespace-nowrap text-xs font-medium text-danger">
               Only {product.stock} left
             </span>
           )}
