@@ -13,7 +13,7 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
         </div>
         {/* Wrap the Clerk widget in a real card so it looks polished & clearly
             framed on every device (iPhone included), not floating on the page. */}
-        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-luxe sm:p-8">
+        <div className="clerk-flat w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-luxe sm:p-8">
           {children}
         </div>
       </div>
@@ -67,7 +67,14 @@ export const clerkAppearance = {
   },
   elements: {
     rootBox: "w-full",
+    // Flatten Clerk's own card wrappers so they don't render a SECOND card
+    // inside our AuthFrame card (the "double card" / stuck look on mobile).
+    cardBox: "shadow-none border-0 bg-transparent w-full",
     card: "shadow-none border-0 bg-transparent w-full px-0",
+    // The "Secured by Clerk / Development mode" footer ships with its own
+    // grey band — make it blend into our single card.
+    footer: "bg-transparent border-0 shadow-none",
+    footerItem: "bg-transparent",
     headerTitle: "font-display text-2xl",
     headerSubtitle: "text-muted",
     // Google / Facebook / social buttons — clear border, readable in both themes.

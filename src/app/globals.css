@@ -321,3 +321,29 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* =============================================================
+   CLERK AUTH WIDGET — flatten into a single branded card
+   -------------------------------------------------------------
+   The Clerk <SignIn/> widget ships its own opaque card + shadow
+   (.cl-cardBox / .cl-card) whose internal styles outrank utility
+   classes, so it rendered a SECOND card inside our AuthFrame card
+   (the "double card" / stuck look on mobile). Force them flat so
+   only our themed AuthFrame card shows, in both light & dark mode.
+   ============================================================= */
+/* Scoped under .clerk-flat (our AuthFrame card) so these rules outrank
+   Clerk's runtime-injected styles, which load AFTER our stylesheet and
+   would otherwise win the cascade at equal specificity. */
+.clerk-flat .cl-cardBox,
+.clerk-flat .cl-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+.clerk-flat .cl-footer,
+.clerk-flat .cl-footerItem {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
