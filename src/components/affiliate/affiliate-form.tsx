@@ -44,7 +44,7 @@ export function AffiliateForm() {
       </div>
       <div>
         <Label htmlFor="audience">Tell us about your audience</Label>
-        <Textarea id="audience" name="audience" placeholder="Audience size, niche, how you'd promote Souq Empire…" required />
+        <Textarea id="audience" name="audience" placeholder="Audience size, niche, how you'd promote Velcarro…" required />
         <ValidationError prefix="Audience" field="audience" errors={state.errors} className="mt-1 text-xs text-danger" />
       </div>
       <button

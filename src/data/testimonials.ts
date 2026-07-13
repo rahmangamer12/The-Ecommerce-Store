@@ -26,7 +26,7 @@ export const testimonials: Testimonial[] = [
     avatar: "https://i.pravatar.cc/120?img=44",
     rating: 5,
     quote:
-      "I was nervous ordering online, but Souq Empire felt premium from the first click to delivery. Completely won me over.",
+      "I was nervous ordering online, but Velcarro felt premium from the first click to delivery. Completely won me over.",
   },
   {
     id: "t4",

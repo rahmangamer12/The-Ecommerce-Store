@@ -10,15 +10,15 @@
 
 export const siteConfig = {
   // ---- Brand ----
-  name: "Souq Empire",
-  legalName: "Souq Empire",
+  name: "Velcarro",
+  legalName: "Velcarro",
   // Short tagline shown in the hero / SEO
   tagline: "Premium finds, delivered worldwide",
   description:
-    "Souq Empire is a global online store. Discover great products across tech, home, fashion, beauty and more — shipped worldwide, with secure online payment.",
+    "Velcarro is a global online store. Discover great products across tech, home, fashion, beauty and more — shipped worldwide, with secure online payment.",
   // Logo: an emoji/letter mark by default. Replace `logoText` or set `logoImage`.
-  logoText: "Souq Empire",
-  logoMark: "S",
+  logoText: "Velcarro",
+  logoMark: "V",
   logoImage: "", // e.g. "/logo.svg" (leave empty to use the text mark)
 
   // ---- Contact ----

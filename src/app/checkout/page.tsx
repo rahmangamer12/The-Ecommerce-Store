@@ -5,7 +5,7 @@ import { isCardPaymentConfigured, isPaypalConfigured } from "@/config/env";
 
 export const metadata: Metadata = buildMetadata({
   title: "Checkout",
-  description: "Securely complete your Souq Empire order.",
+  description: "Securely complete your Velcarro order.",
   path: "/checkout",
   noindex: true,
 });

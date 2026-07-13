@@ -63,7 +63,7 @@ export const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
 export const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY ?? "";
 // Contact used by push services if a subscription misbehaves (mailto: or URL).
 export const vapidSubject =
-  process.env.VAPID_SUBJECT ?? "mailto:admin@souqempire.com";
+  process.env.VAPID_SUBJECT ?? "mailto:admin@velcarro.com";
 
 // ---- Cloudinary (image hosting / upload) ----
 export const cloudinaryCloudName =

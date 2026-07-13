@@ -7,7 +7,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Affiliate Program",
   description:
-    "Earn generous commission promoting Souq Empire. Join our affiliate program and get paid for every sale you refer.",
+    "Earn generous commission promoting Velcarro. Join our affiliate program and get paid for every sale you refer.",
   path: "/affiliate",
 });
 
@@ -36,7 +36,7 @@ export default function AffiliatePage() {
             <Sparkles className="mr-1 inline h-4 w-4" /> Partner with us
           </p>
           <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight sm:text-6xl">
-            Earn with the Souq Empire Affiliate Program
+            Earn with the Velcarro Affiliate Program
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-paper/80">
             Love sharing beautiful products? Turn your audience into income with

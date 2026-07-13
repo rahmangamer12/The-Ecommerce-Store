@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
   title: "Search",
-  description: "Search the Souq Empire catalogue.",
+  description: "Search the Velcarro catalogue.",
   path: "/search",
   noindex: true,
 });

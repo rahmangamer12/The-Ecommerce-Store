@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Track Your Order",
-  description: "Track the status of your Souq Empire order with your order number and email.",
+  description: "Track the status of your Velcarro order with your order number and email.",
   path: "/track-order",
 });
 

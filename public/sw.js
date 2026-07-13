@@ -1,4 +1,4 @@
-/* Souq Empire service worker — handles web push notifications. */
+/* Velcarro service worker — handles web push notifications. */
 
 // Show the notification when a push arrives (even if the site is closed).
 self.addEventListener("push", (event) => {
@@ -6,10 +6,10 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data ? event.data.json() : {};
   } catch {
-    data = { title: "Souq Empire", body: event.data ? event.data.text() : "" };
+    data = { title: "Velcarro", body: event.data ? event.data.text() : "" };
   }
 
-  const title = data.title || "Souq Empire";
+  const title = data.title || "Velcarro";
   const options = {
     body: data.body || "",
     icon: data.icon || "/icon.png",
