@@ -142,7 +142,7 @@ export function ProductBuyBox({
           <span className="font-medium text-danger">{t("product.soldOut")}</span>
         ) : lowStock ? (
           <span className="font-medium text-danger">
-            Hurry — only {product.stock} left in stock
+            {t("buybox.lowStockPre")} {product.stock} {t("buybox.lowStockPost")}
           </span>
         ) : (
           <span className="font-medium text-success">{t("product.inStock")}</span>
@@ -192,7 +192,7 @@ export function ProductBuyBox({
             {t("product.buyNowExt")}
           </a>
           <p className="mt-2 text-center text-xs text-muted">
-            You&apos;ll be taken to our trusted partner to complete your purchase.
+            {t("buybox.affiliateNote")}
           </p>
         </div>
       ) : (
@@ -238,9 +238,7 @@ export function ProductBuyBox({
           open={openInfo === "shipping"}
           onToggle={(id) => setOpenInfo(openInfo === id ? null : id)}
         >
-          We ship worldwide within 1–2 business days. Standard delivery takes 5–9
-          business days. Free shipping applies on orders over $100; a flat rate is
-          shown at checkout otherwise.
+          {t("buybox.shippingBody")}
         </InfoRow>
         <InfoRow
           id="returns"
@@ -248,9 +246,7 @@ export function ProductBuyBox({
           open={openInfo === "returns"}
           onToggle={(id) => setOpenInfo(openInfo === id ? null : id)}
         >
-          Not in love with it? Return any unused item in its original packaging
-          within 30 days for a full refund. Manufacturer warranty applies where
-          relevant.
+          {t("buybox.returnsBody")}
         </InfoRow>
         {product.features.length > 0 && (
           <InfoRow

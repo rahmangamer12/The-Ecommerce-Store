@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useStore } from "@/components/providers/store-provider";
 import { useCatalog } from "@/components/providers/catalog-provider";
+import { usePrefs } from "@/components/providers/prefs-provider";
 import { ProductCard } from "@/components/product/product-card";
 import { SectionHeader } from "@/components/sections/section-header";
 
@@ -10,6 +11,7 @@ import { SectionHeader } from "@/components/sections/section-header";
 export function RecentlyViewed({ currentSlug }: { currentSlug: string }) {
   const { recentlyViewed, pushRecentlyViewed, mounted } = useStore();
   const { getBySlugs } = useCatalog();
+  const { t } = usePrefs();
 
   useEffect(() => {
     pushRecentlyViewed(currentSlug);
@@ -23,7 +25,10 @@ export function RecentlyViewed({ currentSlug }: { currentSlug: string }) {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <SectionHeader eyebrow="Pick up where you left off" title="Recently viewed" />
+      <SectionHeader
+        eyebrow={t("product.recentlyViewedEyebrow")}
+        title={t("product.recentlyViewed")}
+      />
       <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />

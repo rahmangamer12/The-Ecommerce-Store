@@ -264,6 +264,18 @@ export const translations = {
     "flash.title": "Flash Sale",
     "flash.endsIn": "Ends in",
     "brand.trusted": "Trusted brands we carry",
+    "buybox.lowStockPre": "Hurry — only",
+    "buybox.lowStockPost": "left in stock",
+    "buybox.affiliateNote":
+      "You'll be taken to our trusted partner to complete your purchase.",
+    "buybox.shippingBody":
+      "We ship worldwide within 1–2 business days. Standard delivery takes 5–9 business days. Free shipping applies on orders over $100; a flat rate is shown at checkout otherwise.",
+    "buybox.returnsBody":
+      "If an item arrives damaged, faulty or not as described, contact us within 7 days for a free replacement or full refund. Change-of-mind returns are accepted within 14 days on unused items in their original packaging.",
+    "card.onlyLeftPre": "Only",
+    "card.onlyLeftPost": "left",
+    "reviews.basedOnPre": "Based on",
+    "reviews.basedOnPost": "reviews",
   },
   ar: {
     "nav.shop": "تسوق",
@@ -525,6 +537,18 @@ export const translations = {
     "flash.title": "عرض خاطف",
     "flash.endsIn": "ينتهي خلال",
     "brand.trusted": "علامات موثوقة نوفّرها",
+    "buybox.lowStockPre": "أسرِع — بقي",
+    "buybox.lowStockPost": "فقط في المخزون",
+    "buybox.affiliateNote":
+      "سيتم نقلك إلى شريكنا الموثوق لإتمام عملية الشراء.",
+    "buybox.shippingBody":
+      "نشحن لكل العالم خلال يوم إلى يومَي عمل. يستغرق التوصيل القياسي من 5 إلى 9 أيام عمل. الشحن مجاني للطلبات فوق 100$، وإلا تُطبّق رسوم ثابتة تظهر عند الدفع.",
+    "buybox.returnsBody":
+      "إذا وصل المنتج تالفًا أو معيبًا أو مختلفًا عن الوصف، تواصل معنا خلال 7 أيام لاستبدال مجاني أو استرداد كامل. تُقبل إرجاعات تغيير الرأي خلال 14 يومًا للمنتجات غير المستخدمة في تغليفها الأصلي.",
+    "card.onlyLeftPre": "بقي",
+    "card.onlyLeftPost": "فقط",
+    "reviews.basedOnPre": "بناءً على",
+    "reviews.basedOnPost": "تقييم",
   },
 } as const;
 

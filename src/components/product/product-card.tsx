@@ -140,7 +140,7 @@ export function ProductCard({
           )}
           {lowStock && (
             <span className="mt-0.5 w-full whitespace-nowrap text-xs font-medium text-danger">
-              Only {product.stock} left
+              {t("card.onlyLeftPre")} {product.stock} {t("card.onlyLeftPost")}
             </span>
           )}
         </div>

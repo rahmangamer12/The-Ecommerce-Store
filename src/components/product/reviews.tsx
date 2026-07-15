@@ -3,9 +3,11 @@ import type { Product } from "@/types";
 import { getReviews } from "@/data/products";
 import { Rating } from "@/components/ui/rating";
 import { formatDate } from "@/lib/utils";
+import { getT, getLocale } from "@/i18n/server";
 
 // Static review summary + list (sample data; wire to Supabase `reviews` later).
-export function Reviews({ product }: { product: Product }) {
+export async function Reviews({ product }: { product: Product }) {
+  const t = getT(await getLocale());
   const reviews = getReviews(product.slug);
   const breakdown = [5, 4, 3, 2, 1].map((star) => ({
     star,
@@ -16,7 +18,7 @@ export function Reviews({ product }: { product: Product }) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-        Customer reviews
+        {t("product.reviews")}
       </h2>
       <div className="mt-8 grid gap-10 lg:grid-cols-[300px_1fr]">
         {/* Summary */}
@@ -31,7 +33,7 @@ export function Reviews({ product }: { product: Product }) {
             <Rating value={product.rating} size={16} />
           </div>
           <p className="mt-1 text-sm text-muted">
-            Based on {product.reviewCount} reviews
+            {t("reviews.basedOnPre")} {product.reviewCount} {t("reviews.basedOnPost")}
           </p>
           <div className="mt-5 space-y-2">
             {breakdown.map((b) => (
