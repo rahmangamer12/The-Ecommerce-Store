@@ -3,16 +3,18 @@
 import { useForm, ValidationError } from "@formspree/react";
 import { ArrowRight, Check } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 // Newsletter signup — submits to Formspree (same inbox as the contact form),
 // tagged so you can tell newsletter signups apart.
 export function Newsletter() {
   const [state, handleSubmit] = useForm(siteConfig.formspreeId);
+  const { t } = usePrefs();
 
   if (state.succeeded) {
     return (
       <div className="flex items-center gap-3 rounded-full border border-success/30 bg-success/10 px-5 py-3.5 text-sm font-medium text-success">
-        <Check className="h-5 w-5" /> Thank you — you&apos;re on the list!
+        <Check className="h-5 w-5" /> {t("news.success")}
       </div>
     );
   }
@@ -25,16 +27,16 @@ export function Newsletter() {
           type="email"
           name="email"
           required
-          placeholder="Enter your email"
+          placeholder={t("news.placeholder")}
           className="h-12 flex-1 rounded-full border border-border bg-card px-5 text-sm focus:border-gold focus-visible:outline-none"
-          aria-label="Email address"
+          aria-label={t("news.placeholder")}
         />
         <button
           type="submit"
           disabled={state.submitting}
           className="flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-sm font-medium text-paper transition-colors hover:bg-gold hover:text-white disabled:opacity-60"
         >
-          {state.submitting ? "Joining…" : "Subscribe"}
+          {state.submitting ? t("news.joining") : t("common.subscribe")}
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>

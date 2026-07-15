@@ -9,12 +9,12 @@ import { cn } from "@/lib/utils";
 /** The language + currency chooser body — shared by the popover (desktop) and
     the inline drawer variant (mobile). `onPick` lets the popover close itself. */
 function PrefsOptions({ onPick, inline = false }: { onPick?: () => void; inline?: boolean }) {
-  const { currency, setCurrency, locale, setLocale } = usePrefs();
+  const { currency, setCurrency, locale, setLocale, t } = usePrefs();
   return (
     <>
       {/* Language */}
       <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted">
-        Language
+        {t("prefs.language")}
       </p>
       <div className="mt-2 grid grid-cols-2 gap-1">
         {(["en", "ar"] as const).map((l) => (
@@ -33,7 +33,7 @@ function PrefsOptions({ onPick, inline = false }: { onPick?: () => void; inline?
 
       {/* Currency */}
       <p className="mt-4 px-1 text-xs font-semibold uppercase tracking-wider text-muted">
-        Currency
+        {t("prefs.currency")}
       </p>
       {inline ? (
         // Compact chip grid — fits neatly in the drawer, no inner scroll.

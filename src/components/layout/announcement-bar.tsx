@@ -1,14 +1,15 @@
 import { Truck, ShieldCheck, RefreshCw, Headphones } from "lucide-react";
-
-const items = [
-  { icon: Truck, text: "Complimentary worldwide shipping over $100" },
-  { icon: ShieldCheck, text: "100% secure checkout" },
-  { icon: RefreshCw, text: "Buyer protection & easy refunds" },
-  { icon: Headphones, text: "24/7 dedicated support" },
-];
+import { getT, getLocale } from "@/i18n/server";
 
 // A quiet, premium scrolling trust strip above the navbar.
-export function AnnouncementBar() {
+export async function AnnouncementBar() {
+  const t = getT(await getLocale());
+  const items = [
+    { icon: Truck, text: t("ann.shipping") },
+    { icon: ShieldCheck, text: t("ann.secure") },
+    { icon: RefreshCw, text: t("ann.protection") },
+    { icon: Headphones, text: t("ann.support") },
+  ];
   return (
     <div className="overflow-hidden border-b border-border bg-ink text-paper">
       <div className="flex w-max animate-marquee">

@@ -5,39 +5,41 @@ import { Newsletter } from "./newsletter";
 import { siteConfig } from "@/config/site";
 import { categories as localCategories } from "@/data/categories";
 import type { Category } from "@/types";
+import { getT, getLocale } from "@/i18n/server";
+import type { TranslationKey } from "@/i18n/translations";
 
-const shopLinks = [
-  { label: "All Products", href: "/shop" },
-  { label: "New Arrivals", href: "/shop?sort=newest" },
-  { label: "Best Sellers", href: "/shop?sort=popular" },
-  { label: "On Sale", href: "/shop?sale=true" },
-  { label: "Wishlist", href: "/account/wishlist" },
+const shopLinks: { key: TranslationKey; href: string }[] = [
+  { key: "footer.shopAll", href: "/shop" },
+  { key: "footer.newArrivals", href: "/shop?sort=newest" },
+  { key: "footer.bestSellers", href: "/shop?sort=popular" },
+  { key: "footer.onSale", href: "/shop?sale=true" },
+  { key: "footer.wishlist", href: "/account/wishlist" },
 ];
 
-const companyLinks = [
-  { label: "Journal", href: "/blog" },
-  { label: "Track Order", href: "/track-order" },
-  { label: "Affiliate Program", href: "/affiliate" },
-  { label: "Contact", href: "/contact" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms of Service", href: "/terms" },
+const companyLinks: { key: TranslationKey; href: string }[] = [
+  { key: "footer.journal", href: "/blog" },
+  { key: "footer.trackOrder", href: "/track-order" },
+  { key: "footer.affiliate", href: "/affiliate" },
+  { key: "footer.contactLink", href: "/contact" },
+  { key: "footer.faq", href: "/faq" },
+  { key: "footer.privacy", href: "/privacy" },
+  { key: "footer.terms", href: "/terms" },
 ];
 
-export function Footer({ categories = localCategories }: { categories?: Category[] }) {
+export async function Footer({ categories = localCategories }: { categories?: Category[] }) {
+  const t = getT(await getLocale());
   return (
     <footer className="border-t border-border bg-paper-2">
       {/* Newsletter band */}
       <div className="border-b border-border">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:px-8">
           <div>
-            <p className="eyebrow">Stay in the know</p>
+            <p className="eyebrow">{t("footer.newsEyebrow")}</p>
             <h2 className="mt-2 font-display text-2xl font-semibold sm:text-3xl">
-              Join the inner circle
+              {t("footer.newsTitle")}
             </h2>
             <p className="mt-2 max-w-md text-sm text-ink-soft">
-              Be first to access new arrivals, private sales and editorial stories.
-              Plus 10% off your first order.
+              {t("footer.newsDesc")}
             </p>
           </div>
           <Newsletter />
@@ -65,22 +67,28 @@ export function Footer({ categories = localCategories }: { categories?: Category
           </div>
         </div>
 
-        <FooterCol title="Shop" links={shopLinks} />
         <FooterCol
-          title="Categories"
+          title={t("footer.shop")}
+          links={shopLinks.map((l) => ({ label: t(l.key), href: l.href }))}
+        />
+        <FooterCol
+          title={t("footer.categories")}
           links={categories.slice(0, 6).map((c) => ({
             label: c.name,
             href: `/categories/${c.slug}`,
           }))}
         />
-        <FooterCol title="Company" links={companyLinks} />
+        <FooterCol
+          title={t("footer.company")}
+          links={companyLinks.map((l) => ({ label: t(l.key), href: l.href }))}
+        />
       </div>
 
       {/* Bottom bar */}
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-xs text-muted sm:flex-row sm:px-6 lg:px-8">
           <p>
-            © {new Date().getFullYear()} {siteConfig.legalName}. All rights reserved.
+            © {new Date().getFullYear()} {siteConfig.legalName}. {t("footer.rights")}
           </p>
           <div className="flex flex-wrap items-center gap-4">
             {siteConfig.trustBadges.map((b) => (
