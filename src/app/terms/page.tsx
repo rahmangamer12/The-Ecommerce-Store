@@ -36,7 +36,7 @@ export default function TermsPage() {
         {
           heading: "Returns & refunds",
           body: [
-            "Unused items in their original packaging may be returned within 30 days for a full refund. Certain items, such as personal care products, may be exempt for hygiene reasons.",
+            "If an item arrives damaged, faulty, or significantly not as described, notify us within 7 days of delivery with photos and we will provide a free replacement or a full refund. Change-of-mind returns may be requested within 14 days for unused items in their original packaging; return shipping is the customer's responsibility. Certain items, such as personal care products, may be exempt for hygiene reasons. Approved refunds are issued to your original payment method within 5–10 business days.",
           ],
         },
         {

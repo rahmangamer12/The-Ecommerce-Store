@@ -37,7 +37,7 @@ export default function PrivacyPage() {
         {
           heading: "Payments",
           body: [
-            "We offer Cash on Delivery, so you pay when your order arrives. If card payment is enabled, it is handled by a secure third-party provider and we never store your full card details.",
+            "Payments are handled securely. If card payment is enabled, it is processed by a secure third-party provider and we never store your full card details. Bank-transfer and WhatsApp order details are used only to process and deliver your order.",
           ],
         },
         {

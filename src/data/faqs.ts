@@ -14,12 +14,12 @@ export const faqs: Faq[] = [
   {
     question: "What is your return policy?",
     answer:
-      "We offer a 30-day easy return policy on unused items in their original packaging. Start a return from your account dashboard and we'll email you a label.",
+      "If your item arrives damaged, faulty, or not as described, contact us within 7 days of delivery with a photo and we'll arrange a free replacement or a full refund. For change-of-mind returns, reach out within 14 days — the item must be unused in its original packaging and return shipping is the customer's responsibility.",
   },
   {
     question: "Is checkout secure?",
     answer:
-      "Yes. We offer Cash on Delivery so you pay only when your order arrives. Your personal details are always kept private and secure.",
+      "Yes. Payments are processed securely and your personal details are always kept private. You can pay by card, bank transfer, or place your order via WhatsApp — whichever is easiest for you.",
   },
   {
     question: "Can I change or cancel my order?",

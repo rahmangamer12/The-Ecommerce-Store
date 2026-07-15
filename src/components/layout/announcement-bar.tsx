@@ -2,8 +2,8 @@ import { Truck, ShieldCheck, RefreshCw, Headphones } from "lucide-react";
 
 const items = [
   { icon: Truck, text: "Complimentary worldwide shipping over $100" },
-  { icon: ShieldCheck, text: "Cash on Delivery available" },
-  { icon: RefreshCw, text: "30-day easy returns" },
+  { icon: ShieldCheck, text: "100% secure checkout" },
+  { icon: RefreshCw, text: "Buyer protection & easy refunds" },
   { icon: Headphones, text: "24/7 dedicated support" },
 ];
 
