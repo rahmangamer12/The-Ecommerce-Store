@@ -67,7 +67,7 @@ export function CheckoutView({
       key: "card",
       icon: CreditCard,
       title: t("checkout.cardT"),
-      desc: "Pay securely online — you'll be taken to our payment page.",
+      desc: t("checkout.cardD"),
     },
     siteConfig.payments.whatsapp && {
       key: "whatsapp",
@@ -106,14 +106,14 @@ export function CheckoutView({
           <ShoppingBag className="h-8 w-8 text-muted" />
         </div>
         <h2 className="mt-6 font-display text-2xl font-semibold">
-          Nothing to check out
+          {t("co.emptyTitle")}
         </h2>
-        <p className="mt-2 text-ink-soft">Add a few things to your cart first.</p>
+        <p className="mt-2 text-ink-soft">{t("co.emptyDesc")}</p>
         <Link
           href="/shop"
           className="mt-6 rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper"
         >
-          Browse the shop
+          {t("co.browseShop")}
         </Link>
       </div>
     );
@@ -126,11 +126,11 @@ export function CheckoutView({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.country.trim()) {
-      toast.error("Please select your country.");
+      toast.error(t("co.errCountry"));
       return;
     }
     if (stateOptions.length > 0 && !form.state.trim()) {
-      toast.error("Please select your region / state.");
+      toast.error(t("co.errRegion"));
       return;
     }
     setLoading(true);
@@ -161,11 +161,11 @@ export function CheckoutView({
           )
           .join("\n");
         const msg =
-          `Hi! I'd like to confirm my order ${result.orderNumber}.\n\n${lines}\n\n` +
-          `Total: ${formatPrice(totals.total)}\n` +
-          `Name: ${form.fullName}\n` +
-          `Address: ${form.line1}, ${form.city}, ${form.country}\n` +
-          `Phone: ${form.phone}`;
+          `${t("co.waHi")} ${result.orderNumber}.\n\n${lines}\n\n` +
+          `${t("co.waTotal")} ${formatPrice(totals.total)}\n` +
+          `${t("co.waName")} ${form.fullName}\n` +
+          `${t("co.waAddress")} ${form.line1}, ${form.city}, ${form.country}\n` +
+          `${t("co.waPhone")} ${form.phone}`;
         window.open(
           `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(msg)}`,
           "_blank",
@@ -182,7 +182,7 @@ export function CheckoutView({
         );
       }
     } catch {
-      toast.error("Could not place your order. Please try again.");
+      toast.error(t("co.errPlace"));
       setLoading(false);
     }
   }
@@ -196,7 +196,7 @@ export function CheckoutView({
           <div className="flex items-center justify-between">
             <h2 className="font-display text-xl font-semibold">{t("checkout.contact")}</h2>
             <Link href="/login" className="text-sm text-gold-strong hover:underline">
-              Sign in for faster checkout
+              {t("co.signInFaster")}
             </Link>
           </div>
           <div className="mt-4">
@@ -225,7 +225,7 @@ export function CheckoutView({
               <Input id="line1" required value={form.line1} onChange={(e) => set("line1", e.target.value)} />
             </div>
             <div className="sm:col-span-2">
-              <Label htmlFor="line2">Apartment, suite (optional)</Label>
+              <Label htmlFor="line2">{t("co.apartment")}</Label>
               <Input id="line2" value={form.line2} onChange={(e) => set("line2", e.target.value)} />
             </div>
             <div>
@@ -241,7 +241,7 @@ export function CheckoutView({
                   setShipCountry(code);
                 }}
                 options={COUNTRY_OPTIONS}
-                placeholder="Select your country"
+                placeholder={t("co.selectCountry")}
               />
             </div>
             <div>
@@ -252,7 +252,7 @@ export function CheckoutView({
                   value={form.state}
                   onChange={(v) => set("state", v)}
                   options={stateOptions}
-                  placeholder="Select region / state"
+                  placeholder={t("co.selectRegion")}
                   disabled={!form.country}
                 />
               ) : (
@@ -260,7 +260,7 @@ export function CheckoutView({
                   id="state"
                   value={form.state}
                   onChange={(e) => set("state", e.target.value)}
-                  placeholder={form.country ? "Region / state" : "Select a country first"}
+                  placeholder={form.country ? t("co.regionState") : t("co.selectCountryFirst")}
                 />
               )}
             </div>
@@ -320,24 +320,22 @@ export function CheckoutView({
           {/* Extra details for the selected method */}
           {paymentMethod === "bank" && (
             <div className="mt-4 rounded-2xl border border-border bg-paper-2 p-4 text-sm">
-              <p className="font-medium">Bank transfer details</p>
+              <p className="font-medium">{t("co.bankTitle")}</p>
               <div className="mt-2 space-y-0.5 text-ink-soft">
-                <p>Bank: {siteConfig.bank.name}</p>
-                <p>Account name: {siteConfig.bank.accountName}</p>
-                <p>Account no: {siteConfig.bank.accountNumber}</p>
+                <p>{t("co.bankLabel")} {siteConfig.bank.name}</p>
+                <p>{t("co.accountName")} {siteConfig.bank.accountName}</p>
+                <p>{t("co.accountNo")} {siteConfig.bank.accountNumber}</p>
                 <p>IBAN: {siteConfig.bank.iban}</p>
                 <p>SWIFT: {siteConfig.bank.swift}</p>
               </div>
               <p className="mt-2 text-xs text-muted">
-                Use your order number as the transfer reference. We ship once the
-                transfer is received.
+                {t("co.bankNote")}
               </p>
             </div>
           )}
           {paymentMethod === "whatsapp" && (
             <div className="mt-4 rounded-2xl border border-border bg-paper-2 p-4 text-sm text-ink-soft">
-              When you place the order, WhatsApp will open with your order details
-              pre-filled. Send it to us and we&apos;ll confirm payment & delivery.
+              {t("co.waNote")}
             </div>
           )}
         </section>
@@ -368,32 +366,32 @@ export function CheckoutView({
 
           <div className="mt-6 space-y-2.5 border-t border-border pt-5 text-sm">
             <div className="flex justify-between">
-              <span className="text-ink-soft">Subtotal</span>
+              <span className="text-ink-soft">{t("cart.subtotal")}</span>
               <span>{formatPrice(totals.subtotal)}</span>
             </div>
             {totals.discount > 0 && (
               <div className="flex justify-between text-success">
-                <span>Discount</span>
+                <span>{t("cart.discount")}</span>
                 <span>- {formatPrice(totals.discount)}</span>
               </div>
             )}
             <div className="flex justify-between">
               <span className="text-ink-soft">
-                Shipping{form.country ? ` to ${form.country}` : ""}
+                {t("cart.shipping")}{form.country ? ` ${t("co.shipTo")} ${form.country}` : ""}
               </span>
-              <span>{totals.shipping === 0 ? "Free" : formatPrice(totals.shipping)}</span>
+              <span>{totals.shipping === 0 ? t("cart.free") : formatPrice(totals.shipping)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-soft">Tax</span>
+              <span className="text-ink-soft">{t("cart.tax")}</span>
               <span>{formatPrice(totals.tax)}</span>
             </div>
             {!form.country && (
               <p className="text-xs text-muted">
-                Select your country to see exact shipping &amp; tax.
+                {t("co.selectForRates")}
               </p>
             )}
             <div className="flex justify-between border-t border-border pt-3 text-base font-semibold">
-              <span>Total</span>
+              <span>{t("cart.total")}</span>
               <span>{formatPrice(totals.total)}</span>
             </div>
           </div>
@@ -404,20 +402,20 @@ export function CheckoutView({
             className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-3.5 font-medium text-white shadow-gold transition-all hover:-translate-y-0.5 hover:bg-gold-strong disabled:translate-y-0 disabled:opacity-60"
           >
             {loading
-              ? "Placing order…"
+              ? t("co.placing")
               : paymentMethod === "paypal"
-                ? "Continue to PayPal"
+                ? t("co.continuePaypal")
               : paymentMethod === "card"
-                ? "Continue to payment"
+                ? t("co.continuePayment")
                 : paymentMethod === "whatsapp"
-                  ? "Place order & open WhatsApp"
+                  ? t("co.placeWa")
                   : paymentMethod === "cod"
-                    ? "Place order (Cash on Delivery)"
-                    : "Place order"}
+                    ? t("co.placeCod")
+                    : t("checkout.placeOrder")}
             {!loading && <ArrowRight className="h-4 w-4" />}
           </button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted">
-            <ShieldCheck className="h-3.5 w-3.5" /> Your details are kept private &amp; secure
+            <ShieldCheck className="h-3.5 w-3.5" /> {t("co.privacyNote")}
           </p>
         </div>
       </aside>

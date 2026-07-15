@@ -11,6 +11,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createCardPayment } from "@/lib/payments";
 import { createPaypalOrder } from "@/lib/paypal";
 import { generateOrderNumber } from "@/data/orders";
+import { getT, getLocale } from "@/i18n/server";
 
 const checkoutSchema = z.object({
   email: z.string().email(),
@@ -40,9 +41,10 @@ export type CheckoutResult =
   | { ok: false; error: string };
 
 export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
+  const t = getT(await getLocale());
   const parsed = checkoutSchema.safeParse(raw);
   if (!parsed.success) {
-    return { ok: false, error: "Please check your details and try again." };
+    return { ok: false, error: t("co.errDetails") };
   }
   const data = parsed.data;
 
@@ -51,7 +53,7 @@ export async function placeOrder(raw: unknown): Promise<CheckoutResult> {
   const lineItems = [];
   for (const item of data.items) {
     const product = await getCatalogProductById(item.productId);
-    if (!product) return { ok: false, error: "One of the products is unavailable." };
+    if (!product) return { ok: false, error: t("co.errUnavailable") };
     subtotal += product.price * item.quantity;
     lineItems.push({
       product_id: product.id,
