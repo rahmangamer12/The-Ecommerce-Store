@@ -14,6 +14,7 @@ import { siteConfig } from "@/config/site";
 import { ratesForCode } from "@/config/geo-rates";
 import { findCoupon } from "@/data/coupons";
 import { analyticsEvents } from "@/lib/analytics";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 // -------------------------------------------------------------
 //  Client-side store: cart, wishlist, recently viewed, coupon.
@@ -87,6 +88,7 @@ function readLS<T>(key: string, fallback: T): T {
 }
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const { t } = usePrefs();
   const [items, setItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<string[]>([]);
@@ -145,12 +147,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         }
         return [...prev, { ...item, quantity: Math.min(qty, item.maxStock) }];
       });
-      toast.success("Added to cart", { description: item.name });
+      toast.success(t("toast.addedToCart"), { description: item.name });
       // Forward to any configured analytics pixels (GA4/GTM/Meta/TikTok).
       analyticsEvents.addToCart(item.productId, item.name, item.price, qty);
       setCartOpen(true);
     },
-    [],
+    [t],
   );
 
   const removeItem = useCallback((productId: string, variantKey = "") => {
@@ -181,13 +183,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const toggleWishlist = useCallback((productId: string) => {
     setWishlist((prev) => {
       if (prev.includes(productId)) {
-        toast("Removed from wishlist");
+        toast(t("toast.removedWishlist"));
         return prev.filter((id) => id !== productId);
       }
-      toast.success("Saved to wishlist");
+      toast.success(t("toast.savedWishlist"));
       return [...prev, productId];
     });
-  }, []);
+  }, [t]);
 
   const isWishlisted = useCallback(
     (productId: string) => wishlist.includes(productId),
@@ -202,14 +204,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const found = findCoupon(code);
     if (found) {
       setCoupon(found);
-      toast.success(`Coupon “${found.code}” applied`, {
+      toast.success(`${t("toast.couponApplied")}: ${found.code}`, {
         description: found.description,
       });
       return true;
     }
-    toast.error("Invalid coupon code");
+    toast.error(t("toast.invalidCoupon"));
     return false;
-  }, []);
+  }, [t]);
 
   const removeCoupon = useCallback(() => setCoupon(null), []);
 

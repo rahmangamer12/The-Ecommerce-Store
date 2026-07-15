@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Cookie } from "lucide-react";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 // Simple, privacy-friendly cookie notice. Remembers the choice so it only
 // shows once. "Decline" keeps only essential cookies (the default).
 const KEY = "luxora.cookies";
 
 export function CookieConsent() {
+  const { t } = usePrefs();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -30,10 +32,9 @@ export function CookieConsent() {
           <Cookie className="h-5 w-5" />
         </span>
         <p className="flex-1 text-sm text-ink-soft">
-          We use cookies to keep your cart, remember preferences and improve the
-          store. See our{" "}
+          {t("cookie.text")}{" "}
           <Link href="/privacy" className="font-medium text-gold-strong hover:underline">
-            privacy policy
+            {t("cookie.privacy")}
           </Link>
           .
         </p>
@@ -43,14 +44,14 @@ export function CookieConsent() {
             onClick={() => choose("essential")}
             className="rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-ink/30"
           >
-            Decline
+            {t("cookie.decline")}
           </button>
           <button
             type="button"
             onClick={() => choose("all")}
             className="rounded-full bg-gold px-5 py-2 text-sm font-medium text-white shadow-gold transition-colors hover:bg-gold-strong"
           >
-            Accept all
+            {t("cookie.accept")}
           </button>
         </div>
       </div>

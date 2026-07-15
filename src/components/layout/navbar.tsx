@@ -174,12 +174,12 @@ export function Navbar({ categories = localCategories }: { categories?: Category
               <UserButton>
                 <UserButton.MenuItems>
                   <UserButton.Link
-                    label="My account"
+                    label={t("nav.account")}
                     labelIcon={<User className="h-4 w-4" />}
                     href="/account"
                   />
                   <UserButton.Link
-                    label="Admin dashboard"
+                    label={t("nav.admin")}
                     labelIcon={<LayoutDashboard className="h-4 w-4" />}
                     href="/admin"
                   />
@@ -237,7 +237,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                   autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search products, brands, categories…"
+                  placeholder={t("nav.search")}
                   className="h-10 flex-1 bg-transparent text-base focus-visible:outline-none"
                 />
                 <button
@@ -283,14 +283,14 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                       onClick={submitSearch}
                       className="flex w-full items-center justify-center gap-1 rounded-xl py-2 text-sm font-medium text-gold-strong hover:bg-ink/5"
                     >
-                      See all results <ChevronRight className="h-4 w-4" />
+                      {t("nav.seeAllResults")} <ChevronRight className="h-4 w-4" />
                     </button>
                   </li>
                 </ul>
               )}
               {query.trim() && results.length === 0 && (
                 <p className="mt-4 text-center text-sm text-muted">
-                  No products found for “{query}”.
+                  {t("nav.noResults")} “{query}”.
                 </p>
               )}
             </div>
@@ -348,7 +348,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
               </nav>
               <div className="mt-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
-                  Categories
+                  {t("nav.categories")}
                 </p>
                 <div className="grid grid-cols-2 gap-1">
                   {categories.map((cat) => (
@@ -371,14 +371,14 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium hover:bg-ink/5"
                     >
-                      <User className="h-4 w-4" /> My account
+                      <User className="h-4 w-4" /> {t("nav.account")}
                     </Link>
                     <Link
                       href="/admin"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium hover:bg-ink/5"
                     >
-                      <LayoutDashboard className="h-4 w-4" /> Admin dashboard
+                      <LayoutDashboard className="h-4 w-4" /> {t("nav.admin")}
                     </Link>
                   </div>
                 ) : (
@@ -387,7 +387,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-paper"
                   >
-                    <User className="h-4 w-4" /> Sign In / Register
+                    <User className="h-4 w-4" /> {t("nav.signinRegister")}
                   </Link>
                 )}
                 {/* Currency / language + theme — always available in the drawer
@@ -396,7 +396,7 @@ export function Navbar({ categories = localCategories }: { categories?: Category
                     small phone screen; it scrolls with the drawer. */}
                 <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted">
-                    Theme
+                    {t("nav.theme")}
                   </p>
                   <ThemeToggle />
                 </div>

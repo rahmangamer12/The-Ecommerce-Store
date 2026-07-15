@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Bell, MapPin, X } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
+import { usePrefs } from "@/components/providers/prefs-provider";
 import { siteConfig } from "@/config/site";
 import { savePushSubscription } from "@/lib/push-actions";
 
@@ -75,6 +76,7 @@ async function countryFromCoords(lat: number, lng: number): Promise<string | nul
 
 export function PermissionPrompt() {
   const { setShipCountry } = useStore();
+  const { t } = usePrefs();
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -114,8 +116,8 @@ export function PermissionPrompt() {
             if (code) {
               detected = code;
               setShipCountry(code);
-              toast.success("Location set", {
-                description: `Showing shipping & tax for ${code}.`,
+              toast.success(t("perm.locationSet"), {
+                description: `${t("perm.locationDesc")} ${code}.`,
               });
             }
             resolve();
@@ -136,8 +138,8 @@ export function PermissionPrompt() {
         if (perm === "granted") {
           await subscribeToPush(detected);
           try {
-            new Notification(`Welcome to ${siteConfig.name}! 🎉`, {
-              body: "You'll get our best deals & order updates here.",
+            new Notification(`${t("perm.welcomePre")} ${siteConfig.name}! 🎉`, {
+              body: t("perm.welcomeBody"),
               icon: "/icon.png",
             });
           } catch {
@@ -176,11 +178,9 @@ export function PermissionPrompt() {
           </span>
         </div>
 
-        <p className="mt-3 font-semibold">Stay in the loop</p>
+        <p className="mt-3 font-semibold">{t("perm.title")}</p>
         <p className="mt-1 text-sm text-ink-soft">
-          Allow <span className="font-medium">notifications</span> for deals &amp;
-          order updates, and <span className="font-medium">location</span> so we
-          show the right shipping &amp; tax for your country.
+          {t("perm.body")}
         </p>
 
         <div className="mt-4 flex gap-2">
@@ -190,14 +190,14 @@ export function PermissionPrompt() {
             disabled={busy}
             className="flex-1 rounded-full bg-gold px-4 py-2.5 text-sm font-medium text-white shadow-gold transition-colors hover:bg-gold-strong disabled:opacity-60"
           >
-            {busy ? "Enabling…" : "Allow"}
+            {busy ? t("perm.enabling") : t("perm.allow")}
           </button>
           <button
             type="button"
             onClick={() => close(true)}
             className="rounded-full border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:border-ink/30"
           >
-            Not now
+            {t("perm.notNow")}
           </button>
         </div>
       </div>

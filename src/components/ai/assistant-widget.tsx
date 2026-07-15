@@ -3,20 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Send, Sparkles, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 type Msg = { role: "user" | "assistant"; content: string };
-
-const GREETING: Msg = {
-  role: "assistant",
-  content:
-    "Hi! 👋 I'm your shopping assistant. Ask me for product ideas, sizing, shipping or returns — I'm here to help.",
-};
 
 // Floating store assistant. Renders nothing unless AI is configured (the
 // LongCat key is set), so the store is unaffected when it's off.
 export function AssistantWidget({ enabled }: { enabled: boolean }) {
+  const { t } = usePrefs();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([GREETING]);
+  // The first message is always the greeting; send() drops it (index 0) before
+  // calling the API so it isn't treated as conversation history.
+  const [messages, setMessages] = useState<Msg[]>([
+    { role: "assistant", content: t("ai.greeting") },
+  ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -38,23 +38,20 @@ export function AssistantWidget({ enabled }: { enabled: boolean }) {
       const res = await fetch("/api/assistant", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages: next.filter((m) => m !== GREETING) }),
+        body: JSON.stringify({ messages: next.slice(1) }),
       });
       const data = (await res.json()) as { reply?: string; error?: string };
       setMessages((m) => [
         ...m,
         {
           role: "assistant",
-          content:
-            data.reply ??
-            data.error ??
-            "Sorry, something went wrong. Please try again.",
+          content: data.reply ?? data.error ?? t("ai.error"),
         },
       ]);
     } catch {
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: "I couldn't reach the server. Please try again." },
+        { role: "assistant", content: t("ai.network") },
       ]);
     } finally {
       setLoading(false);
@@ -85,8 +82,8 @@ export function AssistantWidget({ enabled }: { enabled: boolean }) {
                 <Sparkles className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-sm font-semibold leading-tight">Shopping assistant</p>
-                <p className="text-[11px] leading-tight text-paper/60">Usually replies instantly</p>
+                <p className="text-sm font-semibold leading-tight">{t("ai.title")}</p>
+                <p className="text-[11px] leading-tight text-paper/60">{t("ai.subtitle")}</p>
               </div>
             </div>
             <button
@@ -140,7 +137,7 @@ export function AssistantWidget({ enabled }: { enabled: boolean }) {
                     send();
                   }
                 }}
-                placeholder="Ask about products, shipping…"
+                placeholder={t("ai.placeholder")}
                 className="h-11 flex-1 rounded-full border border-border bg-paper px-4 text-sm focus:border-gold focus-visible:outline-none"
               />
               <button
@@ -157,7 +154,7 @@ export function AssistantWidget({ enabled }: { enabled: boolean }) {
               </button>
             </div>
             <p className="mt-1.5 text-center text-[10px] text-muted">
-              AI assistant · answers may not be perfect
+              {t("ai.disclaimer")}
             </p>
           </div>
         </div>
