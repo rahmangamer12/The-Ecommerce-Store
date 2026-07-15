@@ -2,25 +2,29 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import type { Category } from "@/types";
+import { getT, getLocale } from "@/i18n/server";
 
 // Daraz / SHEIN-style category quick-grid: compact tappable tiles shown high
 // on the homepage so shoppers jump straight into a category.
-export function CategoryGrid({
+export async function CategoryGrid({
   categories,
-  title = "Shop by category",
+  title,
 }: {
   categories: Category[];
   title?: string;
 }) {
+  const t = getT(await getLocale());
   return (
     <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="font-display text-xl font-semibold sm:text-2xl">{title}</h2>
+        <h2 className="font-display text-xl font-semibold sm:text-2xl">
+          {title ?? t("home.catTitle")}
+        </h2>
         <Link
           href="/categories"
           className="inline-flex items-center gap-1 text-sm font-medium text-gold-strong hover:underline"
         >
-          View all <ArrowRight className="h-4 w-4" />
+          {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
       <div className="grid grid-cols-4 gap-3 sm:grid-cols-6 sm:gap-4 lg:grid-cols-8">

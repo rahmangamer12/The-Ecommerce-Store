@@ -1,9 +1,11 @@
 import { getCatalog } from "@/lib/catalog";
+import { getT, getLocale } from "@/i18n/server";
 
 // A quiet "as featured / our brands" marquee — a common trust signal on
 // premium e-commerce stores. Reads the live catalogue so it shows your real
 // brands once products are added.
 export async function BrandStrip() {
+  const t = getT(await getLocale());
   const catalog = await getCatalog();
   const brands = Array.from(new Set(catalog.map((p) => p.brand))).filter(Boolean);
   if (brands.length === 0) return null;
@@ -12,7 +14,7 @@ export async function BrandStrip() {
   return (
     <section className="border-y border-border bg-paper-2/60 py-7">
       <p className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-        Trusted brands we carry
+        {t("brand.trusted")}
       </p>
       <div className="relative overflow-hidden">
         <div className="flex w-max animate-marquee-slow items-center gap-12 px-6">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Zap } from "lucide-react";
 import type { Product } from "@/types";
 import { ProductCard } from "@/components/product/product-card";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -12,6 +13,7 @@ function pad(n: number) {
 // A flash-sale section with a live countdown (resets at end of day) and the
 // products currently on sale. Classic high-converting e-commerce block.
 export function FlashDeal({ products }: { products: Product[] }) {
+  const { t } = usePrefs();
   const [time, setTime] = useState({ h: 0, m: 0, s: 0 });
 
   useEffect(() => {
@@ -42,17 +44,17 @@ export function FlashDeal({ products }: { products: Product[] }) {
           </span>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-white/80">
-              Limited time
+              {t("flash.limited")}
             </p>
             <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-              Flash Sale
+              {t("flash.title")}
             </h2>
           </div>
         </div>
         {/* Countdown */}
         <div className="flex items-center gap-2">
           <span className="hidden text-sm font-medium text-white/90 sm:inline">
-            Ends in
+            {t("flash.endsIn")}
           </span>
           {[time.h, time.m, time.s].map((v, i) => (
             <span key={i} className="flex items-center gap-2">

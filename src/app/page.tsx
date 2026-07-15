@@ -209,6 +209,7 @@ export default async function HomePage() {
               title={t("home.featTitle")}
               description={t("home.featDesc")}
               href="/shop"
+              hrefLabel={t("common.viewAll")}
             />
           </Reveal>
           <Stagger className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
@@ -227,17 +228,17 @@ export default async function HomePage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="eyebrow flex items-center gap-1.5">
-                <Sparkles className="h-4 w-4 text-gold-strong" /> Picked for you
+                <Sparkles className="h-4 w-4 text-gold-strong" /> {t("home.pickedForYou")}
               </p>
               <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-                Just for you
+                {t("home.justForYou")}
               </h2>
             </div>
             <Link
               href="/shop"
               className="inline-flex items-center gap-1 text-sm font-medium text-gold-strong hover:underline"
             >
-              See more <ArrowRight className="h-4 w-4" />
+              {t("home.seeMore")} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
@@ -272,6 +273,7 @@ export default async function HomePage() {
               title={t("home.newTitle")}
               description={t("home.newDesc")}
               href="/shop?sort=newest"
+              hrefLabel={t("common.viewAll")}
             />
           </Reveal>
           <Stagger className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
@@ -312,6 +314,7 @@ export default async function HomePage() {
               eyebrow={t("home.trendEyebrow")}
               title={t("home.trendTitle")}
               href="/shop?sort=popular"
+              hrefLabel={t("common.viewAll")}
             />
           </Reveal>
           <Stagger className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
@@ -372,6 +375,7 @@ export default async function HomePage() {
               title={t("home.journalTitle")}
               description={t("home.journalDesc")}
               href="/blog"
+              hrefLabel={t("common.viewAll")}
             />
           </Reveal>
           <Stagger className="mt-12 grid gap-6 md:grid-cols-3">

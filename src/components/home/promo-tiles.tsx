@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getCategoryBySlug } from "@/lib/categories";
+import { getT, getLocale } from "@/i18n/server";
 
 // Two large promotional tiles using the clean category cover photos (curated
 // from products, no marketing-text overlays).
 export async function PromoTiles() {
+  const t = getT(await getLocale());
   const [audio, watches] = await Promise.all([
     getCategoryBySlug("audio"),
     getCategoryBySlug("watches-jewelry"),
@@ -13,18 +15,18 @@ export async function PromoTiles() {
 
   const tiles = [
     {
-      title: "Sound, perfected",
-      subtitle: "Shop Audio",
+      title: t("promo.audioTitle"),
+      subtitle: t("promo.audioSub"),
       href: "/categories/audio",
       image: audio?.image,
     },
     {
-      title: "Timeless on the wrist",
-      subtitle: "Shop Watches & Jewelry",
+      title: t("promo.watchesTitle"),
+      subtitle: t("promo.watchesSub"),
       href: "/categories/watches-jewelry",
       image: watches?.image,
     },
-  ].filter((t) => t.image);
+  ].filter((tile) => tile.image);
 
   if (tiles.length === 0) return null;
 
@@ -51,7 +53,7 @@ export async function PromoTiles() {
                 {tile.title}
               </h3>
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium">
-                Shop now
+                {t("common.shopNow")}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
             </div>
