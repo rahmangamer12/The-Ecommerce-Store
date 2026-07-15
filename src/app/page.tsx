@@ -340,24 +340,24 @@ export default async function HomePage() {
           />
         </Reveal>
         <Stagger className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {testimonials.map((t) => (
-            <StaggerItem key={t.id}>
+          {testimonials.map((ti) => (
+            <StaggerItem key={ti.id}>
               <figure className="flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-luxe">
                 <div className="flex items-center gap-1 text-gold">
-                  {Array.from({ length: t.rating }).map((_, i) => (
+                  {Array.from({ length: ti.rating }).map((_, i) => (
                     <Star key={i} className="h-4 w-4 fill-current" />
                   ))}
                 </div>
                 <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-ink-soft">
-                  “{t.quote}”
+                  “{t(ti.quoteKey)}”
                 </blockquote>
                 <figcaption className="mt-5 flex items-center gap-3">
                   <span className="relative h-10 w-10 overflow-hidden rounded-full">
-                    <Image src={t.avatar} alt={t.name} fill sizes="40px" className="object-cover" />
+                    <Image src={ti.avatar} alt={ti.name} fill sizes="40px" className="object-cover" />
                   </span>
                   <span>
-                    <span className="block text-sm font-semibold text-ink">{t.name}</span>
-                    <span className="block text-xs text-muted">{t.role}</span>
+                    <span className="block text-sm font-semibold text-ink">{ti.name}</span>
+                    <span className="block text-xs text-muted">{t(ti.roleKey)}</span>
                   </span>
                 </figcaption>
               </figure>

@@ -6,6 +6,7 @@ import { getAllPosts, blogCategories } from "@/data/blog";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { formatDate, readingTime, cn } from "@/lib/utils";
 import { buildMetadata } from "@/lib/seo";
+import { getT, getLocale } from "@/i18n/server";
 
 export const metadata: Metadata = buildMetadata({
   title: "The Journal",
@@ -19,6 +20,7 @@ export default async function BlogPage({
   searchParams: Promise<{ category?: string }>;
 }) {
   const { category } = await searchParams;
+  const t = getT(await getLocale());
   const all = getAllPosts();
   const posts = category
     ? all.filter((p) => p.category.toLowerCase() === category.toLowerCase())
@@ -29,18 +31,18 @@ export default async function BlogPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
       <header className="text-center">
-        <p className="eyebrow">The Journal</p>
+        <p className="eyebrow">{t("blog.eyebrow")}</p>
         <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-          Stories &amp; guides
+          {t("blog.title")}
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-ink-soft">
-          Thoughtful reading on design, living well and making things last.
+          {t("blog.subtitle")}
         </p>
       </header>
 
       {/* Category pills */}
       <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-        <CategoryPill href="/blog" label="All" active={!category} />
+        <CategoryPill href="/blog" label={t("blog.all")} active={!category} />
         {blogCategories.map((c) => (
           <CategoryPill
             key={c}
@@ -77,11 +79,11 @@ export default async function BlogPage({
               <div className="mt-5 flex items-center gap-4 text-sm text-muted">
                 <span>{formatDate(featured.date)}</span>
                 <span className="flex items-center gap-1.5">
-                  <Clock className="h-4 w-4" /> {readingTime(featured.content)} min read
+                  <Clock className="h-4 w-4" /> {readingTime(featured.content)} {t("blog.minRead")}
                 </span>
               </div>
               <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-gold-strong">
-                Read story <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                {t("blog.readStory")} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
             </div>
           </Link>
@@ -110,7 +112,7 @@ export default async function BlogPage({
               <div className="mt-3 flex items-center gap-3 text-xs text-muted">
                 <span>{formatDate(post.date)}</span>
                 <span>·</span>
-                <span>{readingTime(post.content)} min read</span>
+                <span>{readingTime(post.content)} {t("blog.minRead")}</span>
               </div>
             </Link>
           </StaggerItem>

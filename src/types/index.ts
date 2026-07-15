@@ -1,5 +1,7 @@
 /** Shared domain types for the whole store. */
 
+import type { TranslationKey } from "@/i18n/translations";
+
 export type Category = {
   id: string;
   name: string;
@@ -152,7 +154,9 @@ export type Testimonial = {
   id: string;
   name: string;
   role: string;
+  roleKey: TranslationKey;
   avatar: string;
   rating: number;
   quote: string;
+  quoteKey: TranslationKey;
 };

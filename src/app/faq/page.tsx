@@ -6,6 +6,7 @@ import { faqs } from "@/data/faqs";
 import { siteConfig } from "@/config/site";
 import { buildMetadata, faqSchema, jsonLd } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
+import type { TranslationKey } from "@/i18n/translations";
 
 export const metadata: Metadata = buildMetadata({
   title: "FAQ",
@@ -15,6 +16,10 @@ export const metadata: Metadata = buildMetadata({
 
 export default async function FaqPage() {
   const t = getT(await getLocale());
+  const localizedFaqs = faqs.map((_, i) => ({
+    question: t(`faq.q${i + 1}` as TranslationKey),
+    answer: t(`faq.a${i + 1}` as TranslationKey),
+  }));
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-24">
       <script
@@ -30,7 +35,7 @@ export default async function FaqPage() {
       </header>
 
       <div className="mt-12">
-        <Accordion items={faqs} />
+        <Accordion items={localizedFaqs} />
       </div>
 
       <div className="mt-10 rounded-2xl border border-border bg-card p-6 text-center sm:p-8">

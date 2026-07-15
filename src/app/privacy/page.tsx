@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LegalLayout } from "@/components/legal-layout";
 import { siteConfig } from "@/config/site";
 import { buildMetadata } from "@/lib/seo";
+import { getT, getLocale } from "@/i18n/server";
 
 export const metadata: Metadata = buildMetadata({
   title: "Privacy Policy",
@@ -9,48 +10,36 @@ export const metadata: Metadata = buildMetadata({
   path: "/privacy",
 });
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const t = getT(await getLocale());
   return (
     <LegalLayout
-      title="Privacy Policy"
+      title={t("privacy.title")}
       updated="June 1, 2026"
       sections={[
         {
-          heading: "Introduction",
-          body: [
-            `At ${siteConfig.name}, your privacy matters. This policy explains what information we collect, why we collect it, and how we keep it safe. By using our website you agree to the practices described here.`,
-          ],
+          heading: t("privacy.h1"),
+          body: [t("privacy.b1").replace("{name}", siteConfig.name)],
         },
         {
-          heading: "Information we collect",
-          body: [
-            "We collect information you provide directly — such as your name, email, shipping address and order details — when you create an account or place an order.",
-            "We also collect limited technical data automatically, like your device type and pages visited, to improve our service. This is done through privacy-respecting analytics.",
-          ],
+          heading: t("privacy.h2"),
+          body: [t("privacy.b2a"), t("privacy.b2b")],
         },
         {
-          heading: "How we use your information",
-          body: [
-            "We use your information to process and deliver orders, provide customer support, send important updates, and — only with your consent — share marketing you can opt out of at any time.",
-          ],
+          heading: t("privacy.h3"),
+          body: [t("privacy.b3")],
         },
         {
-          heading: "Payments",
-          body: [
-            "Payments are handled securely. If card payment is enabled, it is processed by a secure third-party provider and we never store your full card details. Bank-transfer and WhatsApp order details are used only to process and deliver your order.",
-          ],
+          heading: t("privacy.h4"),
+          body: [t("privacy.b4")],
         },
         {
-          heading: "Your rights",
-          body: [
-            "You may request access to, correction of, or deletion of your personal data at any time. To exercise these rights, contact us at " + siteConfig.supportEmail + ".",
-          ],
+          heading: t("privacy.h5"),
+          body: [t("privacy.b5").replace("{email}", siteConfig.supportEmail)],
         },
         {
-          heading: "Contact",
-          body: [
-            `Questions about this policy? Email us at ${siteConfig.supportEmail} and we'll be happy to help.`,
-          ],
+          heading: t("privacy.h6"),
+          body: [t("privacy.b6").replace("{email}", siteConfig.supportEmail)],
         },
       ]}
     />

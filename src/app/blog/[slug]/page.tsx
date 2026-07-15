@@ -12,6 +12,7 @@ import {
   breadcrumbSchema,
   jsonLd,
 } from "@/lib/seo";
+import { getT, getLocale } from "@/i18n/server";
 
 export function generateStaticParams() {
   return blogPosts.map((p) => ({ slug: p.slug }));
@@ -51,6 +52,7 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const t = getT(await getLocale());
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
@@ -86,9 +88,9 @@ export default async function BlogPostPage({
       {/* Header */}
       <div className="mx-auto max-w-3xl px-4 pt-10 sm:px-6">
         <nav className="flex items-center gap-1.5 text-sm text-muted">
-          <Link href="/" className="hover:text-ink">Home</Link>
+          <Link href="/" className="hover:text-ink">{t("blog.home")}</Link>
           <ChevronRight className="h-3.5 w-3.5" />
-          <Link href="/blog" className="hover:text-ink">Journal</Link>
+          <Link href="/blog" className="hover:text-ink">{t("blog.journal")}</Link>
         </nav>
         <p className="eyebrow mt-6">{post.category}</p>
         <h1 className="mt-3 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
@@ -107,7 +109,7 @@ export default async function BlogPostPage({
           <span className="text-muted">·</span>
           <span className="text-sm text-muted">{formatDate(post.date)}</span>
           <span className="flex items-center gap-1.5 text-sm text-muted">
-            <Clock className="h-4 w-4" /> {readingTime(post.content)} min read
+            <Clock className="h-4 w-4" /> {readingTime(post.content)} {t("blog.minRead")}
           </span>
         </div>
       </div>
@@ -148,7 +150,7 @@ export default async function BlogPostPage({
           <aside className="hidden lg:block">
             <div className="sticky top-24">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted">
-                On this page
+                {t("blog.onThisPage")}
               </p>
               <ul className="mt-4 space-y-2.5 border-l border-border">
                 {toc.map((h) => (
@@ -171,7 +173,7 @@ export default async function BlogPostPage({
       {related.length > 0 && (
         <section className="mt-20 border-t border-border bg-paper-2">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-            <h2 className="font-display text-2xl font-semibold">Keep reading</h2>
+            <h2 className="font-display text-2xl font-semibold">{t("blog.keepReading")}</h2>
             <div className="mt-8 grid gap-8 md:grid-cols-3">
               {related.map((p) => (
                 <Link key={p.slug} href={`/blog/${p.slug}`} className="card-lift group block">
