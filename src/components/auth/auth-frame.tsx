@@ -1,8 +1,10 @@
 import { Logo } from "@/components/layout/logo";
 import { ShieldCheck, Truck, Star } from "lucide-react";
+import { getT, getLocale } from "@/i18n/server";
 
 // Premium split-screen frame that wraps the Clerk sign-in / sign-up widget.
-export function AuthFrame({ children }: { children: React.ReactNode }) {
+export async function AuthFrame({ children }: { children: React.ReactNode }) {
+  const t = getT(await getLocale());
   return (
     // 100dvh (dynamic viewport height) avoids the iOS Safari 100vh bug where the
     // address bar leaves a gap / pushes content off-screen.
@@ -29,19 +31,18 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
               ))}
             </div>
             <p className="mt-5 font-display text-2xl leading-snug">
-              “The most beautiful online store I&apos;ve shopped with — effortless,
-              premium and personal.”
+              “{t("auth.quote")}”
             </p>
             <footer className="mt-4 text-sm text-paper/70">
-              Sofia M. — Verified customer
+              {t("auth.quoteAuthor")}
             </footer>
           </blockquote>
           <div className="mt-10 flex flex-wrap gap-6 text-sm text-paper/80">
             <span className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-gold-soft" /> Secure &amp; private
+              <ShieldCheck className="h-4 w-4 text-gold-soft" /> {t("auth.securePrivate")}
             </span>
             <span className="flex items-center gap-2">
-              <Truck className="h-4 w-4 text-gold-soft" /> Worldwide shipping
+              <Truck className="h-4 w-4 text-gold-soft" /> {t("auth.worldwide")}
             </span>
           </div>
         </div>

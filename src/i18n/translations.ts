@@ -415,6 +415,21 @@ export const translations = {
     "status.delivered": "Delivered",
     "status.cancelled": "Cancelled",
     "status.refunded": "Refunded",
+    "nf.title": "Page not found",
+    "nf.desc":
+      "The page you're looking for doesn't exist or has moved. Let's get you back to something beautiful.",
+    "nf.backHome": "Back home",
+    "err.title": "Something went wrong",
+    "err.desc":
+      "An unexpected error occurred. Please try again — if it persists, contact our support team.",
+    "err.tryAgain": "Try again",
+    "auth.quote":
+      "The most beautiful online store I've shopped with — effortless, premium and personal.",
+    "auth.quoteAuthor": "Sofia M. — Verified customer",
+    "auth.securePrivate": "Secure & private",
+    "auth.worldwide": "Worldwide shipping",
+    "legal.eyebrow": "Legal",
+    "legal.updated": "Last updated:",
   },
   ar: {
     "nav.shop": "تسوق",
@@ -827,6 +842,21 @@ export const translations = {
     "status.delivered": "تم التوصيل",
     "status.cancelled": "ملغى",
     "status.refunded": "مسترد",
+    "nf.title": "الصفحة غير موجودة",
+    "nf.desc":
+      "الصفحة التي تبحث عنها غير موجودة أو تم نقلها. دعنا نعيدك إلى شيء جميل.",
+    "nf.backHome": "العودة للرئيسية",
+    "err.title": "حدث خطأ ما",
+    "err.desc":
+      "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى — وإن استمر الأمر، تواصل مع فريق الدعم.",
+    "err.tryAgain": "حاول مجددًا",
+    "auth.quote":
+      "أجمل متجر إلكتروني تسوّقت منه — سلس وفاخر وشخصي.",
+    "auth.quoteAuthor": "Sofia M. — عميلة موثّقة",
+    "auth.securePrivate": "آمن وخاص",
+    "auth.worldwide": "شحن لكل العالم",
+    "legal.eyebrow": "قانوني",
+    "legal.updated": "آخر تحديث:",
   },
 } as const;
 
