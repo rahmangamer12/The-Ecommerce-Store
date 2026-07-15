@@ -19,6 +19,7 @@ import { Analytics } from "@/components/analytics";
 import { buildMetadata } from "@/lib/seo";
 import { analytics, isAiConfigured } from "@/config/env";
 import { getCategories } from "@/lib/categories";
+import { getLocale } from "@/i18n/server";
 
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -34,10 +35,12 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const categories = await getCategories();
+  const locale = await getLocale();
   return (
     <ClerkProvider>
       <html
-        lang="en"
+        lang={locale}
+        dir={locale === "ar" ? "rtl" : "ltr"}
         suppressHydrationWarning
         className={`${sans.variable} ${mono.variable} ${display.variable}`}
       >
