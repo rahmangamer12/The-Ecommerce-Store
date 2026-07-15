@@ -7,6 +7,7 @@ import { buildMetadata } from "@/lib/seo";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { siteConfig } from "@/config/site";
 import { formatPrice } from "@/lib/utils";
+import { getT, getLocale } from "@/i18n/server";
 
 export const metadata: Metadata = buildMetadata({
   title: "Order Confirmed",
@@ -24,6 +25,7 @@ export default async function OrderSuccessPage({
 }) {
   const { order, method } = await searchParams;
   const recommended = await getCatalogFeatured(4);
+  const t = getT(await getLocale());
 
   // Look up the order so we can show the exact amount + payment method (more
   // reliable than trusting the URL). Best-effort — falls back to the URL param.
@@ -58,25 +60,24 @@ export default async function OrderSuccessPage({
         <CheckCircle2 className="h-11 w-11" />
       </div>
       <h1 className="mt-6 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
-        {awaitingPayment ? "Order received!" : "Thank you for your order"}
+        {awaitingPayment ? t("os.receivedTitle") : t("os.thankTitle")}
       </h1>
       <p className="mx-auto mt-4 max-w-lg text-lg text-ink-soft">
         {isBank
-          ? "One more step — please complete your bank transfer below. We ship as soon as the payment arrives."
+          ? t("os.bankIntro")
           : isWhatsapp
-            ? "We've opened WhatsApp so you can confirm your order with us. We'll take it from there."
-            : "Your order has been received and is now being prepared. A confirmation email is on its way."}
+            ? t("os.whatsappIntro")
+            : t("os.defaultIntro")}
       </p>
 
       {order && (
         <div className="mt-8">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm">
-            <span className="text-muted">Order number</span>
+            <span className="text-muted">{t("os.orderNumber")}</span>
             <span className="font-semibold tracking-wide">{order}</span>
           </div>
           <p className="mt-2 text-xs text-muted">
-            Save this number — you can track your order anytime (even without an
-            account) using it and your email.
+            {t("os.saveNumber")}
           </p>
         </div>
       )}
@@ -86,22 +87,21 @@ export default async function OrderSuccessPage({
         <div className="mx-auto mt-8 max-w-xl rounded-2xl border border-gold/40 bg-gold/5 p-6 text-left">
           <div className="flex items-center gap-2 text-gold-strong">
             <Landmark className="h-5 w-5" />
-            <h2 className="font-semibold">Complete your bank transfer</h2>
+            <h2 className="font-semibold">{t("os.completeTransfer")}</h2>
           </div>
           <p className="mt-2 text-sm text-ink-soft">
-            Transfer{" "}
+            {t("os.transferPre")}{" "}
             {total != null && (
               <span className="font-semibold text-ink">{formatPrice(total)}</span>
             )}{" "}
-            to the account below, using your order number{" "}
-            <span className="font-semibold text-ink">{order}</span> as the payment
-            reference.
+            {t("os.transferMid")}{" "}
+            <span className="font-semibold text-ink">{order}</span> {t("os.transferPost")}
           </p>
           <dl className="mt-4 space-y-2 rounded-xl bg-card p-4 text-sm">
             {[
-              ["Bank", siteConfig.bank.name],
-              ["Account name", siteConfig.bank.accountName],
-              ["Account no.", siteConfig.bank.accountNumber],
+              [t("os.bankName"), siteConfig.bank.name],
+              [t("os.accountName"), siteConfig.bank.accountName],
+              [t("os.accountNo"), siteConfig.bank.accountNumber],
               ["IBAN", siteConfig.bank.iban],
               ["SWIFT", siteConfig.bank.swift],
             ].map(([k, v]) => (
@@ -112,8 +112,7 @@ export default async function OrderSuccessPage({
             ))}
           </dl>
           <p className="mt-3 text-xs text-muted">
-            After transferring, your order moves from “Pending” to “Paid” and is
-            shipped. Keep your transfer receipt in case we need it.
+            {t("os.afterTransfer")}
           </p>
         </div>
       )}
@@ -123,12 +122,12 @@ export default async function OrderSuccessPage({
         <div className="mx-auto mt-8 max-w-xl rounded-2xl border border-gold/40 bg-gold/5 p-6 text-left">
           <div className="flex items-center gap-2 text-gold-strong">
             <MessageCircle className="h-5 w-5" />
-            <h2 className="font-semibold">Confirm on WhatsApp</h2>
+            <h2 className="font-semibold">{t("os.confirmWa")}</h2>
           </div>
           <p className="mt-2 text-sm text-ink-soft">
-            If WhatsApp didn&apos;t open automatically, message us at{" "}
+            {t("os.waMsgPre")}{" "}
             <span className="font-semibold text-ink">{siteConfig.whatsapp}</span>{" "}
-            with your order number <span className="font-semibold text-ink">{order}</span> to arrange payment and delivery.
+            {t("os.waMsgPost")} <span className="font-semibold text-ink">{order}</span> {t("os.waMsgEnd")}
           </p>
         </div>
       )}
@@ -137,9 +136,9 @@ export default async function OrderSuccessPage({
       {!awaitingPayment && (
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           {[
-            { icon: Mail, title: "Confirmation sent", text: "Check your inbox for details" },
-            { icon: Package, title: "We're on it", text: "Your order is being prepared" },
-            { icon: CheckCircle2, title: "Tracking soon", text: "You'll get a shipping link" },
+            { icon: Mail, title: t("os.confirmSent"), text: t("os.confirmSentText") },
+            { icon: Package, title: t("os.onIt"), text: t("os.onItText") },
+            { icon: CheckCircle2, title: t("os.trackingSoon"), text: t("os.trackingSoonText") },
           ].map((s) => (
             <div key={s.title} className="rounded-2xl border border-border bg-card p-5">
               <s.icon className="mx-auto h-6 w-6 text-gold-strong" />
@@ -156,18 +155,18 @@ export default async function OrderSuccessPage({
           variant="primary"
           size="lg"
         >
-          Track your order
+          {t("os.trackOrder")}
           <ArrowRight className="h-4 w-4" />
         </Button>
         <Button href="/shop" variant="outline" size="lg">
-          Continue shopping
+          {t("common.continueShopping")}
         </Button>
       </div>
 
       {/* Recommendations */}
       <div className="mt-20 text-left">
         <h2 className="text-center font-display text-2xl font-semibold">
-          You might also love
+          {t("os.alsoLove")}
         </h2>
         <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
           {recommended.map((p) => (

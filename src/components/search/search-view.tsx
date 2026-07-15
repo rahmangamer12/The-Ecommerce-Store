@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import type { Product } from "@/types";
 import { ProductCard } from "@/components/product/product-card";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 // Results are fetched SERVER-SIDE (getShopProducts) and passed in — reliable
 // even with thousands of products (the old client-catalogue search returned
@@ -19,6 +20,7 @@ export function SearchView({
   total: number;
 }) {
   const router = useRouter();
+  const { t } = usePrefs();
   const [query, setQuery] = useState(initialQuery);
 
   function submit(e: React.FormEvent) {
@@ -37,14 +39,14 @@ export function SearchView({
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search products, brands, categories…"
+          placeholder={t("nav.search")}
           className="h-10 flex-1 bg-transparent text-base focus-visible:outline-none"
         />
         <button
           type="submit"
           className="rounded-full bg-ink px-5 py-2 text-sm font-medium text-paper hover:bg-gold hover:text-white"
         >
-          Search
+          {t("search.btn")}
         </button>
       </form>
 
@@ -53,10 +55,10 @@ export function SearchView({
           {total > 0 ? (
             <>
               <span className="font-semibold text-ink">{total.toLocaleString()}</span>{" "}
-              results for &ldquo;{initialQuery}&rdquo;
+              {t("search.resultsFor")} &ldquo;{initialQuery}&rdquo;
             </>
           ) : (
-            <>No results for &ldquo;{initialQuery}&rdquo;. Try another search.</>
+            <>{t("search.noResultsPre")} &ldquo;{initialQuery}&rdquo;. {t("search.noResultsPost")}</>
           )}
         </p>
       )}
@@ -71,7 +73,7 @@ export function SearchView({
 
       {!initialQuery && (
         <p className="mt-10 text-center text-muted">
-          Start typing to discover something beautiful.
+          {t("search.startTyping")}
         </p>
       )}
     </div>
