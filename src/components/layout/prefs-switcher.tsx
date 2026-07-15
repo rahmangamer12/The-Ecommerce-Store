@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Globe, ChevronDown, Check } from "lucide-react";
 import { usePrefs } from "@/components/providers/prefs-provider";
+import { LOCALES, LOCALE_NAMES } from "@/i18n/keys";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
@@ -16,8 +17,8 @@ function PrefsOptions({ onPick, inline = false }: { onPick?: () => void; inline?
       <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted">
         {t("prefs.language")}
       </p>
-      <div className="mt-2 grid grid-cols-2 gap-1">
-        {(["en", "ar"] as const).map((l) => (
+      <div className="mt-2 grid max-h-48 grid-cols-2 gap-1 overflow-y-auto">
+        {LOCALES.map((l) => (
           <button
             key={l}
             onClick={() => setLocale(l)}
@@ -26,7 +27,7 @@ function PrefsOptions({ onPick, inline = false }: { onPick?: () => void; inline?
               locale === l ? "bg-ink text-paper" : "hover:bg-ink/5",
             )}
           >
-            {l === "en" ? "English" : "العربية"}
+            {LOCALE_NAMES[l]}
           </button>
         ))}
       </div>

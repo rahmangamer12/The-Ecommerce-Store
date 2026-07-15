@@ -1,12 +1,13 @@
 import { cookies } from "next/headers";
 import { translations, type Locale, type TranslationKey } from "./translations";
+import { isLocale } from "./keys";
 
 /** Read the visitor's chosen language from the cookie (server-side). */
 export async function getLocale(): Promise<Locale> {
   try {
     const c = await cookies();
     const v = c.get("souq.locale")?.value;
-    return v === "ar" ? "ar" : "en";
+    return isLocale(v) ? v : "en";
   } catch {
     return "en";
   }

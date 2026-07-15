@@ -20,6 +20,7 @@ import { buildMetadata } from "@/lib/seo";
 import { analytics, isAiConfigured } from "@/config/env";
 import { getCategories } from "@/lib/categories";
 import { getLocale } from "@/i18n/server";
+import { RTL_LOCALES } from "@/i18n/keys";
 
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -40,7 +41,7 @@ export default async function RootLayout({
     <ClerkProvider>
       <html
         lang={locale}
-        dir={locale === "ar" ? "rtl" : "ltr"}
+        dir={RTL_LOCALES.includes(locale) ? "rtl" : "ltr"}
         suppressHydrationWarning
         className={`${sans.variable} ${mono.variable} ${display.variable}`}
       >

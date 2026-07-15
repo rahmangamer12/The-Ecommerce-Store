@@ -10,6 +10,7 @@ import {
 import { useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { translations, type Locale, type TranslationKey } from "@/i18n/translations";
+import { RTL_LOCALES, INTL_LOCALE, isLocale } from "@/i18n/keys";
 
 type PrefsState = {
   currency: string;
@@ -37,9 +38,9 @@ export function PrefsProvider({ children }: { children: React.ReactNode }) {
     /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const c = window.localStorage.getItem(LS_CUR);
-      const l = window.localStorage.getItem(LS_LOC) as Locale | null;
+      const l = window.localStorage.getItem(LS_LOC);
       if (c) setCurrencyState(c);
-      if (l === "ar" || l === "en") setLocaleState(l);
+      if (isLocale(l)) setLocaleState(l);
     } catch {}
     setMounted(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -49,7 +50,7 @@ export function PrefsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.lang = locale;
-    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = RTL_LOCALES.includes(locale) ? "rtl" : "ltr";
   }, [locale, mounted]);
 
   const setCurrency = useCallback((code: string) => {
@@ -80,7 +81,7 @@ export function PrefsProvider({ children }: { children: React.ReactNode }) {
         siteConfig.currencies[0];
       const value = baseAmount * cur.rate;
       try {
-        return new Intl.NumberFormat(locale === "ar" ? "ar-QA" : "en-US", {
+        return new Intl.NumberFormat(INTL_LOCALE[locale] ?? "en-US", {
           style: "currency",
           currency: cur.code,
           minimumFractionDigits: value % 1 === 0 ? 0 : 2,
