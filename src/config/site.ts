@@ -19,7 +19,11 @@ export const siteConfig = {
   // Logo: an emoji/letter mark by default. Replace `logoText` or set `logoImage`.
   logoText: "Velcarro",
   logoMark: "V",
-  logoImage: "", // e.g. "/logo.svg" (leave empty to use the text mark)
+  // Real brand logo (transparent PNG). Two variants so it stays visible in both
+  // themes: `logoImage` (dark ink) for light mode, `logoImageDark` (light ink)
+  // for dark mode. Leave `logoImage` empty to fall back to the text mark.
+  logoImage: "/logo.png",
+  logoImageDark: "/logo-dark.png",
 
   // ---- Contact ----
   supportEmail: "sheerazshahbaloch@gmail.com",
