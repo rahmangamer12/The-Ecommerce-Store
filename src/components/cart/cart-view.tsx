@@ -33,7 +33,7 @@ export function CartView() {
         </div>
         <h2 className="mt-6 font-display text-2xl font-semibold">{t("cart.empty")}</h2>
         <p className="mt-2 max-w-sm text-ink-soft">
-          Looks like you haven&apos;t added anything yet. Let&apos;s change that.
+          {t("cart.emptyLong")}
         </p>
         <Button href="/shop" variant="gold" size="lg" className="mt-7">
           {t("cart.startShopping")}
@@ -130,7 +130,7 @@ export function CartView() {
                   <Tag className="h-4 w-4" /> {coupon.code}
                 </span>
                 <button onClick={removeCoupon} className="text-muted hover:text-danger">
-                  Remove
+                  {t("cart.remove")}
                 </button>
               </div>
             ) : (
@@ -150,8 +150,7 @@ export function CartView() {
               </div>
             )}
             <p className="mt-2 text-xs text-muted">
-              Try <span className="font-medium">WELCOME10</span> or{" "}
-              <span className="font-medium">FREESHIP</span>
+              {t("cart.tryCoupons")}
             </p>
           </div>
 
@@ -178,7 +177,7 @@ export function CartView() {
             <ArrowRight className="h-4 w-4" />
           </Button>
           <p className="mt-3 text-center text-xs text-muted">
-            Secure checkout · Buyer protection guarantee
+            {t("cart.secureNote")}
           </p>
         </div>
       </aside>

@@ -276,6 +276,14 @@ export const translations = {
     "card.onlyLeftPost": "left",
     "reviews.basedOnPre": "Based on",
     "reviews.basedOnPost": "reviews",
+    "cart.applied": "applied",
+    "cart.promoPlaceholder": "Promo code (try WELCOME10)",
+    "cart.emptyDesc":
+      "Discover something beautiful — your next favourite is a click away.",
+    "cart.exploreShop": "Explore the shop",
+    "cart.emptyLong": "Looks like you haven't added anything yet. Let's change that.",
+    "cart.tryCoupons": "Try WELCOME10 or FREESHIP",
+    "cart.secureNote": "Secure checkout · Buyer protection guarantee",
   },
   ar: {
     "nav.shop": "تسوق",
@@ -549,6 +557,14 @@ export const translations = {
     "card.onlyLeftPost": "فقط",
     "reviews.basedOnPre": "بناءً على",
     "reviews.basedOnPost": "تقييم",
+    "cart.applied": "مُطبّقة",
+    "cart.promoPlaceholder": "رمز الخصم (جرّب WELCOME10)",
+    "cart.emptyDesc":
+      "اكتشف شيئًا جميلًا — قطعتك المفضلة القادمة على بُعد نقرة.",
+    "cart.exploreShop": "استكشف المتجر",
+    "cart.emptyLong": "يبدو أنك لم تُضِف شيئًا بعد. لنغيّر ذلك.",
+    "cart.tryCoupons": "جرّب WELCOME10 أو FREESHIP",
+    "cart.secureNote": "دفع آمن · ضمان حماية المشتري",
   },
 } as const;
 

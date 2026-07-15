@@ -80,11 +80,11 @@ export function CartDrawer() {
                 <div className="border-b border-border px-5 py-3.5">
                   {remaining > 0 ? (
                     <p className="text-sm text-ink-soft">
-                      You&apos;re{" "}
+                      {t("cart.away1")}{" "}
                       <span className="font-semibold text-ink">
                         {formatPrice(remaining)}
                       </span>{" "}
-                      away from free shipping
+                      {t("cart.away2")}
                     </p>
                   ) : (
                     <p className="text-sm font-medium text-success">
@@ -210,7 +210,7 @@ export function CartDrawer() {
                           }
                           className="rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-paper hover:bg-gold hover:text-white"
                         >
-                          Add
+                          {t("cart.add")}
                         </button>
                       </div>
                     </div>
@@ -223,10 +223,10 @@ export function CartDrawer() {
                   {coupon ? (
                     <div className="mb-3 flex items-center justify-between rounded-lg bg-success/10 px-3 py-2 text-sm">
                       <span className="flex items-center gap-2 font-medium text-success">
-                        <Tag className="h-4 w-4" /> {coupon.code} applied
+                        <Tag className="h-4 w-4" /> {coupon.code} {t("cart.applied")}
                       </span>
                       <button onClick={removeCoupon} className="text-muted hover:text-danger">
-                        Remove
+                        {t("cart.remove")}
                       </button>
                     </div>
                   ) : (
@@ -234,7 +234,7 @@ export function CartDrawer() {
                       <input
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
-                        placeholder="Promo code (try WELCOME10)"
+                        placeholder={t("cart.promoPlaceholder")}
                         className="h-10 flex-1 rounded-full border border-border bg-card px-4 text-sm focus:border-gold focus-visible:outline-none"
                       />
                       <button
@@ -243,7 +243,7 @@ export function CartDrawer() {
                         }}
                         className="rounded-full bg-ink px-4 text-sm font-medium text-paper hover:bg-gold hover:text-white"
                       >
-                        Apply
+                        {t("cart.apply")}
                       </button>
                     </div>
                   )}
@@ -258,7 +258,7 @@ export function CartDrawer() {
                       />
                     )}
                     <Row
-                      label="Shipping"
+                      label={t("cart.shipping")}
                       value={
                         totals.shipping === 0
                           ? t("cart.free")
@@ -268,7 +268,7 @@ export function CartDrawer() {
                     <Row label={t("cart.tax")} value={formatPrice(totals.tax)} />
                     <div className="hairline my-2" />
                     <Row
-                      label="Total"
+                      label={t("cart.total")}
                       value={formatPrice(totals.total)}
                       bold
                     />
@@ -281,14 +281,14 @@ export function CartDrawer() {
                     className="mt-4 w-full"
                     onClick={() => setCartOpen(false)}
                   >
-                    Secure Checkout
+                    {t("common.secureCheckout")}
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                   <button
                     onClick={() => setCartOpen(false)}
                     className="mt-2 w-full text-center text-sm text-muted hover:text-ink"
                   >
-                    Continue shopping
+                    {t("common.continueShopping")}
                   </button>
                 </div>
               </>
@@ -320,17 +320,18 @@ function Row({
 }
 
 function EmptyCart({ onClose }: { onClose: () => void }) {
+  const { t } = usePrefs();
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
       <div className="grid h-20 w-20 place-items-center rounded-full bg-paper-2">
         <ShoppingBag className="h-8 w-8 text-muted" />
       </div>
-      <h3 className="mt-5 font-display text-xl font-semibold">Your cart is empty</h3>
+      <h3 className="mt-5 font-display text-xl font-semibold">{t("cart.empty")}</h3>
       <p className="mt-2 text-sm text-muted">
-        Discover something beautiful — your next favourite is a click away.
+        {t("cart.emptyDesc")}
       </p>
       <Button href="/shop" variant="primary" className="mt-6" onClick={onClose}>
-        Explore the shop
+        {t("cart.exploreShop")}
       </Button>
     </div>
   );
