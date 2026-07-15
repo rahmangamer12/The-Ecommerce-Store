@@ -4,9 +4,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 import { Input, Label } from "@/components/ui/input";
+import { usePrefs } from "@/components/providers/prefs-provider";
 
 export default function SettingsPage() {
   const { user } = useUser();
+  const { t } = usePrefs();
   const [profile, setProfile] = useState({
     fullName: user?.fullName ?? "",
     email: user?.primaryEmailAddress?.emailAddress ?? "",
@@ -16,16 +18,16 @@ export default function SettingsPage() {
 
   function save(e: React.FormEvent) {
     e.preventDefault();
-    toast.success("Settings saved");
+    toast.success(t("acct.settingsSaved"));
   }
 
   return (
     <form onSubmit={save} className="max-w-xl space-y-8">
       <section>
-        <h2 className="font-display text-xl font-semibold">Profile</h2>
+        <h2 className="font-display text-xl font-semibold">{t("acct.profile")}</h2>
         <div className="mt-4 space-y-4">
           <div>
-            <Label htmlFor="fullName">Full name</Label>
+            <Label htmlFor="fullName">{t("checkout.fullName")}</Label>
             <Input
               id="fullName"
               value={profile.fullName}
@@ -33,7 +35,7 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("contact.email")}</Label>
             <Input
               id="email"
               type="email"
@@ -42,7 +44,7 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone">{t("checkout.phone")}</Label>
             <Input
               id="phone"
               value={profile.phone}
@@ -53,17 +55,17 @@ export default function SettingsPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-xl font-semibold">Notifications</h2>
+        <h2 className="font-display text-xl font-semibold">{t("acct.notifications")}</h2>
         <div className="mt-4 space-y-3">
           <Switch
-            label="Order updates"
-            description="Shipping and delivery notifications"
+            label={t("acct.orderUpdates")}
+            description={t("acct.orderUpdatesDesc")}
             checked={prefs.orders}
             onChange={() => setPrefs((p) => ({ ...p, orders: !p.orders }))}
           />
           <Switch
-            label="Marketing emails"
-            description="New arrivals, sales and stories"
+            label={t("acct.marketingEmails")}
+            description={t("acct.marketingEmailsDesc")}
             checked={prefs.marketing}
             onChange={() => setPrefs((p) => ({ ...p, marketing: !p.marketing }))}
           />
@@ -74,7 +76,7 @@ export default function SettingsPage() {
         type="submit"
         className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper hover:bg-gold hover:text-white"
       >
-        Save changes
+        {t("acct.saveChanges")}
       </button>
     </form>
   );

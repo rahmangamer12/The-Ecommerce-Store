@@ -6,6 +6,7 @@ import { OrderStatusBadge } from "@/components/order-status-badge";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { adminEmails } from "@/config/env";
+import { getT, getLocale } from "@/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function AccountOverview() {
   const isAdmin = !!email && adminEmails.includes(email);
   const orders = await getOrdersForUser(user?.id, email);
   const recent = orders.slice(0, 3);
+  const t = getT(await getLocale());
 
   return (
     <div className="space-y-8">
@@ -29,9 +31,9 @@ export default async function AccountOverview() {
               <LayoutDashboard className="h-6 w-6" />
             </div>
             <div>
-              <p className="font-display text-lg font-semibold">Admin Dashboard</p>
+              <p className="font-display text-lg font-semibold">{t("nav.admin")}</p>
               <p className="text-sm text-paper/70">
-                Manage products, orders, customers and settings
+                {t("acct.adminDesc")}
               </p>
             </div>
           </div>
@@ -42,9 +44,9 @@ export default async function AccountOverview() {
       {/* Stats — compact 3-up row on mobile, not giant stacked cards */}
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {[
-          { icon: Package, label: "Total orders", value: orders.length },
-          { icon: Heart, label: "Wishlist", value: "View", href: "/account/wishlist" },
-          { icon: MapPin, label: "Saved addresses", value: 0 },
+          { icon: Package, label: t("acct.totalOrders"), value: orders.length },
+          { icon: Heart, label: t("acct.wishlist"), value: t("acct.view"), href: "/account/wishlist" },
+          { icon: MapPin, label: t("acct.savedAddresses"), value: 0 },
         ].map((s) => (
           <div key={s.label} className="rounded-2xl border border-border bg-card p-3 sm:p-5">
             <s.icon className="h-5 w-5 text-gold-strong" />
@@ -57,27 +59,27 @@ export default async function AccountOverview() {
       {/* Recent orders */}
       <div>
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-xl font-semibold">Recent orders</h2>
+          <h2 className="font-display text-xl font-semibold">{t("acct.recentOrders")}</h2>
           <Link
             href="/account/orders"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-gold-strong hover:underline"
           >
-            View all <ArrowRight className="h-4 w-4" />
+            {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
         {recent.length === 0 ? (
           <div className="mt-4 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted">
-            You haven&apos;t placed any orders yet.
+            {t("acct.noOrders")}
           </div>
         ) : (
           <div className="mt-4 overflow-x-auto rounded-2xl border border-border">
             <table className="w-full min-w-[460px] text-left text-sm">
               <thead className="bg-paper-2 text-xs uppercase tracking-wider text-muted">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Order</th>
-                  <th className="px-5 py-3 font-medium">Date</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 text-right font-medium">Total</th>
+                  <th className="px-5 py-3 font-medium">{t("acct.thOrder")}</th>
+                  <th className="px-5 py-3 font-medium">{t("acct.thDate")}</th>
+                  <th className="px-5 py-3 font-medium">{t("acct.thStatus")}</th>
+                  <th className="px-5 py-3 text-right font-medium">{t("cart.total")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
