@@ -1,13 +1,39 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { MessageCircle, X, Send, Sparkles, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePrefs } from "@/components/providers/prefs-provider";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-// Floating store assistant. Renders nothing unless AI is configured (the
+/** Render assistant text, turning markdown links into real (clickable) links.
+ *  Internal links (/products/…, /categories/…) navigate in-app. */
+function RichText({ content }: { content: string }) {
+  const parts: React.ReactNode[] = [];
+  const re = /\[([^\]]+)\]\((\/[^\s)]+)\)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let key = 0;
+  while ((m = re.exec(content)) !== null) {
+    if (m.index > last) parts.push(content.slice(last, m.index));
+    parts.push(
+      <Link
+        key={key++}
+        href={m[2]}
+        className="font-semibold text-gold-strong underline underline-offset-2 hover:opacity-80"
+      >
+        {m[1]}
+      </Link>,
+    );
+    last = m.index + m[0].length;
+  }
+  if (last < content.length) parts.push(content.slice(last));
+  return <>{parts}</>;
+}
+
+// Floating AI store assistant. Renders nothing unless AI is configured (the
 // LongCat key is set), so the store is unaffected when it's off.
 export function AssistantWidget({ enabled }: { enabled: boolean }) {
   const { t } = usePrefs();
@@ -20,43 +46,67 @@ export function AssistantWidget({ enabled }: { enabled: boolean }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading, open]);
 
+  const send = useCallback(
+    async (preset?: string) => {
+      const text = (preset ?? input).trim();
+      if (!text || loadingRef.current) return;
+      loadingRef.current = true;
+      let next: Msg[] = [];
+      setMessages((m) => {
+        next = [...m, { role: "user" as const, content: text }];
+        return next;
+      });
+      setInput("");
+      setLoading(true);
+      try {
+        const res = await fetch("/api/assistant", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ messages: next.slice(1) }),
+        });
+        const data = (await res.json()) as { reply?: string; error?: string };
+        setMessages((m) => [
+          ...m,
+          {
+            role: "assistant",
+            content: data.reply ?? data.error ?? t("ai.error"),
+          },
+        ]);
+      } catch {
+        setMessages((m) => [
+          ...m,
+          { role: "assistant", content: t("ai.network") },
+        ]);
+      } finally {
+        loadingRef.current = false;
+        setLoading(false);
+      }
+    },
+    [input, t],
+  );
+
+  // "Ask AI about this product" buttons anywhere on the site open the chat
+  // with their question pre-sent.
+  useEffect(() => {
+    function onAsk(e: Event) {
+      const q = (e as CustomEvent<{ question?: string }>).detail?.question;
+      if (!q) return;
+      setOpen(true);
+      send(q);
+    }
+    window.addEventListener("velcarro:ask-ai", onAsk);
+    return () => window.removeEventListener("velcarro:ask-ai", onAsk);
+  }, [send]);
+
   if (!enabled) return null;
 
-  async function send() {
-    const text = input.trim();
-    if (!text || loading) return;
-    const next = [...messages, { role: "user" as const, content: text }];
-    setMessages(next);
-    setInput("");
-    setLoading(true);
-    try {
-      const res = await fetch("/api/assistant", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(1) }),
-      });
-      const data = (await res.json()) as { reply?: string; error?: string };
-      setMessages((m) => [
-        ...m,
-        {
-          role: "assistant",
-          content: data.reply ?? data.error ?? t("ai.error"),
-        },
-      ]);
-    } catch {
-      setMessages((m) => [
-        ...m,
-        { role: "assistant", content: t("ai.network") },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const quickQuestions = [t("ai.quickFind"), t("ai.quickShip"), t("ai.quickTrack")];
 
   return (
     <>
@@ -110,10 +160,24 @@ export function AssistantWidget({ enabled }: { enabled: boolean }) {
                       : "rounded-bl-sm bg-paper-2 text-ink",
                   )}
                 >
-                  {m.content}
+                  {m.role === "assistant" ? <RichText content={m.content} /> : m.content}
                 </div>
               </div>
             ))}
+            {/* Quick questions — only while the chat is fresh */}
+            {messages.length === 1 && !loading && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {quickQuestions.map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => send(q)}
+                    className="rounded-full border border-border bg-paper px-3 py-1.5 text-xs text-ink-soft transition-colors hover:border-gold hover:text-gold-strong"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
             {loading && (
               <div className="flex justify-start">
                 <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm bg-paper-2 px-4 py-3">
@@ -141,7 +205,7 @@ export function AssistantWidget({ enabled }: { enabled: boolean }) {
                 className="h-11 flex-1 rounded-full border border-border bg-paper px-4 text-sm focus:border-gold focus-visible:outline-none"
               />
               <button
-                onClick={send}
+                onClick={() => send()}
                 disabled={loading || !input.trim()}
                 aria-label="Send"
                 className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gold text-white transition-colors hover:bg-gold-strong disabled:opacity-50"

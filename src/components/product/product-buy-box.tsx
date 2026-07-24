@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   ChevronDown,
   ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import type { Product } from "@/types";
 import { useStore } from "@/components/providers/store-provider";
@@ -229,6 +230,21 @@ export function ProductBuyBox({
           </div>
         ))}
       </div>
+
+      {/* Ask the AI assistant about this exact product */}
+      <button
+        onClick={() =>
+          window.dispatchEvent(
+            new CustomEvent("velcarro:ask-ai", {
+              detail: { question: `${t("ai.askProduct")}: ${product.name}` },
+            }),
+          )
+        }
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-gold/40 bg-gold/5 px-6 py-3 text-sm font-medium text-gold-strong transition-colors hover:border-gold hover:bg-gold/10"
+      >
+        <Sparkles className="h-4 w-4" />
+        {t("ai.askProduct")}
+      </button>
 
       {/* Info accordions */}
       <div className="mt-6 divide-y divide-border border-y border-border">
