@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import type { Category } from "@/types";
 import { categories as localCategories } from "@/data/categories";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -38,6 +39,15 @@ export async function getCategories(): Promise<Category[]> {
     return localCategories;
   }
 }
+
+/**
+ * Cached categories for the storefront chrome (navbar/footer render on every
+ * page, so this saves one DB round-trip per view). 5-minute freshness; admin
+ * screens keep calling getCategories() directly so edits show up instantly.
+ */
+export const getCategoriesCached = unstable_cache(getCategories, ["categories"], {
+  revalidate: 300,
+});
 
 /** Find a single category by slug (DB-aware). */
 export async function getCategoryBySlug(

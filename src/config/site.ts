@@ -105,7 +105,7 @@ export const siteConfig = {
   trustBadges: [
     "Secure checkout",
     "Worldwide shipping",
-    "30-day easy returns",
+    "14-day returns",
     "24/7 support",
   ],
 } as const;

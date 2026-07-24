@@ -192,6 +192,10 @@ export const tr: Record<TranslationKey, string> = {
   "footer.newsDesc":
     "Yeni gelenlere, özel indirimlere ve editör hikayelerine ilk siz erişin. Ayrıca ilk siparişinizde %10 indirim.",
   "footer.rights": "Tüm hakları saklıdır.",
+  "footer.badgeSecure": "Güvenli ödeme",
+  "footer.badgeShipping": "Dünya çapında kargo",
+  "footer.badgeReturns": "14 gün iade",
+  "footer.badgeSupport": "7/24 destek",
   "news.success": "Teşekkürler — artık listedesiniz!",
   "news.placeholder": "E-postanızı girin",
   "news.joining": "Katılıyor…",

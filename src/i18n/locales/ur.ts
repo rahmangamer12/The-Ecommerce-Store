@@ -192,6 +192,10 @@ export const ur: Record<TranslationKey, string> = {
   "footer.newsDesc":
     "نئی آمد، نجی سیلز اور خصوصی کہانیوں تک سب سے پہلے رسائی حاصل کریں۔ اس کے علاوہ اپنے پہلے آرڈر پر 10% رعایت۔",
   "footer.rights": "جملہ حقوق محفوظ ہیں۔",
+  "footer.badgeSecure": "محفوظ چیک آؤٹ",
+  "footer.badgeShipping": "دنیا بھر میں شپنگ",
+  "footer.badgeReturns": "14 دن میں واپسی",
+  "footer.badgeSupport": "24/7 مدد",
   "news.success": "شکریہ — آپ فہرست میں شامل ہیں!",
   "news.placeholder": "اپنا ای میل درج کریں",
   "news.joining": "شامل ہو رہے ہیں…",

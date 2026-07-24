@@ -190,6 +190,10 @@ export const en = {
     "footer.newsDesc":
       "Be first to access new arrivals, private sales and editorial stories. Plus 10% off your first order.",
     "footer.rights": "All rights reserved.",
+    "footer.badgeSecure": "Secure checkout",
+    "footer.badgeShipping": "Worldwide shipping",
+    "footer.badgeReturns": "14-day returns",
+    "footer.badgeSupport": "24/7 support",
     "news.success": "Thank you — you're on the list!",
     "news.placeholder": "Enter your email",
     "news.joining": "Joining…",

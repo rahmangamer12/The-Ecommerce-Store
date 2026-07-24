@@ -192,6 +192,10 @@ export const hi: Record<TranslationKey, string> = {
   "footer.newsDesc":
     "नए आगमन, निजी सेल और संपादकीय कहानियों तक पहुँचने वाले पहले व्यक्ति बनें। साथ ही अपने पहले ऑर्डर पर 10% की छूट।",
   "footer.rights": "सर्वाधिकार सुरक्षित।",
+  "footer.badgeSecure": "सुरक्षित चेकआउट",
+  "footer.badgeShipping": "दुनिया भर में शिपिंग",
+  "footer.badgeReturns": "14-दिन रिटर्न",
+  "footer.badgeSupport": "24/7 सहायता",
   "news.success": "धन्यवाद — अब आप सूची में हैं!",
   "news.placeholder": "अपना ईमेल दर्ज करें",
   "news.joining": "शामिल हो रहे हैं…",

@@ -18,7 +18,7 @@ import { VisitTracker } from "@/components/visit-tracker";
 import { Analytics } from "@/components/analytics";
 import { buildMetadata } from "@/lib/seo";
 import { analytics, isAiConfigured } from "@/config/env";
-import { getCategories } from "@/lib/categories";
+import { getCategoriesCached } from "@/lib/categories";
 import { getLocale } from "@/i18n/server";
 import { RTL_LOCALES } from "@/i18n/keys";
 
@@ -35,7 +35,7 @@ export const metadata: Metadata = buildMetadata();
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const categories = await getCategories();
+  const categories = await getCategoriesCached();
   const locale = await getLocale();
   return (
     <ClerkProvider>

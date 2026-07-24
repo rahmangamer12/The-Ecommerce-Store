@@ -91,9 +91,10 @@ export async function Footer({ categories = localCategories }: { categories?: Ca
             © {new Date().getFullYear()} {siteConfig.legalName}. {t("footer.rights")}
           </p>
           <div className="flex flex-wrap items-center gap-4">
-            {siteConfig.trustBadges.map((b) => (
-              <span key={b}>{b}</span>
-            ))}
+            <span>{t("footer.badgeSecure")}</span>
+            <span>{t("footer.badgeShipping")}</span>
+            <span>{t("footer.badgeReturns")}</span>
+            <span>{t("footer.badgeSupport")}</span>
           </div>
         </div>
       </div>

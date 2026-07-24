@@ -192,6 +192,10 @@ export const ru: Record<TranslationKey, string> = {
   "footer.newsDesc":
     "Узнавайте первыми о новинках, закрытых распродажах и авторских историях. Плюс скидка 10% на первый заказ.",
   "footer.rights": "Все права защищены.",
+  "footer.badgeSecure": "Безопасная оплата",
+  "footer.badgeShipping": "Доставка по всему миру",
+  "footer.badgeReturns": "Возврат в течение 14 дней",
+  "footer.badgeSupport": "Поддержка 24/7",
   "news.success": "Спасибо — вы в списке!",
   "news.placeholder": "Введите вашу электронную почту",
   "news.joining": "Присоединение…",

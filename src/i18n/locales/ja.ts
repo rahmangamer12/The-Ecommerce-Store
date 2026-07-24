@@ -192,6 +192,10 @@ export const ja: Record<TranslationKey, string> = {
   "footer.newsDesc":
     "新着商品、限定セール、特集ストーリーをいち早くお届けします。さらに初回ご注文が10％オフに。",
   "footer.rights": "無断複写・転載を禁じます。",
+  "footer.badgeSecure": "安全なチェックアウト",
+  "footer.badgeShipping": "世界中へ配送",
+  "footer.badgeReturns": "14日間返品可能",
+  "footer.badgeSupport": "24時間365日サポート",
   "news.success": "ありがとうございます — 登録が完了しました！",
   "news.placeholder": "メールアドレスを入力",
   "news.joining": "登録中…",

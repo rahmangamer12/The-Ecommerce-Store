@@ -192,6 +192,10 @@ export const es: Record<TranslationKey, string> = {
   "footer.newsDesc":
     "Sé el primero en acceder a novedades, ventas privadas e historias editoriales. Además, un 10% de descuento en tu primer pedido.",
   "footer.rights": "Todos los derechos reservados.",
+  "footer.badgeSecure": "Pago seguro",
+  "footer.badgeShipping": "Envío mundial",
+  "footer.badgeReturns": "Devoluciones de 14 días",
+  "footer.badgeSupport": "Soporte 24/7",
   "news.success": "Gracias — ¡ya estás en la lista!",
   "news.placeholder": "Introduce tu correo electrónico",
   "news.joining": "Uniéndote…",

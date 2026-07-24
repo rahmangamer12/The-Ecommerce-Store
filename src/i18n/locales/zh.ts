@@ -192,6 +192,10 @@ export const zh: Record<TranslationKey, string> = {
   "footer.newsDesc":
     "抢先获取新品、私享特卖和精选故事。此外，首单还可享 9 折优惠。",
   "footer.rights": "版权所有。",
+  "footer.badgeSecure": "安全结账",
+  "footer.badgeShipping": "全球配送",
+  "footer.badgeReturns": "14天退货",
+  "footer.badgeSupport": "全天候客服",
   "news.success": "谢谢您——您已成功订阅！",
   "news.placeholder": "输入您的电子邮箱",
   "news.joining": "加入中…",

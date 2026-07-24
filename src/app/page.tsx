@@ -29,49 +29,65 @@ import { siteConfig } from "@/config/site";
 import { formatDate } from "@/lib/utils";
 import { jsonLd, websiteSchema, organizationSchema } from "@/lib/seo";
 import { getLocale, getT } from "@/i18n/server";
-
-// Cache the rendered homepage for 5 minutes (ISR) so repeat visits are instant
-// and we don't hit the DB on every request. New products appear within 5 min.
-export const revalidate = 300;
+import { unstable_cache } from "next/cache";
 
 const pickN = (flagged: Product[], all: Product[], n: number) =>
   (flagged.length ? flagged : all).slice(0, n);
 
+// The locale cookie makes this route dynamic, so page-level `revalidate` never
+// caches anything — every visit was re-running ~20 DB queries (catalogue, hero,
+// a query per category showcase) and taking seconds. Caching the assembled data
+// blob for 5 minutes makes warm visits skip the DB entirely; only the tiny
+// locale/translation work runs per request.
+const getHomeData = unstable_cache(
+  async () => {
+    const [categories, allProducts, heroRes] = await Promise.all([
+      getCategories(),
+      // Only the newest ~60 products (not all 4000+): every small section is
+      // derived from this one query. "See more" links to /shop for the rest.
+      getCatalogLite(60),
+      // A popular watch makes a cleaner hero than the newest random import.
+      getShopProducts({ category: "watches-jewelry", pageSize: 1, sort: "popular" }),
+    ]);
+
+    // Daraz/Alibaba-style: a product row per category. Fetch 6 popular products
+    // for each category and keep only the ones that actually have stock.
+    const showcases = (
+      await Promise.all(
+        categories.map(async (cat) => ({
+          category: cat,
+          products: (
+            await getShopProducts({ category: cat.slug, pageSize: 6, sort: "popular" })
+          ).products,
+        })),
+      )
+    )
+      .filter((s) => s.products.length >= 4)
+      .slice(0, 8);
+
+    return {
+      categories,
+      allProducts,
+      heroProduct: heroRes.products[0] ?? allProducts[0] ?? null,
+      showcases,
+    };
+  },
+  ["home-data"],
+  { revalidate: 300 },
+);
+
 export default async function HomePage() {
   const t = getT(await getLocale());
-  const categories = await getCategories();
+  const { categories, allProducts, heroProduct, showcases } = await getHomeData();
 
-  // Fetch only the newest ~60 products (not all 800+) and derive every section
-  // from that one small query — so the homepage loads fast. "See more" links to
-  // /shop, which loads the full catalogue for filtering.
-  const allProducts = await getCatalogLite(60);
   const featured = pickN(allProducts.filter((p) => p.featured), allProducts, 10);
   const trending = pickN(allProducts.filter((p) => p.trending), allProducts, 5);
   const onSale = allProducts
     .filter((p) => p.compareAtPrice && p.compareAtPrice > p.price)
     .slice(0, 5);
-  const newArrivals = allProducts.slice(0, 5); // getCatalog is newest-first
+  const newArrivals = allProducts.slice(0, 5); // getCatalogLite is newest-first
   const justForYou = allProducts.slice(0, 12);
-  // A popular watch makes a cleaner hero than the newest random import.
-  const heroProduct =
-    (await getShopProducts({ category: "watches-jewelry", pageSize: 1, sort: "popular" }))
-      .products[0] ?? allProducts[0];
   const posts = getAllPosts().slice(0, 3);
-
-  // Daraz/Alibaba-style: a product row per category. Fetch 6 popular products
-  // for each category and keep only the ones that actually have stock.
-  const showcases = (
-    await Promise.all(
-      categories.map(async (cat) => ({
-        category: cat,
-        products: (
-          await getShopProducts({ category: cat.slug, pageSize: 6, sort: "popular" })
-        ).products,
-      })),
-    )
-  )
-    .filter((s) => s.products.length >= 4)
-    .slice(0, 8);
 
   return (
     <>
