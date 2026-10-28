@@ -87,9 +87,26 @@ export async function Footer({ categories = localCategories }: { categories?: Ca
       {/* Bottom bar */}
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-xs text-muted sm:flex-row sm:px-6 lg:px-8">
-          <p>
-            © {new Date().getFullYear()} {siteConfig.legalName}. {t("footer.rights")}
-          </p>
+          <div className="flex flex-col items-center gap-1 sm:items-start">
+            <p>
+              © {new Date().getFullYear()} {siteConfig.legalName}. {t("footer.rights")}
+            </p>
+            <p>
+              Crafted by{" "}
+              <a
+                href="https://undercraftstudio.com"
+                target="_blank"
+                rel="noopener"
+                className="font-medium text-ink-soft transition-colors hover:text-gold-strong"
+              >
+                Undercraftstudio.com
+              </a>
+              {" · "}
+              <a href="mailto:hello@undercraftstudio.com" className="transition-colors hover:text-gold-strong">
+                hello@undercraftstudio.com
+              </a>
+            </p>
+          </div>
           <div className="flex flex-wrap items-center gap-4">
             <span>{t("footer.badgeSecure")}</span>
             <span>{t("footer.badgeShipping")}</span>

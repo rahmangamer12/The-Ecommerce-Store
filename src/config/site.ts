@@ -26,7 +26,7 @@ export const siteConfig = {
   logoImageDark: "/logo-dark.png",
 
   // ---- Contact ----
-  supportEmail: "sheerazshahbaloch@gmail.com",
+  supportEmail: "hello@velcarro.com",
   whatsapp: "+974 3126 9934", // shown in UI
   whatsappNumber: "97431269934", // wa.me format, no + or spaces
   // Formspree form ID for the contact form (formspree.io). The form works
